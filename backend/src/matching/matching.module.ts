@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Project, ProjectSchema } from '../project/schemas/project.schema';
 import { User, UserSchema } from '../user/schemas/user.schema';
@@ -9,6 +9,7 @@ import {
   MatchingRequestSchema,
 } from './schemas/matching-request.schema';
 import { Proposal, ProposalSchema } from '../proposals/schemas/proposal.schema';
+import { AlertsModule } from '../alerts/alerts.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { Proposal, ProposalSchema } from '../proposals/schemas/proposal.schema';
       { name: Project.name, schema: ProjectSchema },
       { name: Proposal.name, schema: ProposalSchema },
     ]),
+    forwardRef(() => AlertsModule),
   ],
   controllers: [MatchingController],
   providers: [MatchingService],

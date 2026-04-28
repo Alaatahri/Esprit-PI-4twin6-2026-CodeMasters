@@ -13,7 +13,15 @@ api.interceptors.request.use((config) => {
     const raw = localStorage.getItem('bmp_user');
     if (raw) {
       const user = JSON.parse(raw);
-      const userId = user?._id;
+      const rawId = user?._id;
+      const userId =
+        typeof rawId === 'string'
+          ? rawId.trim()
+          : typeof rawId?.$oid === 'string'
+            ? String(rawId.$oid).trim()
+            : typeof rawId?.toString === 'function'
+              ? String(rawId.toString()).trim()
+              : '';
       if (userId) {
         config.headers = config.headers || {};
         (config.headers as any)['x-user-id'] = userId;
