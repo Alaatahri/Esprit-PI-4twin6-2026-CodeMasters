@@ -14,6 +14,12 @@ import { getStoredUser, type BMPUser } from "@/lib/auth";
 import { fetchAPI, fetchAPISafe } from "@/lib/fetchHelper";
 import { DictationButton } from "@/components/DictationButton";
 import { useLanguage } from "@/components/LanguageProvider";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
+import StripeContainer from '../../components/StripeContainer';
+import SuccessNotification from '@/components/SuccessNotification';
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder");
 
 const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api";
 
@@ -454,23 +460,23 @@ function DocumentModal({
 
               {/* Fields Grid */}
               <div style={{ display: 'grid', gap: '10px' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                  <input value={payerNom} onChange={e=>setPayerNom(e.target.value)} placeholder="Nom" style={inputStyle} />
-                  <input value={payerPrenom} onChange={e=>setPayerPrenom(e.target.value)} placeholder="Prénom" style={inputStyle} />
-                </div>
-                <input value={payerTelephone} onChange={e=>setPayerTelephone(e.target.value)} placeholder="Téléphone" style={inputStyle} />
-                <input value={data.temp_client_email||''} disabled style={{...inputStyle, opacity: 0.5}} />
-
-                <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '10px 0' }} />
+                {payMethod !== 'carte' && (
+                  <>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                      <input value={payerNom} onChange={e=>setPayerNom(e.target.value)} placeholder="Nom" style={inputStyle} />
+                      <input value={payerPrenom} onChange={e=>setPayerPrenom(e.target.value)} placeholder="Prénom" style={inputStyle} />
+                    </div>
+                    <input value={payerTelephone} onChange={e=>setPayerTelephone(e.target.value)} placeholder="Téléphone" style={inputStyle} />
+                    <input value={data.temp_client_email||''} disabled style={{...inputStyle, opacity: 0.5}} />
+                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '10px 0' }} />
+                  </>
+                )}
 
                 {payMethod === 'carte' && (
-                  <>
-                    <input value={cardNumber} onChange={e=>setCardNumber(e.target.value)} placeholder="Numéro de carte" style={inputStyle} />
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                      <input value={cardExpiry} onChange={e=>setCardExpiry(e.target.value)} placeholder="MM/AA" style={inputStyle} />
-                      <input value={cardCvc} onChange={e=>setCardCvc(e.target.value)} placeholder="CVC" style={inputStyle} />
-                    </div>
-                  </>
+                  <StripeContainer 
+                    amount={data.solde_du ?? derivedTotalTTC}
+                    factureId={data._id}
+                  />
                 )}
 
                 {payMethod === 'virement' && (
@@ -485,28 +491,30 @@ function DocumentModal({
                 {payMethod === 'flouci' && <input value={flouciPhone} onChange={e=>setFlouciPhone(e.target.value)} placeholder="N° Flouci" style={inputStyle} />}
               </div>
 
-              {/* Action */}
-              <div style={{ marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px', textAlign: 'center' }}>
-                <p style={{ fontSize: '10px', textTransform: 'uppercase', color: '#475569', marginBottom: '6px' }}>Montant total</p>
-                <p style={{ fontSize: '28px', fontWeight: 900, color: '#fff', margin: '0 0 20px' }}>{fmt(data.solde_du ?? derivedTotalTTC)}</p>
-                
-                <button onClick={() => {
-                    if (!payerNom || !payerPrenom || !payerTelephone) { 
-                      setPaymentError('Veuillez remplir vos informations de contact.'); 
-                      return; 
-                    }
-                    setShowConfirmPayment(true);
-                  }}
-                  disabled={paying}
-                  style={{
-                    width: '100%', padding: '16px', borderRadius: '14px', border: 'none',
-                    background: 'linear-gradient(135deg, #10b981, #059669)',
-                    color: '#fff', fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px',
-                    cursor: paying ? 'not-allowed' : 'pointer', transition: '0.2s', boxShadow: '0 10px 20px rgba(16,185,129,0.2)'
-                  }}>
-                  {paying ? '⏳ Prévu...' : 'Payer Maintenant'}
-                </button>
-              </div>
+              {/* Action (for non-card methods) */}
+              {payMethod !== 'carte' && (
+                <div style={{ marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px', textAlign: 'center' }}>
+                  <p style={{ fontSize: '10px', textTransform: 'uppercase', color: '#475569', marginBottom: '6px' }}>Montant total</p>
+                  <p style={{ fontSize: '28px', fontWeight: 900, color: '#fff', margin: '0 0 20px' }}>{fmt(data.solde_du ?? derivedTotalTTC)}</p>
+                  
+                  <button onClick={() => {
+                      if (!payerNom || !payerPrenom || !payerTelephone) { 
+                        setPaymentError('Veuillez remplir vos informations de contact.'); 
+                        return; 
+                      }
+                      setShowConfirmPayment(true);
+                    }}
+                    disabled={paying}
+                    style={{
+                      width: '100%', padding: '16px', borderRadius: '14px', border: 'none',
+                      background: 'linear-gradient(135deg, #10b981, #059669)',
+                      color: '#fff', fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px',
+                      cursor: paying ? 'not-allowed' : 'pointer', transition: '0.2s', boxShadow: '0 10px 20px rgba(16,185,129,0.2)'
+                    }}>
+                    {paying ? '⏳ Prévu...' : 'Payer Maintenant'}
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -629,10 +637,10 @@ function DocumentModal({
             </button>
           </div>
         )}
+        </div>
       </div>
 
     </div>
-  </div>
   );
 }
 
@@ -1616,8 +1624,11 @@ function GestionDevisContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
  
+  const [showSuccessNotif, setShowSuccessNotif] = useState(false);
   const searchParams = useSearchParams();
   const initialProjectId = searchParams.get("projectId") || undefined;
+
+
   
   const loadDevis = useCallback(async () => {
     if (!user) return;
@@ -1726,6 +1737,23 @@ function GestionDevisContent() {
       setClientsList([]);
     }
   }, [user]);
+
+  const refreshData = useCallback(() => {
+    loadDevis();
+    loadFactures();
+  }, [loadDevis, loadFactures]);
+
+  useEffect(() => {
+    const success = searchParams.get('success');
+    if (success === 'true') {
+      setShowSuccessNotif(true);
+      const url = new URL(window.location.href);
+      url.searchParams.delete('success');
+      url.searchParams.delete('session_id');
+      window.history.replaceState({}, document.title, url.toString());
+      refreshData();
+    }
+  }, [searchParams, refreshData]);
 
   const handleExportPDF = () => {
     const list = tab === 'devis' ? filteredDevis : filteredFactures;
@@ -1861,6 +1889,7 @@ function GestionDevisContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white" dir={lang === 'ar-SA' ? 'rtl' : 'ltr'}>
+      {showSuccessNotif && <SuccessNotification onClose={() => setShowSuccessNotif(false)} />}
       <style dangerouslySetInnerHTML={{ __html: OVERDUE_STYLES }} />
       <div className="fixed inset-0 z-0 bg-gradient-to-br from-purple-950/20 via-gray-950/90 to-gray-950" />
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-6xl">

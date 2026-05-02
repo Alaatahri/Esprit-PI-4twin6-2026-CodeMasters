@@ -15,6 +15,7 @@ import { ProposalsModule } from './proposals/proposals.module';
 import { ContractsModule } from './contracts/contracts.module';
 import { AuthModule } from './auth/auth.module';
 import { FacturesModule } from './factures/factures.module';
+import { StripeModule } from './stripe/stripe.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { FacturesModule } from './factures/factures.module';
     ProposalsModule,
     ContractsModule,
     FacturesModule,
+    StripeModule,
   ],
   controllers: [AppController],
 })

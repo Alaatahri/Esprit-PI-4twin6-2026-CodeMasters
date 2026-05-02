@@ -37,6 +37,7 @@
     "pdfkit": "^0.18.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
+    "stripe": "^22.1.0",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {

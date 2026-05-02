@@ -16,13 +16,37 @@ export class FacturesService implements OnModuleInit {
     const factures = await this.factureModel.find({}).sort({ createdAt: 1 }).exec();
     for (let i = 0; i < factures.length; i++) {
         const expectedNum = `Facture N${i + 1}`;
+        let hasChanged = false;
+
         if (factures[i].numero_facture !== expectedNum) {
             factures[i].numero_facture = expectedNum;
             // On met aussi à jour le titre si c'est un titre par défaut ou ancien format
             if (!factures[i].titre || factures[i].titre.startsWith('FAC-') || factures[i].titre.startsWith('Facture pour')) {
                 factures[i].titre = expectedNum;
             }
-            await factures[i].save();
+            hasChanged = true;
+        }
+
+        // Migration: s'assurer que les champs obligatoires sont présents
+        if (factures[i].montant_total === undefined || factures[i].montant_total === null) {
+            factures[i].montant_total = 0;
+            hasChanged = true;
+        }
+        if (factures[i].solde_du === undefined || factures[i].solde_du === null) {
+            factures[i].solde_du = factures[i].montant_total - (factures[i].montant_paye || 0);
+            hasChanged = true;
+        }
+        if (!factures[i].titre) {
+            factures[i].titre = factures[i].numero_facture;
+            hasChanged = true;
+        }
+
+        if (hasChanged) {
+            try {
+                await factures[i].save();
+            } catch (err) {
+                console.error(`Erreur migration facture ${factures[i]._id}:`, err.message);
+            }
         }
     }
   }
