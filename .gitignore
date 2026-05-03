@@ -1,0 +1,9 @@
+node_modules/
+.next/
+temp_git_repo/
+temp_repo_integration/
+*.log
+.env
+dist/
+build/
+.DS_Store

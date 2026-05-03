@@ -1,0 +1,136 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import Layout from './layouts/Layout';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import ProjectsList from './pages/ProjectsList';
+import ProjectDetails from './pages/ProjectDetails';
+import AddProject from './pages/AddProject';
+import UsersList from './pages/UsersList';
+import Profile from './pages/Profile';
+import MatchingAdmin from './pages/MatchingAdmin';
+import ExpertRequests from './pages/ExpertRequests';
+import MesProjets from './pages/MesProjets';
+import AdminMarketplace from './pages/AdminMarketplace';
+import AdminMarketplaceSimple from './pages/AdminMarketplaceSimple';
+
+const PrivateRoute = ({ children }: { children: React.ReactElement }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  
+  if (isLoading) {
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Chargement...</div>;
+  }
+  
+  return isAuthenticated ? children : <Navigate to="/login" />;
+};
+
+function AppRoutes() {
+  return (
+    <Routes>
+      <Route path="/admin/marketplace" element={<AdminMarketplace />} />
+      <Route path="/login" element={<Login />} />
+      <Route
+        path="/"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <Dashboard />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/projects"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <ProjectsList />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/projects/:id"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <ProjectDetails />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/projects/add"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <AddProject />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/users"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <UsersList />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <Profile />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/matching"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <MatchingAdmin />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/expert/requests"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <ExpertRequests />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/mes-projets"
+        element={
+          <PrivateRoute>
+            <Layout>
+              <MesProjets />
+            </Layout>
+          </PrivateRoute>
+        }
+      />
+      <Route path="/admin/marketplace" element={<AdminMarketplaceSimple />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
+  );
+}
+
+export default App;
