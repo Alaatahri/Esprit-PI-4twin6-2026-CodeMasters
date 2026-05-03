@@ -57,7 +57,7 @@ export class MailService {
   async sendPasswordResetEmail(args: {
     to: string;
     token: string;
-  }): Promise<void> {
+  }): Promise<SendVerificationResult> {
     const base = (process.env.FRONTEND_URL || 'http://localhost:3000').replace(
       /\/$/,
       '',
@@ -110,7 +110,7 @@ export class MailService {
 
     if (isSmtpConfigured()) {
       await sendMailViaGmailSmtp({ to: args.to, subject, html });
-      return;
+      return { usedEthereal: false };
     }
     if (process.env.NODE_ENV === 'production') {
       throw new Error(
@@ -118,8 +118,7 @@ export class MailService {
       );
     }
     if (process.env.USE_ETHEREAL_IN_DEV?.trim() === 'true') {
-      await this.sendViaEthereal(args.to, html, subject);
-      return;
+      return this.sendViaEthereal(args.to, html, subject);
     }
     throw new Error(
       'E-mail sortant non configuré : MAIL_HOST/MAIL_USER/MAIL_PASS/MAIL_FROM, ou USE_ETHEREAL_IN_DEV=true en dev.',

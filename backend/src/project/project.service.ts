@@ -28,11 +28,45 @@ export class ProjectService {
   async create(createProjectDto: Partial<Project>): Promise<Project> {
     // Compat: les nouveaux formulaires client ne fournissent plus date/budget.
     // On met des valeurs provisoires, l’expert proposera ensuite via proposition/contrat.
+    // Important: on évite les "500" Mongoose en validant/castant proprement `clientId`
+    // et en appliquant des defaults sur les champs requis par le schéma.
     const dto: any = { ...(createProjectDto as any) };
-    if (!dto.date_debut) dto.date_debut = new Date();
-    if (!dto.date_fin_prevue)
+
+    const rawClientId = dto.clientId != null ? String(dto.clientId) : "";
+    if (!rawClientId || !this.isValidObjectId(rawClientId)) {
+      throw new BadRequestException("clientId invalide.");
+    }
+    try {
+      dto.clientId = new Types.ObjectId(rawClientId);
+    } catch {
+      throw new BadRequestException("clientId invalide.");
+    }
+
+    if (!dto.date_debut || !Number.isFinite(new Date(dto.date_debut).getTime())) {
+      dto.date_debut = new Date();
+    }
+    if (
+      !dto.date_fin_prevue ||
+      !Number.isFinite(new Date(dto.date_fin_prevue).getTime())
+    ) {
       dto.date_fin_prevue = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    if (dto.budget_estime == null) dto.budget_estime = 0;
+    }
+
+    const budget = dto.budget_estime == null ? null : Number(dto.budget_estime);
+    dto.budget_estime = budget != null && Number.isFinite(budget) ? budget : 0;
+
+    // Champs requis avec défauts côté schéma : on les met aussi ici pour être sûr
+    // (et réduire les risques de plantage si le DTO transite avec des `undefined`).
+    if (!dto.statut) dto.statut = "En attente";
+    if (dto.avancement_global == null) dto.avancement_global = 0;
+    if (
+      dto.urgence !== "urgent" &&
+      dto.urgence !== "normal" &&
+      dto.urgence !== "flexible"
+    ) {
+      dto.urgence = "normal";
+    }
+
     const createdProject = new this.projectModel(dto);
     return createdProject.save();
   }

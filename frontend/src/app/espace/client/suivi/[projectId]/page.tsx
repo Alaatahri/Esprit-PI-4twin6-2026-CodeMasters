@@ -257,7 +257,7 @@ export default function ClientSuiviDetailPage() {
   if (user && user.role !== "client") {
     return (
       <div className="max-w-lg mx-auto text-center space-y-4 py-16">
-        <p className="text-gray-400">Cette page est réservée aux clients.</p>
+        <p className="text-muted-foreground">Cette page est réservée aux clients.</p>
         <Link
           href="/espace"
           className="text-amber-400 hover:underline"
@@ -273,14 +273,14 @@ export default function ClientSuiviDetailPage() {
       <div>
         <Link
           href="/espace/client/suivi"
-          className="inline-flex items-center gap-2 text-sm text-amber-400/90 hover:text-amber-300 mb-4"
+          className="mb-4 inline-flex items-center gap-2 text-sm text-brand hover:text-brand-muted dark:text-amber-400/90 dark:hover:text-amber-300"
         >
           <ArrowLeft className="w-4 h-4" />
           Retour au suivi de mes projets
         </Link>
         <Link
           href="/espace/client"
-          className="block text-xs text-gray-500 hover:text-gray-400 mb-2"
+          className="block text-xs text-muted-foreground hover:text-muted-foreground mb-2"
         >
           ← Espace client
         </Link>
@@ -291,17 +291,17 @@ export default function ClientSuiviDetailPage() {
           <Loader2 className="w-10 h-10 animate-spin text-amber-400" />
         </div>
       ) : error ? (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-4 text-sm text-red-200">
+        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-4 text-sm text-red-800 dark:text-red-200">
           {error}
         </div>
       ) : project ? (
         <>
           <header className="space-y-2">
-            <h1 className="text-2xl font-semibold text-white">{project.titre}</h1>
-            <p className="text-sm text-gray-400 leading-relaxed">
+            <h1 className="text-2xl font-semibold text-foreground">{project.titre}</h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
               {project.description}
             </p>
-            <div className="flex flex-wrap gap-4 text-xs text-gray-500">
+            <div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
                 {project.date_debut
@@ -315,10 +315,10 @@ export default function ClientSuiviDetailPage() {
               <span
                 className={`rounded-full px-2 py-0.5 ${
                   project.statut === "Terminé"
-                    ? "bg-emerald-500/15 text-emerald-300"
+                    ? "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
                     : project.statut === "En cours"
-                    ? "bg-blue-500/15 text-blue-300"
-                    : "bg-gray-500/15 text-gray-300"
+                    ? "bg-blue-500/15 text-blue-800 dark:text-blue-300"
+                    : "bg-gray-500/15 text-body-secondary"
                 }`}
               >
                 {project.statut}
@@ -334,12 +334,12 @@ export default function ClientSuiviDetailPage() {
             const artisanOid = accepted ? refId(accepted.artisanId) : "";
             if (!expertOid && !artisanOid) return null;
             return (
-              <section className="rounded-2xl border border-amber-500/20 bg-amber-950/20 p-4 space-y-3">
-                <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <section className="space-y-3 rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 dark:border-amber-500/20 dark:bg-amber-950/20">
+                <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
                   <MessageCircle className="w-4 h-4 text-amber-400" />
                   Échanger avec l&apos;équipe
                 </h2>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Ouvrez une conversation avec votre expert ou l&apos;artisan
                   assigné au chantier.
                 </p>
@@ -347,7 +347,7 @@ export default function ClientSuiviDetailPage() {
                   {expertOid ? (
                     <Link
                       href={`/messages/${expertOid}`}
-                      className="inline-flex items-center gap-2 rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-2 text-xs font-medium text-sky-200 hover:bg-sky-500/20"
+                      className="inline-flex items-center gap-2 rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-2 text-xs font-medium text-sky-900 hover:bg-sky-500/20 dark:text-sky-200"
                     >
                       <MessageCircle className="w-4 h-4" />
                       Message à l&apos;expert
@@ -356,7 +356,7 @@ export default function ClientSuiviDetailPage() {
                   {artisanOid ? (
                     <Link
                       href={`/messages/${artisanOid}`}
-                      className="inline-flex items-center gap-2 rounded-xl border border-violet-500/35 bg-violet-500/10 px-4 py-2 text-xs font-medium text-violet-200 hover:bg-violet-500/20"
+                      className="inline-flex items-center gap-2 rounded-xl border border-violet-500/35 bg-violet-500/10 px-4 py-2 text-xs font-medium text-violet-900 hover:bg-violet-500/20 dark:text-violet-200"
                     >
                       <MessageCircle className="w-4 h-4" />
                       Message à l&apos;artisan
@@ -367,42 +367,42 @@ export default function ClientSuiviDetailPage() {
             );
           })()}
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-3">
+          <section className="rounded-2xl border border-border bg-muted p-5 space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-sm font-semibold text-white inline-flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-foreground inline-flex items-center gap-2">
                 <FileText className="w-4 h-4 text-amber-400" />
                 Proposition & contrat
               </h2>
               <Link
                 href={`/espace/client/acceptation/${encodeURIComponent(projectId)}`}
-                className="text-xs font-semibold text-amber-300 hover:underline"
+                className="text-xs font-semibold text-brand hover:underline dark:text-amber-300"
               >
                 Ouvrir la page d&apos;acceptation
               </Link>
             </div>
 
             {contractErr ? (
-              <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-200">
+              <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-800 dark:text-red-200">
                 {contractErr}
               </div>
             ) : null}
 
             {contract ? (
-              <div className="rounded-xl border border-emerald-500/25 bg-emerald-950/20 p-4 space-y-3">
-                <div className="flex items-center justify-between text-xs text-gray-300">
+              <div className="space-y-3 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] p-4 dark:bg-emerald-950/20">
+                <div className="flex items-center justify-between text-xs text-body-secondary">
                   <span className="inline-flex items-center gap-2">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                    <CheckCircle2 className="h-4 w-4 text-emerald-800 dark:text-emerald-300" />
                     Contrat: {contract.status}
                   </span>
-                  <span className="text-gray-500">
+                  <span className="text-muted-foreground">
                     Client signé: {contract.clientSignedAt ? "oui" : "non"} · Expert signé:{" "}
                     {contract.expertSignedAt ? "oui" : "non"}
                   </span>
                 </div>
-                <pre className="whitespace-pre-wrap text-[11px] text-gray-200/90 rounded-xl border border-white/10 bg-black/30 p-3 max-h-56 overflow-auto scrollbar-bmp">
+                <pre className="whitespace-pre-wrap text-[11px] text-body-secondary/90 rounded-xl border border-border bg-muted dark:bg-black/30 p-3 max-h-56 overflow-auto scrollbar-bmp">
 {contract.contractText}
                 </pre>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-muted-foreground">
                   PDF officiel, envoi du scan signé, ou signature électronique ci-dessous.
                 </p>
                 <div className="flex flex-wrap gap-2 items-center">
@@ -410,12 +410,12 @@ export default function ClientSuiviDetailPage() {
                     type="button"
                     disabled={pdfBusy}
                     onClick={() => void handleDownloadPdf()}
-                    className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 disabled:opacity-40"
+                    className="inline-flex items-center gap-2 rounded-xl border border-border bg-muted px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted disabled:opacity-40"
                   >
                     {pdfBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                     PDF
                   </button>
-                  <label className="inline-flex items-center gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-100 cursor-pointer hover:bg-emerald-500/20">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-950 hover:bg-emerald-500/20 dark:text-emerald-100">
                     <input
                       type="file"
                       accept="application/pdf,.pdf,application/octet-stream"
@@ -432,19 +432,19 @@ export default function ClientSuiviDetailPage() {
                     type="button"
                     disabled={!pendingClientPdf || uploadBusy}
                     onClick={() => void confirmClientUploadPdf()}
-                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600/90 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-40"
+                    className="inline-flex items-center gap-2 rounded-xl bg-emerald-600/90 px-3 py-2 text-xs font-semibold text-foreground hover:bg-emerald-600 disabled:opacity-40"
                   >
                     {uploadBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                     Valider
                   </button>
                 </div>
                 {pendingClientPdf ? (
-                  <p className="text-[11px] text-gray-500">{pendingClientPdf.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{pendingClientPdf.name}</p>
                 ) : null}
                 {clientPdfHref ? (
-                  <p className="text-[11px] text-gray-500">
+                  <p className="text-[11px] text-muted-foreground">
                     Fichier signé :{" "}
-                    <a href={clientPdfHref} target="_blank" rel="noopener noreferrer" className="text-amber-300 hover:underline">
+                    <a href={clientPdfHref} target="_blank" rel="noopener noreferrer" className="text-brand hover:underline dark:text-amber-300">
                       ouvrir
                     </a>
                   </p>
@@ -453,36 +453,36 @@ export default function ClientSuiviDetailPage() {
                   type="button"
                   disabled={!canSignDigital}
                   onClick={() => void signContract()}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 px-4 py-2.5 text-xs font-semibold text-gray-900 hover:opacity-95 disabled:opacity-40"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl bmp-btn-primary px-4 py-2.5 text-xs font-semibold text-gray-900 hover:opacity-95 disabled:opacity-40"
                 >
                   Signer électroniquement (client)
                 </button>
               </div>
             ) : proposals.length > 0 ? (
               <div className="space-y-3">
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-muted-foreground">
                   Résumé des propositions — pour accepter, contre-proposer ou annuler le projet, utilisez la page
                   dédiée (bouton ci-dessus).
                 </p>
                 {proposals.slice(0, 5).map((p) => (
                   <div
                     key={p._id}
-                    className="rounded-xl border border-white/10 bg-black/25 p-4 space-y-2"
+                    className="rounded-xl border border-border bg-muted dark:bg-black/25 p-4 space-y-2"
                   >
-                    <div className="flex items-center justify-between text-xs text-gray-400">
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
                       <span>
                         Prix:{" "}
-                        <span className="text-amber-200 font-semibold">
+                        <span className="font-semibold text-brand dark:text-amber-200">
                           {Math.round(p.proposedPrice).toLocaleString("fr-FR")} TND
                         </span>{" "}
                         · Durée:{" "}
-                        <span className="text-gray-200 font-semibold">
+                        <span className="text-body-secondary font-semibold">
                           {p.estimatedDurationDays} j
                         </span>
                       </span>
-                      <span className="text-gray-500">{p.status}</span>
+                      <span className="text-muted-foreground">{p.status}</span>
                     </div>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {p.status === "countered"
                         ? "Négociation en cours — en attente de l’expert."
                         : p.status === "sent"
@@ -493,25 +493,25 @@ export default function ClientSuiviDetailPage() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Aucune proposition pour le moment. Dès que l’expert envoie une proposition, elle apparaîtra ici.
               </p>
             )}
           </section>
 
-          <section className="rounded-2xl border border-white/10 bg-white/5 p-5 space-y-3">
+          <section className="rounded-2xl border border-border bg-muted p-5 space-y-3">
             <div className="flex items-center justify-between gap-4">
-              <h2 className="text-sm font-semibold text-white inline-flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-foreground inline-flex items-center gap-2">
                 <Percent className="w-4 h-4 text-amber-400" />
                 Avancement global du chantier
               </h2>
-              <span className="text-2xl font-bold text-amber-300 tabular-nums">
+              <span className="text-2xl font-bold tabular-nums text-brand dark:text-amber-300">
                 {clampPct(project.avancement_global ?? 0)}%
               </span>
             </div>
-            <div className="h-3 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-3 rounded-full bg-muted overflow-hidden">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all"
+                className="h-full rounded-full bmp-progress-accent transition-all"
                 style={{
                   width: `${clampPct(project.avancement_global ?? 0)}%`,
                 }}
@@ -520,12 +520,12 @@ export default function ClientSuiviDetailPage() {
           </section>
 
           <section className="space-y-4">
-            <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+            <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
               <ImageIcon className="w-4 h-4 text-amber-400" />
               Photos et points de suivi
             </h2>
             {suivis.length === 0 ? (
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-muted-foreground">
                 Aucune photo de suivi enregistrée pour ce projet pour le moment.
               </p>
             ) : (
@@ -543,7 +543,7 @@ export default function ClientSuiviDetailPage() {
                   return (
                     <article
                       key={s._id}
-                      className="rounded-2xl border border-white/10 bg-black/30 overflow-hidden"
+                      className="rounded-2xl border border-border bg-muted dark:bg-black/30 overflow-hidden"
                     >
                       <div className="aspect-video sm:aspect-[21/9] bg-gray-900 relative">
                         {photo ? (
@@ -560,11 +560,11 @@ export default function ClientSuiviDetailPage() {
                         )}
                         <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-3">
                           <div className="flex items-center justify-between text-xs">
-                            <span className="text-gray-300">{dateStr}</span>
-                            <span className="font-semibold text-amber-300">
+                            <span className="text-body-secondary">{dateStr}</span>
+                            <span className="font-semibold text-amber-100 dark:text-amber-300">
                               {pct ?? "—"}%
                               {typeof s.progressIndex === "number" && (
-                                <span className="text-gray-500 font-normal ml-1">
+                                <span className="text-muted-foreground font-normal ml-1">
                                   (#{s.progressIndex})
                                 </span>
                               )}
@@ -573,7 +573,7 @@ export default function ClientSuiviDetailPage() {
                         </div>
                       </div>
                       <div className="p-4 space-y-2">
-                        <p className="text-sm text-gray-300 leading-relaxed">
+                        <p className="text-sm text-body-secondary leading-relaxed">
                           {s.description_progression}
                         </p>
                       </div>

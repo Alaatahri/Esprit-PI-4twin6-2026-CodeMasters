@@ -1,74 +1,140 @@
-'use client';
-import { useState } from 'react';
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { Loader2, Mail } from "lucide-react";
+import { fieldInputClass } from "@/lib/form-ui";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle'|'loading'|'success'|'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
+  const [email, setEmail] = useState("");
+  const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
+    "idle",
+  );
+  const [errorMsg, setErrorMsg] = useState("");
+  const [mailMode, setMailMode] = useState<
+    "smtp" | "ethereal" | "none" | null
+  >(null);
 
   const handleSubmit = async () => {
-    if (!email) { setErrorMsg('Veuillez saisir votre email.'); setStatus('error'); return; }
-    setStatus('loading');
+    if (!email) {
+      setErrorMsg("Veuillez saisir votre email.");
+      setStatus("error");
+      return;
+    }
+    setStatus("loading");
     try {
-      const res = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
-      if (res.ok) setStatus('success');
-      else { setErrorMsg('Une erreur est survenue.'); setStatus('error'); }
-    } catch { setErrorMsg('Une erreur est survenue.'); setStatus('error'); }
+      if (res.ok) {
+        const data = await res.json().catch(() => null);
+        setMailMode(data?.mailMode ?? null);
+        setStatus("success");
+      } else {
+        setErrorMsg("Une erreur est survenue.");
+        setStatus("error");
+      }
+    } catch {
+      setErrorMsg("Une erreur est survenue.");
+      setStatus("error");
+    }
   };
 
   return (
-    <div style={{ minHeight:'100vh', background:'#0f0f1a', display:'flex',
-      alignItems:'center', justifyContent:'center' }}>
-      <div style={{ background:'#1a1a2e', padding:'40px', borderRadius:'12px',
-        width:'100%', maxWidth:'440px', color:'#fff' }}>
-        <div style={{ textAlign:'center', marginBottom:'24px' }}>
-          <h2 style={{ color:'#F5A623', margin:'0 0 8px' }}>Mot de passe oublié</h2>
-          <p style={{ color:'#aaa', fontSize:'14px', margin:0 }}>
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-foreground">
+      <div className="w-full max-w-md rounded-3xl border border-border bg-card p-8 shadow-bmp-md sm:p-10">
+        <div className="mb-6 text-center">
+          <h2 className="text-xl font-bold text-brand">Mot de passe oublié</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
             Entrez votre email pour recevoir un lien de réinitialisation.
           </p>
         </div>
-        {status === 'success' ? (
-          <div style={{ background:'#1e3a2f', border:'1px solid #2ecc71',
-            borderRadius:'8px', padding:'20px', textAlign:'center' }}>
-            <p style={{ fontSize:'32px', margin:'0 0 12px' }}>📧</p>
-            <p style={{ margin:'0 0 16px' }}>
-              Un lien a été envoyé à <strong>{email}</strong>.<br/>
-              Vérifiez votre boîte mail.
+
+        {status === "success" ? (
+          <div className="space-y-4 rounded-2xl border border-success/35 bg-success/10 p-5 text-center text-sm text-foreground">
+            <p className="text-2xl" aria-hidden>
+              📧
             </p>
-            <a href="/login" style={{ color:'#F5A623', fontSize:'13px' }}>
+            <p>
+              Un lien a été envoyé à <strong>{email}</strong>.
+              <br />
+              {mailMode === "none" ? (
+                <>
+                  Aucun service e-mail n’est configuré sur le serveur (MAIL_*
+                  manquantes).
+                  <br />
+                  Configure SMTP (Gmail app password) ou active
+                  USE_ETHEREAL_IN_DEV=true.
+                </>
+              ) : mailMode === "ethereal" ? (
+                <>
+                  En mode dev, l’e-mail est simulé via Ethereal. Aucun mail Gmail
+                  n’est livré.
+                  <br />
+                  Ouvre la prévisualisation (lien) dans la console backend.
+                </>
+              ) : (
+                <>Vérifiez votre boîte mail (et les indésirables).</>
+              )}
+            </p>
+            <Link
+              href="/login"
+              className="inline-block text-sm font-medium text-brand hover:text-brand-muted hover:underline"
+            >
               ← Retour à la connexion
-            </a>
+            </Link>
           </div>
         ) : (
           <>
-            <label style={{ fontSize:'13px', color:'#ccc' }}>E-mail</label>
-            <input type="email" value={email}
-              onChange={e => { setEmail(e.target.value); setStatus('idle'); }}
-              placeholder="nom@exemple.tn"
-              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-              style={{ width:'100%', padding:'12px', margin:'8px 0 16px',
-                background:'#2a2a3e', border:'1px solid #3a3a5e',
-                borderRadius:'8px', color:'#fff', boxSizing:'border-box' }} />
-            {status === 'error' && (
-              <p style={{ color:'#e74c3c', fontSize:'13px', marginBottom:'12px' }}>
+            <label htmlFor="forgot-email" className="text-sm font-medium text-body-secondary">
+              E-mail
+            </label>
+            <div className="relative mt-2">
+              <Mail className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand/70" />
+              <input
+                id="forgot-email"
+                type="email"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setStatus("idle");
+                }}
+                placeholder="nom@exemple.tn"
+                onKeyDown={(e) => e.key === "Enter" && void handleSubmit()}
+                className={fieldInputClass(false, status === "loading", {
+                  hasLeftIcon: true,
+                })}
+              />
+            </div>
+            {status === "error" && (
+              <p className="mt-2 text-sm text-destructive" role="alert">
                 {errorMsg}
               </p>
             )}
-            <button onClick={handleSubmit} disabled={status === 'loading'}
-              style={{ width:'100%', padding:'13px', background:'#F5A623',
-                border:'none', borderRadius:'8px', color:'#fff',
-                fontWeight:'bold', cursor:'pointer', fontSize:'15px',
-                opacity: status === 'loading' ? 0.7 : 1 }}>
-              {status === 'loading' ? 'Envoi en cours...' : 'Envoyer le lien'}
+            <button
+              type="button"
+              onClick={() => void handleSubmit()}
+              disabled={status === "loading"}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-xl bmp-btn-primary py-3 text-[15px] font-bold text-gray-900 transition-opacity disabled:opacity-70"
+            >
+              {status === "loading" ? (
+                <>
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  Envoi en cours...
+                </>
+              ) : (
+                "Envoyer le lien"
+              )}
             </button>
-            <div style={{ textAlign:'center', marginTop:'16px' }}>
-              <a href="/login" style={{ color:'#F5A623', fontSize:'13px' }}>
+            <div className="mt-4 text-center">
+              <Link
+                href="/login"
+                className="text-sm font-medium text-brand hover:text-brand-muted hover:underline"
+              >
                 ← Retour à la connexion
-              </a>
+              </Link>
             </div>
           </>
         )}
@@ -76,4 +142,3 @@ export default function ForgotPasswordPage() {
     </div>
   );
 }
-

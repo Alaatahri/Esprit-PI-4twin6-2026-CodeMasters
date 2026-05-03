@@ -1,6 +1,8 @@
 "use client";
 
-/** Message d’erreur sous un champ (accessibilité + style cohérent). */
+import { cn } from "@/lib/utils";
+
+/** Message d’erreur sous un champ (accessibilité + tokens). */
 export function FieldError({
   id,
   message,
@@ -10,10 +12,16 @@ export function FieldError({
 }) {
   if (!message) return null;
   return (
-    <p id={id} className="mt-1.5 text-xs text-red-300/95" role="alert">
+    <p id={id} className="mt-1.5 text-xs text-destructive dark:text-red-300" role="alert">
       {message}
     </p>
   );
+}
+
+function inputBorderRing(hasError: boolean) {
+  return hasError
+    ? "border-destructive focus:border-destructive focus:ring-destructive/25"
+    : "border-input focus:border-ring focus:ring-ring/25";
 }
 
 export function fieldInputClass(
@@ -21,22 +29,21 @@ export function fieldInputClass(
   disabled: boolean,
   opts?: { hasLeftIcon?: boolean },
 ): string {
-  const pad = opts?.hasLeftIcon
-    ? "pl-12 pr-4 py-3"
-    : "px-3 py-2.5 sm:px-4";
-  const base = `w-full min-h-[48px] sm:min-h-[44px] text-base sm:text-sm rounded-xl bg-white/5 border ${pad} text-white placeholder-gray-500 transition-all outline-none disabled:opacity-60`;
-  const border = hasError
-    ? "border-red-400/55 focus:border-red-400 focus:ring-2 focus:ring-red-500/25"
-    : "border-white/15 focus:border-amber-400/60 focus:ring-2 focus:ring-amber-400/30";
-  return `${base} ${border}`;
+  const pad = opts?.hasLeftIcon ? "py-3 pl-12 pr-4" : "px-3 py-2.5 sm:px-4";
+  return cn(
+    "w-full min-h-[48px] rounded-xl border bg-background text-base text-foreground outline-none transition-all placeholder:text-muted-foreground sm:min-h-[44px] sm:text-sm",
+    pad,
+    inputBorderRing(hasError),
+    "focus:ring-2",
+    disabled && "pointer-events-none opacity-60",
+  );
 }
 
 export function fieldTextareaClass(hasError: boolean, disabled: boolean): string {
-  const base =
-    "w-full text-base sm:text-sm rounded-xl bg-white/5 border px-3 py-2.5 text-white placeholder-gray-500 transition-all outline-none resize-y min-h-[88px] disabled:opacity-60";
-  const border = hasError
-    ? "border-red-400/55 focus:border-red-400 focus:ring-2 focus:ring-red-500/25"
-    : "border-white/15 focus:border-amber-400/60 focus:ring-2 focus:ring-amber-400/30";
-  const locked = disabled ? " opacity-60 pointer-events-none" : "";
-  return `${base} ${border}${locked}`;
+  return cn(
+    "min-h-[88px] w-full resize-y rounded-xl border bg-background px-3 py-2.5 text-base text-foreground outline-none transition-all placeholder:text-muted-foreground sm:text-sm",
+    inputBorderRing(hasError),
+    "focus:ring-2",
+    disabled && "pointer-events-none opacity-60",
+  );
 }

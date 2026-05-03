@@ -571,10 +571,10 @@ export default function ExpertProjectHubPage() {
     project?.statut !== "Terminé";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8 max-w-4xl space-y-6">
         <nav
-          className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-4"
+          className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4"
           aria-label="Fil d’Ariane expert"
         >
           <Link
@@ -584,7 +584,7 @@ export default function ExpertProjectHubPage() {
             <ArrowLeft className="w-4 h-4" />
             {backLabel}
           </Link>
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-gray-500">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
             <Link
               href="/espace/expert"
               className="hover:text-amber-400/90 transition"
@@ -621,13 +621,13 @@ export default function ExpertProjectHubPage() {
           <>
             <header className="space-y-2">
               <h1 className="text-2xl font-bold leading-tight">{project.titre}</h1>
-              <div className="flex flex-wrap gap-2 text-xs text-gray-400">
+              <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
                 {project.ville ? <span>{project.ville}</span> : null}
                 {project.statut ? (
-                  <span className="text-gray-500">· {project.statut}</span>
+                  <span className="text-muted-foreground">· {project.statut}</span>
                 ) : null}
                 {project.requestStatus ? (
-                  <span className="rounded-full border border-white/10 px-2 py-0.5 text-gray-300">
+                  <span className="rounded-full border border-border px-2 py-0.5 text-body-secondary">
                     {project.requestStatus}
                   </span>
                 ) : null}
@@ -644,9 +644,9 @@ export default function ExpertProjectHubPage() {
               <section className="rounded-2xl border border-emerald-500/20 bg-emerald-950/15 p-5 space-y-3">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-emerald-300" />
-                  <p className="text-sm font-medium text-white">Propositions & contrat</p>
+                  <p className="text-sm font-medium text-foreground">Propositions & contrat</p>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {acceptedProposal
                     ? "Proposition acceptée par le client : seule cette offre fait foi. Le contrat ci-dessous en découle."
                     : "Négociation : vous voyez la demande du client (en cours ou archivée) et votre proposition actuelle."}
@@ -659,11 +659,11 @@ export default function ExpertProjectHubPage() {
                 ) : null}
 
                 {acceptedProposal ? (
-                  <div className="rounded-xl border border-emerald-500/30 bg-black/25 p-4 space-y-3">
+                  <div className="rounded-xl border border-emerald-500/30 bg-muted dark:bg-black/25 p-4 space-y-3">
                     <p className="text-[11px] uppercase text-emerald-200/90 font-semibold">
                       Proposition retenue (acceptée)
                     </p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                       <span>
                         Prix:{" "}
                         <span className="text-amber-200 font-semibold">
@@ -672,17 +672,17 @@ export default function ExpertProjectHubPage() {
                       </span>
                       <span>
                         Durée:{" "}
-                        <span className="text-gray-200 font-semibold">
+                        <span className="text-body-secondary font-semibold">
                           {acceptedProposal.estimatedDurationDays ?? "—"} j
                         </span>
                       </span>
                       {acceptedProposal.createdAt ? (
-                        <span className="text-gray-500">
+                        <span className="text-muted-foreground">
                           {new Date(acceptedProposal.createdAt).toLocaleString("fr-FR")}
                         </span>
                       ) : null}
                     </div>
-                    <div className="text-sm text-gray-300 rounded-xl border border-white/5 bg-black/20 p-3">
+                    <div className="text-sm text-body-secondary rounded-xl border border-border bg-muted dark:bg-black/20 p-3">
                       {acceptedProposal.technicalNotes && isProbablyHtml(acceptedProposal.technicalNotes) ? (
                         <SafeHtml html={acceptedProposal.technicalNotes} />
                       ) : (
@@ -690,12 +690,12 @@ export default function ExpertProjectHubPage() {
                       )}
                     </div>
                     {acceptedProposal.materialSuggestions ? (
-                      <div className="text-xs text-gray-400">
-                        <span className="text-gray-500">Matériaux : </span>
+                      <div className="text-xs text-muted-foreground">
+                        <span className="text-muted-foreground">Matériaux : </span>
                         {isProbablyHtml(acceptedProposal.materialSuggestions) ? (
                           <SafeHtml
                             html={acceptedProposal.materialSuggestions}
-                            className="prose prose-invert prose-sm max-w-none inline text-gray-300"
+                            className="prose prose-invert prose-sm max-w-none inline text-body-secondary"
                           />
                         ) : (
                           acceptedProposal.materialSuggestions
@@ -712,17 +712,17 @@ export default function ExpertProjectHubPage() {
                         <p className="text-[11px] uppercase text-amber-200 font-semibold">
                           Contre-proposition du client (en cours)
                         </p>
-                        <p className="text-xs text-gray-300">
+                        <p className="text-xs text-body-secondary">
                           Prix souhaité :{" "}
                           <span className="text-amber-200 font-semibold">
                             {Math.round(counteredProposal.clientCounterPrice).toLocaleString("fr-FR")} TND
                           </span>{" "}
                           · Durée :{" "}
-                          <span className="text-gray-200 font-semibold">
+                          <span className="text-body-secondary font-semibold">
                             {counteredProposal.clientCounterDurationDays} j
                           </span>
                         </p>
-                        <p className="text-sm text-gray-300 whitespace-pre-wrap">
+                        <p className="text-sm text-body-secondary whitespace-pre-wrap">
                           {counteredProposal.clientCounterMessage ?? ""}
                         </p>
                       </div>
@@ -731,11 +731,11 @@ export default function ExpertProjectHubPage() {
                     {!counteredProposal &&
                     latestProposal?.lastClientCounterSnapshot &&
                     latestProposal.status === "sent" ? (
-                      <div className="rounded-xl border border-amber-500/25 bg-black/20 p-4 space-y-2">
+                      <div className="rounded-xl border border-amber-500/25 bg-muted dark:bg-black/20 p-4 space-y-2">
                         <p className="text-[11px] uppercase text-amber-200/80 font-semibold">
                           Dernière demande client (archivée après votre révision)
                         </p>
-                        <p className="text-xs text-gray-300">
+                        <p className="text-xs text-body-secondary">
                           Prix :{" "}
                           <span className="text-amber-200 font-semibold">
                             {Math.round(
@@ -744,22 +744,22 @@ export default function ExpertProjectHubPage() {
                             TND
                           </span>{" "}
                           · Durée :{" "}
-                          <span className="text-gray-200 font-semibold">
+                          <span className="text-body-secondary font-semibold">
                             {latestProposal.lastClientCounterSnapshot.estimatedDurationDays} j
                           </span>
                         </p>
-                        <p className="text-sm text-gray-300 whitespace-pre-wrap">
+                        <p className="text-sm text-body-secondary whitespace-pre-wrap">
                           {latestProposal.lastClientCounterSnapshot.message}
                         </p>
                       </div>
                     ) : null}
 
                     {latestProposal ? (
-                      <div className="rounded-xl border border-white/10 bg-black/25 p-4 space-y-2">
-                        <p className="text-[11px] uppercase text-gray-400 font-semibold">
+                      <div className="rounded-xl border border-border bg-muted dark:bg-black/25 p-4 space-y-2">
+                        <p className="text-[11px] uppercase text-muted-foreground font-semibold">
                           Votre proposition affichée au client
                         </p>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-gray-400">
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                           <span>
                             Statut :{" "}
                             <span className="text-amber-200/90">{latestProposal.status ?? "—"}</span>
@@ -775,13 +775,13 @@ export default function ExpertProjectHubPage() {
                           {typeof latestProposal.estimatedDurationDays === "number" ? (
                             <span>
                               Durée :{" "}
-                              <span className="text-gray-200 font-semibold">
+                              <span className="text-body-secondary font-semibold">
                                 {latestProposal.estimatedDurationDays} j
                               </span>
                             </span>
                           ) : null}
                         </div>
-                        <div className="text-sm text-gray-300 rounded-xl border border-white/5 bg-black/20 p-3">
+                        <div className="text-sm text-body-secondary rounded-xl border border-border bg-muted dark:bg-black/20 p-3">
                           {latestProposal.technicalNotes && isProbablyHtml(latestProposal.technicalNotes) ? (
                             <SafeHtml html={latestProposal.technicalNotes} />
                           ) : (
@@ -789,12 +789,12 @@ export default function ExpertProjectHubPage() {
                           )}
                         </div>
                         {latestProposal.materialSuggestions ? (
-                          <div className="text-xs text-gray-400">
-                            <span className="text-gray-500">Matériaux : </span>
+                          <div className="text-xs text-muted-foreground">
+                            <span className="text-muted-foreground">Matériaux : </span>
                             {isProbablyHtml(latestProposal.materialSuggestions) ? (
                               <SafeHtml
                                 html={latestProposal.materialSuggestions}
-                                className="prose prose-invert prose-sm max-w-none inline text-gray-300"
+                                className="prose prose-invert prose-sm max-w-none inline text-body-secondary"
                               />
                             ) : (
                               latestProposal.materialSuggestions
@@ -804,7 +804,7 @@ export default function ExpertProjectHubPage() {
                       </div>
                     ) : null}
 
-                    <ul className="space-y-2 text-xs text-gray-500 border-t border-white/10 pt-3">
+                    <ul className="space-y-2 text-xs text-muted-foreground border-t border-border pt-3">
                       {sortedProposalsDesc.map((pr) => (
                         <li key={pr._id} className="flex flex-wrap gap-x-2">
                           <span className="text-amber-200/80">{pr.status ?? "—"}</span>
@@ -821,12 +821,12 @@ export default function ExpertProjectHubPage() {
                 ) : null}
 
                 {contract ? (
-                  <div className="rounded-xl border border-white/10 bg-black/30 p-4 space-y-3 mt-2">
-                    <p className="text-xs font-semibold text-white inline-flex items-center gap-2">
+                  <div className="rounded-xl border border-border bg-muted dark:bg-black/30 p-4 space-y-3 mt-2">
+                    <p className="text-xs font-semibold text-foreground inline-flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                       Contrat généré
                     </p>
-                    <p className="text-[11px] text-gray-500">
+                    <p className="text-[11px] text-muted-foreground">
                       Client signé : {contract.clientSignedAt ? "oui" : "non"} · Expert signé :{" "}
                       {contract.expertSignedAt ? "oui" : "non"}
                     </p>
@@ -835,7 +835,7 @@ export default function ExpertProjectHubPage() {
                         type="button"
                         disabled={pdfBusy}
                         onClick={() => void handleExpertDownloadPdf()}
-                        className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/5 px-3 py-2 text-xs font-semibold text-white hover:bg-white/10 disabled:opacity-40"
+                        className="inline-flex items-center gap-2 rounded-xl border border-border bg-muted px-3 py-2 text-xs font-semibold text-foreground hover:bg-muted disabled:opacity-40"
                       >
                         {pdfBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
                         Télécharger PDF
@@ -858,18 +858,18 @@ export default function ExpertProjectHubPage() {
                         type="button"
                         disabled={!pendingExpertPdf || uploadBusy}
                         onClick={() => void confirmExpertUploadPdf()}
-                        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600/90 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-600 disabled:opacity-40"
+                        className="inline-flex items-center gap-2 rounded-xl bg-emerald-600/90 px-3 py-2 text-xs font-semibold text-foreground hover:bg-emerald-600 disabled:opacity-40"
                       >
                         {uploadBusy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                         Valider l&apos;envoi
                       </button>
                     </div>
                     {pendingExpertPdf ? (
-                      <p className="text-[11px] text-gray-500">
+                      <p className="text-[11px] text-muted-foreground">
                         Fichier sélectionné : {pendingExpertPdf.name}
                       </p>
                     ) : null}
-                    <div className="text-[11px] text-gray-500 space-y-1">
+                    <div className="text-[11px] text-muted-foreground space-y-1">
                       {clientPdfHref ? (
                         <p>
                           PDF client :{" "}
@@ -903,7 +903,7 @@ export default function ExpertProjectHubPage() {
                       type="button"
                       disabled={!canSignExpertDigital || signingContract}
                       onClick={() => void expertSignContract()}
-                      className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 px-4 py-2.5 text-xs font-semibold text-gray-900 hover:opacity-95 disabled:opacity-40"
+                      className="inline-flex items-center justify-center gap-2 rounded-xl bmp-btn-primary px-4 py-2.5 text-xs font-semibold text-gray-900 hover:opacity-95 disabled:opacity-40"
                     >
                       {signingContract ? (
                         <>
@@ -919,24 +919,24 @@ export default function ExpertProjectHubPage() {
               </section>
             ) : null}
 
-            <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 space-y-4">
-              <p className="text-sm font-medium text-white inline-flex items-center gap-2">
+            <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
+              <p className="text-sm font-medium text-foreground inline-flex items-center gap-2">
                 <Users className="w-4 h-4 text-amber-300" />
                 Équipe & avancement
               </p>
               <div className="grid sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <p className="text-[11px] uppercase text-gray-500 mb-1">Expert référent</p>
-                  <p className="text-gray-200">
+                  <p className="text-[11px] uppercase text-muted-foreground mb-1">Expert référent</p>
+                  <p className="text-body-secondary">
                     {expertLabel ?? "—"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[11px] uppercase text-gray-500 mb-1">Avancement</p>
+                  <p className="text-[11px] uppercase text-muted-foreground mb-1">Avancement</p>
                   <p className="text-amber-200 font-semibold tabular-nums">{avPct}%</p>
-                  <div className="mt-1 h-2 rounded-full bg-white/10 overflow-hidden max-w-[220px]">
+                  <div className="mt-1 h-2 rounded-full bg-muted overflow-hidden max-w-[220px]">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400"
+                      className="h-full rounded-full bmp-progress-accent"
                       style={{ width: `${avPct}%` }}
                     />
                   </div>
@@ -944,17 +944,17 @@ export default function ExpertProjectHubPage() {
               </div>
               {artisanApplications.length > 0 ? (
                 <div className="space-y-2">
-                  <p className="text-[11px] uppercase text-gray-500 mb-1">
+                  <p className="text-[11px] uppercase text-muted-foreground mb-1">
                     Candidatures & artisans
                   </p>
                   <ul className="space-y-3">
                     {artisanApplications.map((row) => (
                       <li
                         key={row.applicationId}
-                        className="rounded-xl border border-white/10 bg-black/25 p-3 space-y-2"
+                        className="rounded-xl border border-border bg-muted dark:bg-black/25 p-3 space-y-2"
                       >
                         <div className="flex flex-wrap items-start justify-between gap-2">
-                          <span className="text-sm text-gray-200 font-medium">
+                          <span className="text-sm text-body-secondary font-medium">
                             {row.label}
                           </span>
                           <span
@@ -1027,14 +1027,14 @@ export default function ExpertProjectHubPage() {
                   </ul>
                 </div>
               ) : (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Aucune candidature artisan pour le moment.
                 </p>
               )}
 
               {suiviPhotoUrls.length > 0 ? (
                 <div>
-                  <p className="text-[11px] uppercase text-gray-500 mb-2 inline-flex items-center gap-1">
+                  <p className="text-[11px] uppercase text-muted-foreground mb-2 inline-flex items-center gap-1">
                     <ImageIcon className="w-3.5 h-3.5" />
                     Photos de suivi chantier
                   </p>
@@ -1045,7 +1045,7 @@ export default function ExpertProjectHubPage() {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="aspect-square rounded-lg overflow-hidden border border-white/10 bg-black/40"
+                        className="aspect-square rounded-lg overflow-hidden border border-border bg-muted dark:bg-black/40"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={url} alt="" className="h-full w-full object-cover" />
@@ -1054,7 +1054,7 @@ export default function ExpertProjectHubPage() {
                   </div>
                 </div>
               ) : (
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Aucune photo de suivi pour l’instant (utilisez le suivi photo pour analyse IA
                   automatique).
                 </p>
@@ -1065,7 +1065,7 @@ export default function ExpertProjectHubPage() {
 
             {canRespond ? (
               <section className="rounded-2xl border border-amber-500/25 bg-amber-500/5 p-5 space-y-4">
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-body-secondary">
                   Cette invitation vous est destinée. Vous pouvez l&apos;accepter
                   pour être l&apos;expert référent du dossier, ou la refuser.
                 </p>
@@ -1109,8 +1109,8 @@ export default function ExpertProjectHubPage() {
 
             {isAssigned ? (
               <>
-                <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 space-y-4">
-                  <p className="text-sm font-medium text-white">
+                <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
+                  <p className="text-sm font-medium text-foreground">
                     {contractFullySigned
                       ? "Suivi du chantier"
                       : dossierCommercialClos
@@ -1118,7 +1118,7 @@ export default function ExpertProjectHubPage() {
                         : "Négociation & proposition"}
                   </p>
                   {dossierCommercialClos ? (
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                       {contractFullySigned
                         ? "Contrat signé par le client et vous : la proposition commerciale est verrouillée. Poursuivez le suivi via les accès ci-dessous."
                         : "Le client a accepté votre proposition commerciale. Vous pouvez encore signer le contrat dans la section ci-dessus si besoin, puis utilisez les accès chantier."}
@@ -1136,7 +1136,7 @@ export default function ExpertProjectHubPage() {
                         <ChevronRight className="w-4 h-4 opacity-70" />
                       </Link>
                     ) : null}
-                    <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-gray-400 pt-1">
+                    <div className="flex flex-wrap gap-x-4 gap-y-2 text-xs text-muted-foreground pt-1">
                       <Link
                         href={subLink(
                           `/expert/projects/${encodeURIComponent(projectId)}/photos`,
@@ -1170,16 +1170,16 @@ export default function ExpertProjectHubPage() {
                   </div>
                 </section>
 
-                <section className="rounded-2xl border border-white/10 bg-black/25 p-5 space-y-3">
-                  <p className="text-sm font-medium text-white">Avancement manuel</p>
-                  <p className="text-xs text-gray-500">
+                <section className="rounded-2xl border border-border bg-muted dark:bg-black/25 p-5 space-y-3">
+                  <p className="text-sm font-medium text-foreground">Avancement manuel</p>
+                  <p className="text-xs text-muted-foreground">
                     Sans photo : indiquez un pourcentage et une note (les photos avec analyse IA
                     restent sur « Suivi photo »).
                   </p>
                   <form onSubmit={submitManualProgress} className="space-y-3">
                     <div className="flex flex-wrap gap-3 items-end">
                       <div>
-                        <label className="block text-[11px] text-gray-400 mb-1">
+                        <label className="block text-[11px] text-muted-foreground mb-1">
                           % avancement (0–100)
                         </label>
                         <input
@@ -1189,7 +1189,7 @@ export default function ExpertProjectHubPage() {
                           onChange={(e) =>
                             setManualPct(e.target.value.replace(/\D/g, "").slice(0, 3))
                           }
-                          className="w-28 rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white"
+                          className="w-28 rounded-lg border border-border bg-muted dark:bg-black/40 px-3 py-2 text-sm text-foreground"
                         />
                       </div>
                       <button
@@ -1205,22 +1205,22 @@ export default function ExpertProjectHubPage() {
                       onChange={(e) => setManualNote(e.target.value)}
                       placeholder="Note courte (optionnel)"
                       rows={2}
-                      className="w-full rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-gray-600"
+                      className="w-full rounded-lg border border-border bg-muted dark:bg-black/40 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground"
                     />
                     {progressMsg ? (
-                      <p className="text-xs text-gray-400">{progressMsg}</p>
+                      <p className="text-xs text-muted-foreground">{progressMsg}</p>
                     ) : null}
                   </form>
                 </section>
               </>
             ) : null}
 
-            <footer className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-white/10 pt-6 text-[11px] text-gray-500">
+            <footer className="flex flex-wrap items-center gap-x-3 gap-y-1 border-t border-border pt-6 text-[11px] text-muted-foreground">
               <Link
                 href={subLink(
                   `/expert/tous-les-projets/${encodeURIComponent(projectId)}`,
                 )}
-                className="text-gray-400 hover:text-amber-400/90 transition"
+                className="text-muted-foreground hover:text-amber-400/90 transition"
               >
                 Vue dossier étendue
               </Link>
@@ -1229,7 +1229,7 @@ export default function ExpertProjectHubPage() {
               </span>
               <Link
                 href="/expert/projets"
-                className="text-gray-400 hover:text-amber-400/90 transition"
+                className="text-muted-foreground hover:text-amber-400/90 transition"
               >
                 Liste des projets
               </Link>

@@ -4,6 +4,7 @@ export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle'|'loading'|'success'|'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [mailMode, setMailMode] = useState<'smtp'|'ethereal'|'none'|null>(null);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -16,9 +17,24 @@ export default function ForgotPassword() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
       });
-      if (res.ok) setStatus('success');
-      else { setErrorMsg('Une erreur est survenue.'); setStatus('error'); }
-    } catch { setErrorMsg('Une erreur est survenue.'); setStatus('error'); }
+      const data = await res.json().catch(() => null);
+      if (res.ok) {
+        setMailMode(data?.mailMode ?? null);
+        setStatus('success');
+      } else {
+        const msg =
+          typeof data?.message === 'string'
+            ? data.message
+            : Array.isArray(data?.message)
+              ? data.message.join(' ')
+              : 'Une erreur est survenue.';
+        setErrorMsg(msg);
+        setStatus('error');
+      }
+    } catch (e) {
+      setErrorMsg(e instanceof Error ? e.message : 'Une erreur est survenue.');
+      setStatus('error');
+    }
   };
 
   return (
@@ -35,7 +51,14 @@ export default function ForgotPassword() {
             borderRadius:'8px', padding:'20px', textAlign:'center' }}>
             <p style={{ fontSize:'32px', margin:'0 0 12px' }}>📧</p>
             <p>Lien envoyé à <strong>{email}</strong>.<br/>
-            Vérifiez votre boîte mail.</p>
+            {mailMode === 'none' ? (
+              <>Aucun e-mail n’est configuré sur le serveur (MAIL_* manquantes).</>
+            ) : mailMode === 'ethereal' ? (
+              <>Mode dev : e-mail simulé via Ethereal (prévisualisation dans la console backend).</>
+            ) : (
+              <>Vérifiez votre boîte mail (et les indésirables).</>
+            )}
+            </p>
             <a href="/login" style={{ color:'#F5A623', marginTop:'12px',
               display:'inline-block', fontSize:'13px' }}>
               ← Retour à la connexion

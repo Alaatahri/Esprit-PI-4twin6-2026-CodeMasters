@@ -9,6 +9,7 @@ import {
   fetchConversations,
   type ConversationRow,
 } from "@/lib/messages-api";
+import { BmpInsetPanel, BmpRowCard } from "@/components/bmp/surfaces";
 
 function roleLabel(role?: string): string {
   if (!role) return "";
@@ -56,13 +57,13 @@ export default function MessagesInboxPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8 sm:py-10">
-      <div className="flex items-center gap-3 mb-8">
-        <div className="rounded-2xl bg-amber-500/15 border border-amber-500/30 p-3">
-          <MessageCircle className="w-7 h-7 text-amber-300" />
+      <div className="mb-8 flex items-center gap-3">
+        <div className="rounded-2xl border border-brand/35 bg-brand/10 p-3 dark:bg-brand/15">
+          <MessageCircle className="h-7 w-7 text-brand" />
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-white">Messages</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-bold text-foreground">Messages</h1>
+          <p className="text-sm text-muted-foreground">
             Vos conversations avec clients, experts et artisans.
           </p>
         </div>
@@ -70,56 +71,55 @@ export default function MessagesInboxPage() {
 
       {loading ? (
         <div className="flex justify-center py-20">
-          <Loader2 className="w-10 h-10 animate-spin text-amber-400/80" />
+          <Loader2 className="h-10 w-10 animate-spin text-brand" />
         </div>
       ) : err ? (
-        <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-2xl border border-destructive/35 bg-destructive/10 px-4 py-3 text-sm text-destructive dark:text-red-200">
           {err}
         </div>
       ) : rows.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-6 py-12 text-center space-y-3">
-          <p className="text-gray-400 text-sm">
+        <BmpInsetPanel className="space-y-3 py-12">
+          <p className="text-sm text-muted-foreground">
             Aucune conversation pour le moment. Ouvrez un projet (ex. espace
             expert) et utilisez « Contacter » pour écrire à un client ou un
             artisan.
           </p>
           <Link
             href="/espace"
-            className="inline-flex text-sm text-amber-400 hover:text-amber-300"
+            className="inline-flex text-sm font-medium text-brand underline-offset-4 hover:text-brand-muted hover:underline"
           >
             Retour à l&apos;espace
           </Link>
-        </div>
+        </BmpInsetPanel>
       ) : (
         <ul className="space-y-2">
           {rows.map((c) => (
             <li key={c.partnerId}>
-              <Link
-                href={`/messages/${c.partnerId}`}
-                className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-4 transition hover:border-amber-500/30 hover:bg-white/[0.06]"
-              >
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-500/30 to-yellow-500/10 border border-amber-500/20">
-                  <User className="w-6 h-6 text-amber-200" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="font-semibold text-white truncate">
-                      {c.partnerNom || "Utilisateur"}
-                    </p>
-                    {c.unread > 0 && (
-                      <span className="shrink-0 rounded-full bg-amber-500 px-2 py-0.5 text-[11px] font-bold text-gray-900">
-                        {c.unread}
-                      </span>
-                    )}
+              <Link href={`/messages/${c.partnerId}`}>
+                <BmpRowCard className="flex cursor-pointer items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-brand/25 bg-gradient-to-br from-brand/20 to-brand-muted/15">
+                    <User className="h-6 w-6 text-brand" />
                   </div>
-                  <p className="text-[11px] text-gray-500 uppercase tracking-wide">
-                    {roleLabel(c.partnerRole)}
-                  </p>
-                  <p className="text-sm text-gray-400 truncate mt-1">
-                    {c.lastBody}
-                  </p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-600 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <p className="truncate font-semibold text-foreground">
+                        {c.partnerNom || "Utilisateur"}
+                      </p>
+                      {c.unread > 0 && (
+                        <span className="shrink-0 rounded-full bg-brand-muted px-2 py-0.5 text-[11px] font-bold text-brand-foreground">
+                          {c.unread}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                      {roleLabel(c.partnerRole)}
+                    </p>
+                    <p className="mt-1 truncate text-sm text-muted-foreground">
+                      {c.lastBody}
+                    </p>
+                  </div>
+                  <ChevronRight className="h-5 w-5 shrink-0 text-muted-foreground" />
+                </BmpRowCard>
               </Link>
             </li>
           ))}

@@ -257,8 +257,8 @@ export default function ExpertProjectPhotosPage() {
 
   if (user && normalizeRole(user.role) !== "expert") {
     return (
-      <div className="min-h-screen bg-gray-950 text-white flex items-center justify-center px-4">
-        <p className="text-gray-400">Accès réservé aux experts.</p>
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
+        <p className="text-muted-foreground">Accès réservé aux experts.</p>
       </div>
     );
   }
@@ -267,7 +267,7 @@ export default function ExpertProjectPhotosPage() {
   const apres = project?.photosApres?.filter(Boolean) ?? [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-10 max-w-3xl">
         <Link
           href={hubHref}
@@ -277,11 +277,11 @@ export default function ExpertProjectPhotosPage() {
           Retour au dossier
         </Link>
 
-        <h1 className="text-2xl font-bold text-white mb-2 flex items-center gap-2">
+        <h1 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
           <Images className="w-7 h-7 text-amber-400" />
           Photos du projet
         </h1>
-        <p className="text-sm text-gray-400 mb-8">
+        <p className="text-sm text-muted-foreground mb-8">
           Ajoutez des images à la fiche projet (galerie avant / après), visibles
           sur la vitrine lorsque le projet est terminé.
         </p>
@@ -300,25 +300,25 @@ export default function ExpertProjectPhotosPage() {
             <div className="mb-6 flex flex-col sm:flex-row gap-3">
               <Link
                 href={`/expert/projects/${projectId}/suivi-photo?from=${encodeURIComponent(fromQ)}`}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-5 py-2.5 text-sm font-medium text-white/90 hover:bg-white/10"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-muted px-5 py-2.5 text-sm font-medium text-foreground/90 hover:bg-muted"
               >
                 <Plus className="w-4 h-4 text-amber-300" />
                 Uploader une photo (avancement)
               </Link>
               <a
                 href="#ajout-urls"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 px-5 py-2.5 text-sm font-semibold text-gray-900 hover:opacity-95"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bmp-btn-primary px-5 py-2.5 text-sm font-semibold text-gray-900 hover:opacity-95"
               >
                 <Plus className="w-4 h-4" />
                 Ajouter à la galerie (URLs)
               </a>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-5 mb-8 space-y-2">
-              <p className="text-lg font-semibold text-white">{project.titre}</p>
-              <p className="text-xs text-gray-500">
+            <div className="rounded-2xl border border-border bg-muted p-5 mb-8 space-y-2">
+              <p className="text-lg font-semibold text-foreground">{project.titre}</p>
+              <p className="text-xs text-muted-foreground">
                 Statut :{" "}
-                <span className="text-gray-300">{project.statut ?? "—"}</span>
+                <span className="text-body-secondary">{project.statut ?? "—"}</span>
               </p>
             </div>
 
@@ -327,26 +327,26 @@ export default function ExpertProjectPhotosPage() {
                 <p className="text-[10px] uppercase tracking-wider text-amber-200/80">
                   Avant
                 </p>
-                <p className="text-lg font-semibold text-white">{avant.length}</p>
+                <p className="text-lg font-semibold text-foreground">{avant.length}</p>
               </div>
               <div className="rounded-xl border border-emerald-500/20 bg-emerald-950/20 px-3 py-2 text-center">
                 <p className="text-[10px] uppercase tracking-wider text-emerald-200/80">
                   Après
                 </p>
-                <p className="text-lg font-semibold text-white">{apres.length}</p>
+                <p className="text-lg font-semibold text-foreground">{apres.length}</p>
               </div>
             </div>
 
             <form
               noValidate
               onSubmit={onUpload}
-              className="rounded-2xl border border-white/10 bg-black/30 p-5 space-y-4"
+              className="rounded-2xl border border-border bg-muted dark:bg-black/30 p-5 space-y-4"
             >
-              <p className="text-sm font-semibold text-white flex items-center gap-2">
+              <p className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Upload className="w-4 h-4 text-amber-300" />
                 Uploader des images (fichiers)
               </p>
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Sélectionnez une ou plusieurs images depuis votre appareil. Elles
                 seront hébergées par le backend et visibles dans le détail du
                 projet.
@@ -361,7 +361,7 @@ export default function ExpertProjectPhotosPage() {
                     onChange={() => setAlbum("apres")}
                     className="text-amber-500"
                   />
-                  <span className="text-sm text-gray-200">Après travaux</span>
+                  <span className="text-sm text-body-secondary">Après travaux</span>
                 </label>
                 <label className="inline-flex items-center gap-2 cursor-pointer">
                   <input
@@ -371,7 +371,7 @@ export default function ExpertProjectPhotosPage() {
                     onChange={() => setAlbum("avant")}
                     className="text-amber-500"
                   />
-                  <span className="text-sm text-gray-200">Avant travaux</span>
+                  <span className="text-sm text-body-secondary">Avant travaux</span>
                 </label>
               </div>
 
@@ -389,10 +389,10 @@ export default function ExpertProjectPhotosPage() {
                   setFilesInputError(null);
                   setUploadFiles(e.target.files);
                 }}
-                className={`block w-full rounded-xl bg-black/40 px-3 py-2 text-sm text-gray-200 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-100 hover:file:bg-amber-500/30 border ${
+                className={`block w-full rounded-xl bg-muted dark:bg-black/40 px-3 py-2 text-sm text-body-secondary file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-100 hover:file:bg-amber-500/30 border ${
                   filesInputError
                     ? "border-red-400/55"
-                    : "border-white/10"
+                    : "border-border"
                 }`}
               />
               <FieldError id="expert-photos-files-err" message={filesInputError ?? undefined} />
@@ -400,7 +400,7 @@ export default function ExpertProjectPhotosPage() {
               <button
                 type="submit"
                 disabled={uploading}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bmp-btn-primary font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 w-full sm:w-auto"
               >
                 {uploading ? (
                   <>
@@ -428,13 +428,13 @@ export default function ExpertProjectPhotosPage() {
               noValidate
               onSubmit={onSubmit}
               id="ajout-urls"
-              className="rounded-2xl border border-white/10 bg-black/30 p-5 space-y-4"
+              className="rounded-2xl border border-border bg-muted dark:bg-black/30 p-5 space-y-4"
             >
-              <p className="text-sm font-semibold text-white flex items-center gap-2">
+              <p className="text-sm font-semibold text-foreground flex items-center gap-2">
                 <Plus className="w-4 h-4 text-amber-300" />
                 Ajouter des photos (URLs)
               </p>
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Utilisez des liens https vers des images déjà hébergées (ex. votre
                 stockage ou CDN). Une URL par ligne.
               </p>
@@ -448,7 +448,7 @@ export default function ExpertProjectPhotosPage() {
                     onChange={() => setAlbum("apres")}
                     className="text-amber-500"
                   />
-                  <span className="text-sm text-gray-200">Après travaux</span>
+                  <span className="text-sm text-body-secondary">Après travaux</span>
                 </label>
                 <label className="inline-flex items-center gap-2 cursor-pointer">
                   <input
@@ -458,14 +458,14 @@ export default function ExpertProjectPhotosPage() {
                     onChange={() => setAlbum("avant")}
                     className="text-amber-500"
                   />
-                  <span className="text-sm text-gray-200">Avant travaux</span>
+                  <span className="text-sm text-body-secondary">Avant travaux</span>
                 </label>
               </div>
 
               <div>
                 <label
                   htmlFor="expert-photo-urls"
-                  className="block text-[11px] text-gray-400 mb-1"
+                  className="block text-[11px] text-muted-foreground mb-1"
                 >
                   URLs des images
                 </label>
@@ -483,7 +483,7 @@ export default function ExpertProjectPhotosPage() {
                   aria-describedby={
                     urlsInputError ? "expert-photo-urls-err" : undefined
                   }
-                  className={`${fieldTextareaClass(!!urlsInputError, submitting)} font-mono text-xs bg-black/40 placeholder:text-gray-600`}
+                  className={`${fieldTextareaClass(!!urlsInputError, submitting)} font-mono text-xs bg-muted dark:bg-black/40 placeholder:text-muted-foreground`}
                   placeholder={
                     "https://images.unsplash.com/photo-...\nhttps://..."
                   }
@@ -494,7 +494,7 @@ export default function ExpertProjectPhotosPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bmp-btn-primary font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 w-full sm:w-auto"
               >
                 {submitting ? (
                   <>
@@ -529,7 +529,7 @@ export default function ExpertProjectPhotosPage() {
                       {apres.slice(0, 6).map((url, i) => (
                         <div
                           key={`ap-${i}`}
-                          className="aspect-square rounded-lg overflow-hidden border border-white/10 bg-black/40"
+                          className="aspect-square rounded-lg overflow-hidden border border-border bg-muted dark:bg-black/40"
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
@@ -551,7 +551,7 @@ export default function ExpertProjectPhotosPage() {
                       {avant.slice(0, 6).map((url, i) => (
                         <div
                           key={`av-${i}`}
-                          className="aspect-square rounded-lg overflow-hidden border border-white/10 bg-black/40"
+                          className="aspect-square rounded-lg overflow-hidden border border-border bg-muted dark:bg-black/40"
                         >
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img
@@ -567,7 +567,7 @@ export default function ExpertProjectPhotosPage() {
               </div>
             )}
 
-            <p className="mt-8 text-xs text-gray-500">
+            <p className="mt-8 text-xs text-muted-foreground">
               Pour envoyer une photo depuis votre appareil avec analyse
               d&apos;avancement, utilisez aussi{" "}
               <Link

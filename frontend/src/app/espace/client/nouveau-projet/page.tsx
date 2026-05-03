@@ -17,6 +17,10 @@ type NewProjectForm = NewProjectFormInput & {
   urgence: "urgent" | "normal" | "flexible";
 };
 
+function isValidMongoId(id: string): boolean {
+  return /^[a-f\d]{24}$/i.test(id.trim());
+}
+
 const initialForm: NewProjectForm = {
   titre: "",
   categorie: "",
@@ -82,6 +86,13 @@ export default function NouveauProjetPage() {
     }
 
     try {
+      const clientId = String(user._id ?? "").trim();
+      if (!isValidMongoId(clientId)) {
+        throw new Error(
+          "Identifiant client invalide. Déconnectez-vous puis reconnectez-vous.",
+        );
+      }
+
       const payload = {
         titre: form.titre.trim(),
         categorie: form.categorie.trim() || undefined,
@@ -93,7 +104,7 @@ export default function NouveauProjetPage() {
         urgence: form.urgence,
         preferences_materiaux: form.preferences_materiaux.trim() || undefined,
         exigences_techniques: form.exigences_techniques.trim() || undefined,
-        clientId: user._id,
+        clientId,
         // statut non envoyé : le backend mettra "En attente" par défaut
       };
 
@@ -165,10 +176,10 @@ export default function NouveauProjetPage() {
   if (!loadingUser && !user) {
     return (
       <div className="max-w-2xl mx-auto text-center space-y-6">
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-foreground">
           Espace client
         </h1>
-        <p className="text-gray-400">
+        <p className="text-muted-foreground">
           Connectez-vous pour créer et suivre vos projets.
         </p>
       </div>
@@ -178,12 +189,12 @@ export default function NouveauProjetPage() {
   if (!loadingUser && user && user.role !== "client") {
     return (
       <div className="max-w-2xl mx-auto text-center space-y-4">
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-foreground">
           Espace réservé aux clients
         </h1>
-        <p className="text-gray-400 text-sm">
+        <p className="text-muted-foreground text-sm">
           Vous êtes connecté en tant que{" "}
-          <span className="font-semibold text-amber-300">
+          <span className="font-semibold text-brand dark:text-amber-300">
             {user.role}
           </span>
           . Cet écran est dédié aux clients qui créent des projets.
@@ -195,23 +206,23 @@ export default function NouveauProjetPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-semibold text-white">
+        <h1 className="text-2xl font-semibold text-foreground">
           Créer un nouveau projet
         </h1>
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-muted-foreground">
           Décrivez votre besoin (construction, rénovation, extension…) pour que
           les experts et artisans puissent vous accompagner.
         </p>
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-800 dark:text-red-200">
           {error}
         </div>
       )}
 
       {success && (
-        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-200">
+        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-900 dark:text-emerald-200">
           {success}
         </div>
       )}
@@ -220,7 +231,7 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-titre"
-            className="block text-sm font-medium text-gray-200 mb-2"
+            className="block text-sm font-medium text-body-secondary mb-2"
           >
             Titre du projet <span className="text-red-400/90">*</span>
           </label>
@@ -241,7 +252,7 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-categorie"
-            className="block text-sm font-medium text-gray-200 mb-2"
+            className="block text-sm font-medium text-body-secondary mb-2"
           >
             Catégorie <span className="text-red-400/90">*</span>
           </label>
@@ -253,7 +264,7 @@ export default function NouveauProjetPage() {
             aria-describedby={fieldErrors.categorie ? "err-np-cat" : undefined}
             className={`${fieldInputClass(!!fieldErrors.categorie, submitting)} appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3 bg-[length:18px] pr-10`}
           >
-            <option value="" className="bg-gray-950">
+            <option value="" className="bg-background">
               Choisir une catégorie…
             </option>
             {[
@@ -266,7 +277,7 @@ export default function NouveauProjetPage() {
               "Peinture",
               "Menuiserie",
             ].map((c) => (
-              <option key={c} value={c} className="bg-gray-950">
+              <option key={c} value={c} className="bg-background">
                 {c}
               </option>
             ))}
@@ -277,7 +288,7 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-desc"
-            className="block text-sm font-medium text-gray-200 mb-2"
+            className="block text-sm font-medium text-body-secondary mb-2"
           >
             Description <span className="text-red-400/90">*</span>
           </label>
@@ -299,7 +310,7 @@ export default function NouveauProjetPage() {
           <div>
             <label
               htmlFor="np-ville"
-              className="block text-sm font-medium text-gray-200 mb-2"
+              className="block text-sm font-medium text-body-secondary mb-2"
             >
               Ville <span className="text-red-400/90">*</span>
             </label>
@@ -319,7 +330,7 @@ export default function NouveauProjetPage() {
           <div>
             <label
               htmlFor="np-adr"
-              className="block text-sm font-medium text-gray-200 mb-2"
+              className="block text-sm font-medium text-body-secondary mb-2"
             >
               Adresse exacte <span className="text-red-400/90">*</span>
             </label>
@@ -338,8 +349,8 @@ export default function NouveauProjetPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-          <p className="text-sm text-gray-300">
+        <div className="rounded-2xl border border-border bg-muted dark:bg-black/20 p-4">
+          <p className="text-sm text-body-secondary">
             Les dates et le budget seront proposés par l&apos;expert après analyse du
             dossier.
           </p>
@@ -347,7 +358,7 @@ export default function NouveauProjetPage() {
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">
+            <label className="block text-sm font-medium text-body-secondary mb-2">
               Surface (m²) (optionnel)
             </label>
             <input
@@ -366,7 +377,7 @@ export default function NouveauProjetPage() {
           <div>
             <label
               htmlFor="np-type"
-              className="block text-sm font-medium text-gray-200 mb-2"
+              className="block text-sm font-medium text-body-secondary mb-2"
             >
               Type de bâtiment <span className="text-red-400/90">*</span>
             </label>
@@ -380,11 +391,11 @@ export default function NouveauProjetPage() {
               }
               className={`${fieldInputClass(!!fieldErrors.type_batiment, submitting)} appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3 bg-[length:18px] pr-10`}
             >
-              <option value="" className="bg-gray-950">
+              <option value="" className="bg-background">
                 Choisir…
               </option>
               {["Maison", "Appartement", "Commercial", "Bureau", "Autre"].map((t) => (
-                <option key={t} value={t} className="bg-gray-950">
+                <option key={t} value={t} className="bg-background">
                   {t}
                 </option>
               ))}
@@ -394,7 +405,7 @@ export default function NouveauProjetPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-200 mb-2">
+          <label className="block text-sm font-medium text-body-secondary mb-2">
             Urgence
           </label>
           <div className="flex flex-wrap gap-2">
@@ -414,8 +425,8 @@ export default function NouveauProjetPage() {
                 }
                 className={`px-4 py-2 rounded-xl border text-sm transition ${
                   form.urgence === u.id
-                    ? "border-amber-400/50 bg-amber-500/15 text-amber-200"
-                    : "border-white/10 bg-white/5 text-gray-200 hover:bg-white/10"
+                    ? "border-amber-400/50 bg-amber-500/15 text-amber-950 dark:text-amber-200"
+                    : "border-border bg-muted text-body-secondary hover:bg-muted"
                 }`}
               >
                 {u.label}
@@ -427,10 +438,10 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-pref"
-            className="block text-sm font-medium text-gray-200 mb-2"
+            className="block text-sm font-medium text-body-secondary mb-2"
           >
             Préférences matériaux{" "}
-            <span className="text-gray-500 text-xs">(optionnel)</span>
+            <span className="text-muted-foreground text-xs">(optionnel)</span>
           </label>
           <textarea
             id="np-pref"
@@ -457,10 +468,10 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-exi"
-            className="block text-sm font-medium text-gray-200 mb-2"
+            className="block text-sm font-medium text-body-secondary mb-2"
           >
             Exigences techniques{" "}
-            <span className="text-gray-500 text-xs">(optionnel)</span>
+            <span className="text-muted-foreground text-xs">(optionnel)</span>
           </label>
           <textarea
             id="np-exi"
@@ -484,10 +495,10 @@ export default function NouveauProjetPage() {
           />
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-4 space-y-3">
-          <p className="text-sm font-semibold text-white">Fichiers & photos</p>
+        <div className="rounded-2xl border border-border bg-muted dark:bg-black/20 p-4 space-y-3">
+          <p className="text-sm font-semibold text-foreground">Fichiers & photos</p>
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">
+            <label className="block text-sm font-medium text-body-secondary mb-2">
               Plans / documents (PDF, images)
             </label>
             <input
@@ -496,14 +507,14 @@ export default function NouveauProjetPage() {
               accept=".pdf,image/*"
               disabled={submitting}
               onChange={(e) => setAttachments(e.target.files)}
-              className="block w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-gray-200 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-100 hover:file:bg-amber-500/30"
+              className="block w-full rounded-xl border border-border bg-muted px-3 py-2 text-sm text-body-secondary file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-950 hover:file:bg-amber-500/30 dark:bg-black/40 dark:file:text-amber-100"
             />
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-muted-foreground">
               (Optionnel) Aide l’expert à évaluer rapidement.
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-2">
+            <label className="block text-sm font-medium text-body-secondary mb-2">
               Photos de l’état actuel (site)
             </label>
             <input
@@ -512,7 +523,7 @@ export default function NouveauProjetPage() {
               accept="image/*"
               disabled={submitting}
               onChange={(e) => setSitePhotos(e.target.files)}
-              className="block w-full rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-gray-200 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-100 hover:file:bg-amber-500/30"
+              className="block w-full rounded-xl border border-border bg-muted px-3 py-2 text-sm text-body-secondary file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-950 hover:file:bg-amber-500/30 dark:bg-black/40 dark:file:text-amber-100"
             />
           </div>
         </div>
@@ -520,7 +531,7 @@ export default function NouveauProjetPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold shadow-lg shadow-amber-500/40 hover:shadow-amber-500/60 transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm inline-flex items-center justify-center gap-2"
+          className="w-full sm:w-auto px-6 py-3 rounded-2xl bmp-btn-primary font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm inline-flex items-center justify-center gap-2"
         >
           {submitting ? "Création en cours..." : "Créer le projet"}
         </button>

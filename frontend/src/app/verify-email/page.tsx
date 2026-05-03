@@ -57,7 +57,7 @@ function VerifyEmailInner() {
   }, [searchParams]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex items-center justify-center px-4 py-12">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
         <div className="flex items-center justify-center gap-3 mb-10">
           <div
@@ -75,23 +75,23 @@ function VerifyEmailInner() {
             >
               BMP.tn
             </span>
-            <div className="text-xs text-gray-500 tracking-widest mt-0.5">
+            <div className="text-xs text-muted-foreground tracking-widest mt-0.5">
               VÉRIFICATION E-MAIL
             </div>
           </div>
         </div>
 
-        <div className="backdrop-blur-2xl bg-white/[0.07] rounded-3xl p-8 border border-white/15 shadow-2xl text-center">
+        <div className="backdrop-blur-2xl bg-card/95 rounded-3xl p-8 border border-border shadow-2xl text-center">
           {status === "loading" && (
             <>
               <Loader2
                 className="w-14 h-14 mx-auto mb-6 animate-spin"
                 style={{ color: ACCENT }}
               />
-              <h1 className="text-xl font-bold text-white mb-2">
+              <h1 className="text-xl font-bold text-foreground mb-2">
                 Vérification en cours…
               </h1>
-              <p className="text-gray-400 text-sm">
+              <p className="text-muted-foreground text-sm">
                 Merci de patienter quelques secondes.
               </p>
             </>
@@ -105,10 +105,10 @@ function VerifyEmailInner() {
               >
                 <CheckCircle className="w-10 h-10" style={{ color: ACCENT }} />
               </div>
-              <h1 className="text-2xl font-bold text-white mb-2">
+              <h1 className="text-2xl font-bold text-foreground mb-2">
                 Email vérifié !
               </h1>
-              <p className="text-gray-400 text-sm mb-8">
+              <p className="text-muted-foreground text-sm mb-8">
                 Votre compte est activé. Vous pouvez vous connecter.
               </p>
               <Link
@@ -128,13 +128,13 @@ function VerifyEmailInner() {
               <div className="w-16 h-16 rounded-full bg-red-500/15 flex items-center justify-center mx-auto mb-6">
                 <XCircle className="w-10 h-10 text-red-400" />
               </div>
-              <h1 className="text-xl font-bold text-white mb-2">
+              <h1 className="text-xl font-bold text-foreground mb-2">
                 Lien invalide ou expiré
               </h1>
-              <p className="text-gray-400 text-sm mb-8">{errorMessage}</p>
+              <p className="text-muted-foreground text-sm mb-8">{errorMessage}</p>
               <Link
                 href="/"
-                className="inline-flex items-center justify-center w-full min-h-[48px] rounded-xl border border-white/20 text-gray-200 hover:border-[#F5A623]/50 hover:text-[#F5A623] transition-colors"
+                className="inline-flex items-center justify-center w-full min-h-[48px] rounded-xl border border-border text-body-secondary hover:border-[#F5A623]/50 hover:text-[#F5A623] transition-colors"
               >
                 Retour à l&apos;accueil
               </Link>
@@ -150,7 +150,7 @@ export default function VerifyEmailPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-950 flex items-center justify-center">
+        <div className="min-h-screen bg-background flex items-center justify-center">
           <Loader2 className="w-10 h-10 animate-spin text-[#F5A623]" />
         </div>
       }

@@ -23,6 +23,7 @@ export function SafeImageFill({ src, fallbackSrc, onError, ...rest }: Props) {
     <Image
       {...rest}
       src={current}
+      unoptimized
       onError={(e) => {
         if (current !== fallbackSrc) {
           setCurrent(fallbackSrc);

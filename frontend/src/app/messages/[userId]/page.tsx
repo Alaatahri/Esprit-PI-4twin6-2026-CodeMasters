@@ -112,22 +112,22 @@ export default function MessageThreadPage() {
     <div className="mx-auto max-w-2xl flex flex-col min-h-[calc(100vh-8rem)] px-4 py-6">
       <Link
         href="/messages"
-        className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-amber-300 mb-4"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-amber-300 mb-4"
       >
         <ArrowLeft className="w-4 h-4" />
         Conversations
       </Link>
 
-      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-white/10">
+      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border">
         <div className="rounded-xl bg-amber-500/15 border border-amber-500/25 p-2.5">
           <User className="w-6 h-6 text-amber-200" />
         </div>
         <div>
-          <h1 className="text-lg font-semibold text-white">
+          <h1 className="text-lg font-semibold text-foreground">
             {partner?.nom || "…"}
           </h1>
           {partner?.role && (
-            <p className="text-xs text-gray-500 capitalize">{partner.role}</p>
+            <p className="text-xs text-muted-foreground capitalize">{partner.role}</p>
           )}
         </div>
       </div>
@@ -145,7 +145,7 @@ export default function MessageThreadPage() {
               </div>
             )}
             {messages.length === 0 ? (
-              <p className="text-center text-sm text-gray-500 py-8">
+              <p className="text-center text-sm text-muted-foreground py-8">
                 Aucun message encore. Écrivez le premier ci-dessous.
               </p>
             ) : (
@@ -162,15 +162,15 @@ export default function MessageThreadPage() {
                     <div
                       className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
                         mine
-                          ? "bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900"
-                          : "bg-white/10 text-gray-100 border border-white/10"
+                          ? "bmp-btn-primary"
+                          : "bg-muted text-gray-100 border border-border"
                       }`}
                     >
                       <p className="whitespace-pre-wrap break-words">{m.body}</p>
                       {m.createdAt && (
                         <p
                           className={`text-[10px] mt-1 ${
-                            mine ? "text-gray-800/80" : "text-gray-500"
+                            mine ? "text-gray-800/80" : "text-muted-foreground"
                           }`}
                         >
                           {new Date(m.createdAt).toLocaleString("fr-FR", {
@@ -187,7 +187,7 @@ export default function MessageThreadPage() {
             <div ref={bottomRef} />
           </div>
 
-          <form noValidate onSubmit={onSend} className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-white/10">
+          <form noValidate onSubmit={onSend} className="flex flex-col sm:flex-row gap-2 pt-2 border-t border-border">
             <div className="flex-1 min-w-0">
               <textarea
                 id="msg-body"

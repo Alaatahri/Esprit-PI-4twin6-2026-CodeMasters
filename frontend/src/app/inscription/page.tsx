@@ -369,16 +369,16 @@ export default function InscriptionPage() {
 
   if (success) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex items-center justify-center px-4 py-10">
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-10">
         <div className="w-full max-w-lg text-center">
-          <div className="backdrop-blur-2xl bg-white/[0.08] rounded-3xl p-8 sm:p-10 border border-white/15 shadow-2xl">
+          <div className="backdrop-blur-2xl bg-card/95 rounded-3xl p-8 sm:p-10 border border-border shadow-2xl">
             <div
               className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6"
               style={{ backgroundColor: "rgba(245, 166, 35, 0.18)" }}
             >
               <Mail className="w-9 h-9" style={{ color: "#F5A623" }} />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-3">
+            <h1 className="text-2xl font-bold text-foreground mb-3">
               {devBypass
                 ? "Compte créé (mode développement)"
                 : verificationEmailSent === true
@@ -390,7 +390,7 @@ export default function InscriptionPage() {
                 className="rounded-2xl border border-sky-500/35 bg-sky-950/30 px-4 py-3 text-left text-sm mb-6 space-y-3"
                 role="status"
               >
-                <p className="text-gray-200 leading-relaxed">
+                <p className="text-body-secondary leading-relaxed">
                   <span className="text-[#F5A623] font-semibold">E-mail simulé</span>{" "}
                   : le backend utilise Ethereal (test). Rien n&apos;est envoyé dans
                   votre vraie boîte. Pour une livraison réelle : dans{" "}
@@ -422,19 +422,19 @@ export default function InscriptionPage() {
             )}
             {verificationEmailSent === true && !devBypass && !etherealPreviewUrl && (
               <>
-                <p className="text-gray-300 text-sm sm:text-base leading-relaxed mb-2">
+                <p className="text-body-secondary text-sm sm:text-base leading-relaxed mb-2">
                   <span className="text-[#F5A623] font-semibold">📧</span> Un
                   e-mail de vérification a été envoyé à{" "}
-                  <span className="text-white font-medium break-all">
+                  <span className="text-foreground font-medium break-all">
                     {registeredEmail}
                   </span>
                   . Sur Gmail, regardez l&apos;onglet{" "}
-                  <strong className="text-gray-200">Principale</strong>, puis{" "}
-                  <strong className="text-gray-200">Promotions</strong> et{" "}
-                  <strong className="text-gray-200">Indésirables</strong> si besoin.
+                  <strong className="text-body-secondary">Principale</strong>, puis{" "}
+                  <strong className="text-body-secondary">Promotions</strong> et{" "}
+                  <strong className="text-body-secondary">Indésirables</strong> si besoin.
                   Ouvrez le message puis cliquez sur le lien de confirmation.
                 </p>
-                <p className="text-gray-500 text-sm mb-6">
+                <p className="text-muted-foreground text-sm mb-6">
                   Si le mail est dans Promotions, vous pouvez le glisser vers
                   Principale pour les prochains envois. Sans confirmation, la
                   connexion reste bloquée.
@@ -449,7 +449,7 @@ export default function InscriptionPage() {
                 <p className="font-medium text-[#F5A623] mb-1">
                   SMTP désactivé volontairement (dev)
                 </p>
-                <p className="leading-relaxed text-gray-200">
+                <p className="leading-relaxed text-body-secondary">
                   Le backend a{" "}
                   <code className="text-xs text-amber-200/90">
                     ALLOW_REGISTRATION_WITHOUT_SMTP=true
@@ -462,10 +462,10 @@ export default function InscriptionPage() {
               </div>
             )}
             {verificationEmailSent === undefined && !devBypass && (
-              <p className="text-gray-400 text-sm mb-6">{successMessage}</p>
+              <p className="text-muted-foreground text-sm mb-6">{successMessage}</p>
             )}
             {devBypass && (
-              <p className="text-gray-500 text-xs text-left mb-6 leading-relaxed">
+              <p className="text-muted-foreground text-xs text-left mb-6 leading-relaxed">
                 {successMessage}
               </p>
             )}
@@ -485,13 +485,13 @@ export default function InscriptionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex items-center justify-center px-4 py-10 sm:py-12">
+    <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4 py-10 sm:py-12">
       <div className="w-full max-w-md sm:max-w-lg">
         <Link
           href="/"
           className="flex items-center justify-center gap-3 mb-8 sm:mb-10 group"
         >
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg group-hover:shadow-amber-500/50 transition-shadow shrink-0">
+          <div className="w-14 h-14 rounded-2xl bmp-icon-gradient flex items-center justify-center shadow-lg group-hover:shadow-amber-500/50 transition-shadow shrink-0">
             <Building2 className="w-7 h-7 text-gray-900" />
           </div>
           <div className="text-left min-w-0">
@@ -504,11 +504,11 @@ export default function InscriptionPage() {
           </div>
         </Link>
 
-        <div className="backdrop-blur-2xl bg-white/10 rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl">
-          <h1 className="text-xl sm:text-2xl font-bold text-white mb-2 text-center">
+        <div className="backdrop-blur-2xl bg-muted rounded-3xl p-6 sm:p-8 border border-border shadow-2xl">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center">
             Créer un compte
           </h1>
-          <p className="text-gray-400 text-center mb-6 sm:mb-8 text-sm sm:text-base">
+          <p className="text-muted-foreground text-center mb-6 sm:mb-8 text-sm sm:text-base">
             Rejoignez la plateforme BMP.tn
           </p>
 
@@ -526,7 +526,7 @@ export default function InscriptionPage() {
             <div>
               <label
                 htmlFor="nom"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-body-secondary mb-2"
               >
                 Nom complet <span className="text-red-400/90">*</span>
               </label>
@@ -561,7 +561,7 @@ export default function InscriptionPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-body-secondary mb-2"
               >
                 E-mail <span className="text-red-400/90">*</span>
               </label>
@@ -597,9 +597,9 @@ export default function InscriptionPage() {
             <div>
               <label
                 htmlFor="telephone"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-body-secondary mb-2"
               >
-                Téléphone <span className="text-gray-500 text-xs font-normal">(optionnel)</span>
+                Téléphone <span className="text-muted-foreground text-xs font-normal">(optionnel)</span>
               </label>
               <div className="relative">
                 <Phone
@@ -635,7 +635,7 @@ export default function InscriptionPage() {
             <div>
               <label
                 htmlFor="role"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-body-secondary mb-2"
               >
                 Rôle <span className="text-red-400/90">*</span>
               </label>
@@ -650,10 +650,10 @@ export default function InscriptionPage() {
                   setLivreurCinPermis(null);
                 }}
                 disabled={loading}
-                className="w-full min-h-[48px] sm:min-h-[44px] text-base sm:text-sm px-4 py-3 rounded-xl bg-white/5 border border-white/20 text-white focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-60 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-4 bg-[length:20px] pr-12"
+                className="w-full min-h-[48px] sm:min-h-[44px] text-base sm:text-sm px-4 py-3 rounded-xl bg-muted border border-border text-foreground focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-60 appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-4 bg-[length:20px] pr-12"
               >
                 {ROLES.map((r) => (
-                  <option key={r.value} value={r.value} className="bg-gray-900 text-white">
+                  <option key={r.value} value={r.value} className="bg-gray-900 text-foreground">
                     {r.label}
                   </option>
                 ))}
@@ -661,7 +661,7 @@ export default function InscriptionPage() {
             </div>
 
             {isArtisan && (
-              <div className="space-y-4 sm:space-y-5 rounded-2xl border border-white/15 bg-white/5 p-4 sm:p-5">
+              <div className="space-y-4 sm:space-y-5 rounded-2xl border border-border bg-muted p-4 sm:p-5">
                 <p className="text-sm font-semibold text-amber-200/90">
                   Profil artisan
                 </p>
@@ -669,7 +669,7 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="specialite"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     Spécialité <span className="text-red-400/90">*</span>
                   </label>
@@ -689,10 +689,10 @@ export default function InscriptionPage() {
                     aria-describedby={
                       fieldErrors.specialite ? "err-specialite" : undefined
                     }
-                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-white/5 border text-base sm:text-sm text-white placeholder-gray-500 outline-none transition-all disabled:opacity-60 ${
+                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-muted border text-base sm:text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all disabled:opacity-60 ${
                       fieldErrors.specialite
                         ? "border-red-400/55 focus:border-red-400 focus:ring-2 focus:ring-red-500/25"
-                        : "border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
+                        : "border-border focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
                     }`}
                   />
                   <FieldError id="err-specialite" message={fieldErrors.specialite} />
@@ -701,7 +701,7 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="experience"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     Expérience (années) <span className="text-red-400/90">*</span>
                   </label>
@@ -722,10 +722,10 @@ export default function InscriptionPage() {
                     aria-describedby={
                       fieldErrors.experienceAnnees ? "err-experience" : undefined
                     }
-                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-white/5 border text-base sm:text-sm text-white placeholder-gray-500 outline-none transition-all disabled:opacity-60 ${
+                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-muted border text-base sm:text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all disabled:opacity-60 ${
                       fieldErrors.experienceAnnees
                         ? "border-red-400/55 focus:border-red-400 focus:ring-2 focus:ring-red-500/25"
-                        : "border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
+                        : "border-border focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
                     }`}
                   />
                   <FieldError
@@ -735,7 +735,7 @@ export default function InscriptionPage() {
                 </div>
 
                 <fieldset className="space-y-3">
-                  <legend className="text-sm font-medium text-gray-300 mb-2 block">
+                  <legend className="text-sm font-medium text-body-secondary mb-2 block">
                     Zones de travail <span className="text-red-400/90">*</span>
                   </legend>
                   {fieldErrors.zones ? (
@@ -744,7 +744,7 @@ export default function InscriptionPage() {
                     </p>
                   ) : null}
                   <div className="space-y-3">
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={zoneTunisie}
@@ -758,7 +758,7 @@ export default function InscriptionPage() {
                       <span>Toute la Tunisie</span>
                     </label>
 
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={zoneVillesTunisie}
@@ -790,10 +790,10 @@ export default function InscriptionPage() {
                           aria-describedby={
                             fieldErrors.villesTunisie ? "err-villes" : undefined
                           }
-                          className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-white/5 border text-sm text-white placeholder-gray-500 outline-none ${
+                          className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-muted border text-sm text-foreground placeholder:text-muted-foreground outline-none ${
                             fieldErrors.villesTunisie
                               ? "border-red-400/55"
-                              : "border-white/20"
+                              : "border-border"
                           }`}
                         />
                         <FieldError
@@ -803,7 +803,7 @@ export default function InscriptionPage() {
                       </div>
                     )}
 
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={zonePays}
@@ -835,15 +835,15 @@ export default function InscriptionPage() {
                           aria-describedby={
                             fieldErrors.pays ? "err-pays" : undefined
                           }
-                          className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-white/5 border text-sm text-white placeholder-gray-500 outline-none ${
-                            fieldErrors.pays ? "border-red-400/55" : "border-white/20"
+                          className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-muted border text-sm text-foreground placeholder:text-muted-foreground outline-none ${
+                            fieldErrors.pays ? "border-red-400/55" : "border-border"
                           }`}
                         />
                         <FieldError id="err-pays" message={fieldErrors.pays} />
                       </div>
                     )}
 
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={zoneMonde}
@@ -858,7 +858,7 @@ export default function InscriptionPage() {
                     </label>
                   </div>
 
-                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                     Séparez les villes ou pays par des virgules.
                   </p>
                 </fieldset>
@@ -866,7 +866,7 @@ export default function InscriptionPage() {
             )}
 
             {isExpert && (
-              <div className="space-y-4 sm:space-y-5 rounded-2xl border border-white/15 bg-white/5 p-4 sm:p-5">
+              <div className="space-y-4 sm:space-y-5 rounded-2xl border border-border bg-muted p-4 sm:p-5">
                 <p className="text-sm font-semibold text-amber-200/90">
                   Profil expert
                 </p>
@@ -874,7 +874,7 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="expert-domaine"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     Domaine d’expertise <span className="text-red-400/90">*</span>
                   </label>
@@ -893,10 +893,10 @@ export default function InscriptionPage() {
                     aria-describedby={
                       fieldErrors.expertDomaine ? "err-expert-domaine" : undefined
                     }
-                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-white/5 border text-base sm:text-sm text-white placeholder-gray-500 outline-none transition-all disabled:opacity-60 ${
+                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-muted border text-base sm:text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all disabled:opacity-60 ${
                       fieldErrors.expertDomaine
                         ? "border-red-400/55 focus:border-red-400 focus:ring-2 focus:ring-red-500/25"
-                        : "border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
+                        : "border-border focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
                     }`}
                   />
                   <FieldError
@@ -908,7 +908,7 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="expert-experience"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     Expérience (années) <span className="text-red-400/90">*</span>
                   </label>
@@ -928,10 +928,10 @@ export default function InscriptionPage() {
                     aria-describedby={
                       fieldErrors.experienceAnnees ? "err-expert-exp" : undefined
                     }
-                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-white/5 border text-base sm:text-sm text-white placeholder-gray-500 outline-none transition-all disabled:opacity-60 ${
+                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-muted border text-base sm:text-sm text-foreground placeholder:text-muted-foreground outline-none transition-all disabled:opacity-60 ${
                       fieldErrors.experienceAnnees
                         ? "border-red-400/55 focus:border-red-400 focus:ring-2 focus:ring-red-500/25"
-                        : "border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
+                        : "border-border focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
                     }`}
                   />
                   <FieldError id="err-expert-exp" message={fieldErrors.experienceAnnees} />
@@ -940,7 +940,7 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="expert-niveau"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     Niveau d’études <span className="text-red-400/90">*</span>
                   </label>
@@ -954,10 +954,10 @@ export default function InscriptionPage() {
                       clearField("expertNiveauEtudes");
                     }}
                     disabled={loading}
-                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-white/5 border text-base sm:text-sm text-white outline-none transition-all disabled:opacity-60 ${
+                    className={`w-full min-h-[48px] px-4 py-3 rounded-xl bg-muted border text-base sm:text-sm text-foreground outline-none transition-all disabled:opacity-60 ${
                       fieldErrors.expertNiveauEtudes
                         ? "border-red-400/55 focus:border-red-400 focus:ring-2 focus:ring-red-500/25"
-                        : "border-white/20 focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
+                        : "border-border focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20"
                     }`}
                   >
                     <option value="bac_plus_3" className="bg-gray-900">
@@ -982,9 +982,9 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="expert-linkedin"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
-                    LinkedIn <span className="text-gray-500 text-xs font-normal">(optionnel)</span>
+                    LinkedIn <span className="text-muted-foreground text-xs font-normal">(optionnel)</span>
                   </label>
                   <input
                     id="expert-linkedin"
@@ -994,14 +994,14 @@ export default function InscriptionPage() {
                     onChange={(e) => setExpertLinkedin(e.target.value)}
                     placeholder="https://www.linkedin.com/in/..."
                     disabled={loading}
-                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-white/5 border border-white/20 text-base sm:text-sm text-white placeholder-gray-500 outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-60"
+                    className="w-full min-h-[48px] px-4 py-3 rounded-xl bg-muted border border-border text-base sm:text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all disabled:opacity-60"
                   />
                 </div>
 
                 <div>
                   <label
                     htmlFor="expert-cv"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     CV (PDF ou DOCX) <span className="text-red-400/90">*</span>
                   </label>
@@ -1010,12 +1010,12 @@ export default function InscriptionPage() {
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border cursor-pointer transition-colors ${
                         fieldErrors.expertCv
                           ? "border-red-400/55 bg-red-500/10"
-                          : "border-white/20 bg-white/5 hover:bg-white/10"
+                          : "border-border bg-muted hover:bg-muted"
                       }`}
                       htmlFor="expert-cv"
                     >
                       <Upload className="w-4 h-4 text-amber-300" />
-                      <span className="text-sm text-gray-200 truncate">
+                      <span className="text-sm text-body-secondary truncate">
                         {expertCv ? expertCv.name : "Choisir un fichier"}
                       </span>
                     </label>
@@ -1033,7 +1033,7 @@ export default function InscriptionPage() {
                     />
                   </div>
                   <FieldError id="err-expert-cv" message={fieldErrors.expertCv} />
-                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                     Taille max côté serveur : 5 Mo.
                   </p>
                 </div>
@@ -1041,7 +1041,7 @@ export default function InscriptionPage() {
             )}
 
             {isLivreur && (
-              <div className="space-y-4 sm:space-y-5 rounded-2xl border border-white/15 bg-white/5 p-4 sm:p-5">
+              <div className="space-y-4 sm:space-y-5 rounded-2xl border border-border bg-muted p-4 sm:p-5">
                 <p className="text-sm font-semibold text-amber-200/90">
                   Profil livreur
                 </p>
@@ -1049,7 +1049,7 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="livreur-transport"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     Moyen de transport <span className="text-red-400/90">*</span>
                   </label>
@@ -1073,16 +1073,16 @@ export default function InscriptionPage() {
                         hasLeftIcon: true,
                       })}
                     >
-                      <option value="velo" className="bg-gray-900 text-white">
+                      <option value="velo" className="bg-gray-900 text-foreground">
                         Vélo
                       </option>
-                      <option value="moto" className="bg-gray-900 text-white">
+                      <option value="moto" className="bg-gray-900 text-foreground">
                         Moto
                       </option>
-                      <option value="voiture" className="bg-gray-900 text-white">
+                      <option value="voiture" className="bg-gray-900 text-foreground">
                         Voiture
                       </option>
-                      <option value="camionnette" className="bg-gray-900 text-white">
+                      <option value="camionnette" className="bg-gray-900 text-foreground">
                         Camionnette
                       </option>
                     </select>
@@ -1094,7 +1094,7 @@ export default function InscriptionPage() {
                 </div>
 
                 <fieldset className="space-y-3">
-                  <legend className="text-sm font-medium text-gray-300 mb-2 block">
+                  <legend className="text-sm font-medium text-body-secondary mb-2 block">
                     Zones de livraison <span className="text-red-400/90">*</span>
                   </legend>
                   {fieldErrors.livreurZones ? (
@@ -1107,7 +1107,7 @@ export default function InscriptionPage() {
                     </p>
                   ) : null}
                   <div className="space-y-3">
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={livreurZoneTunisie}
@@ -1121,7 +1121,7 @@ export default function InscriptionPage() {
                       <span>Toute la Tunisie</span>
                     </label>
 
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={livreurZoneVillesTunisie}
@@ -1160,10 +1160,10 @@ export default function InscriptionPage() {
                                 ? "err-livreur-villes"
                                 : undefined
                             }
-                            className={`w-full min-h-[44px] pl-11 pr-4 py-2.5 rounded-xl bg-white/5 border text-sm text-white placeholder-gray-500 outline-none ${
+                            className={`w-full min-h-[44px] pl-11 pr-4 py-2.5 rounded-xl bg-muted border text-sm text-foreground placeholder:text-muted-foreground outline-none ${
                               fieldErrors.livreurVillesTunisie
                                 ? "border-red-400/55"
-                                : "border-white/20"
+                                : "border-border"
                             }`}
                           />
                         </div>
@@ -1174,7 +1174,7 @@ export default function InscriptionPage() {
                       </div>
                     )}
 
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={livreurZoneRegion}
@@ -1206,10 +1206,10 @@ export default function InscriptionPage() {
                           aria-describedby={
                             fieldErrors.livreurRegion ? "err-livreur-region" : undefined
                           }
-                          className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-white/5 border text-sm text-white placeholder-gray-500 outline-none ${
+                          className={`w-full min-h-[44px] px-4 py-2.5 rounded-xl bg-muted border text-sm text-foreground placeholder:text-muted-foreground outline-none ${
                             fieldErrors.livreurRegion
                               ? "border-red-400/55"
-                              : "border-white/20"
+                              : "border-border"
                           }`}
                         />
                         <FieldError
@@ -1219,7 +1219,7 @@ export default function InscriptionPage() {
                       </div>
                     )}
                   </div>
-                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                     Séparez les villes par des virgules.
                   </p>
                 </fieldset>
@@ -1227,7 +1227,7 @@ export default function InscriptionPage() {
                 <div>
                   <label
                     htmlFor="livreur-cin"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    className="block text-sm font-medium text-body-secondary mb-2"
                   >
                     CIN / Permis de conduire{" "}
                     <span className="text-red-400/90">*</span>
@@ -1237,12 +1237,12 @@ export default function InscriptionPage() {
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border cursor-pointer transition-colors ${
                         fieldErrors.livreurCin
                           ? "border-red-400/55 bg-red-500/10"
-                          : "border-white/20 bg-white/5 hover:bg-white/10"
+                          : "border-border bg-muted hover:bg-muted"
                       }`}
                       htmlFor="livreur-cin"
                     >
                       <Upload className="w-4 h-4 text-amber-300" />
-                      <span className="text-sm text-gray-200 truncate">
+                      <span className="text-sm text-body-secondary truncate">
                         {livreurCinPermis ? livreurCinPermis.name : "Choisir un fichier"}
                       </span>
                     </label>
@@ -1261,7 +1261,7 @@ export default function InscriptionPage() {
                   </div>
                   <FieldError id="err-livreur-cin" message={fieldErrors.livreurCin} />
                   {livreurCinPreviewUrl && (
-                    <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3">
+                    <div className="mt-3 rounded-2xl border border-border bg-muted p-3">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={livreurCinPreviewUrl}
@@ -1271,17 +1271,17 @@ export default function InscriptionPage() {
                     </div>
                   )}
                   {!livreurCinPreviewUrl && livreurCinPermis?.type === "application/pdf" ? (
-                    <p className="mt-2 text-xs text-gray-500">
+                    <p className="mt-2 text-xs text-muted-foreground">
                       PDF sélectionné : {livreurCinPermis.name}
                     </p>
                   ) : null}
-                  <p className="mt-2 text-xs text-gray-500 leading-relaxed">
+                  <p className="mt-2 text-xs text-muted-foreground leading-relaxed">
                     Formats : JPG, PNG, PDF. Taille max côté serveur : 3 Mo.
                   </p>
                 </div>
 
                 <fieldset className="space-y-3">
-                  <legend className="text-sm font-medium text-gray-300 mb-2 block">
+                  <legend className="text-sm font-medium text-body-secondary mb-2 block">
                     Disponibilité <span className="text-red-400/90">*</span>
                   </legend>
                   <FieldError
@@ -1289,7 +1289,7 @@ export default function InscriptionPage() {
                     message={fieldErrors.livreurDisponibilites}
                   />
                   <div className="space-y-3">
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={livreurDispTempsPlein}
@@ -1302,7 +1302,7 @@ export default function InscriptionPage() {
                       />
                       <span>Temps plein</span>
                     </label>
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={livreurDispTempsPartiel}
@@ -1315,7 +1315,7 @@ export default function InscriptionPage() {
                       />
                       <span>Temps partiel</span>
                     </label>
-                    <label className="flex items-start gap-3 text-sm text-gray-200 cursor-pointer">
+                    <label className="flex items-start gap-3 text-sm text-body-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={livreurDispWeekend}
@@ -1336,10 +1336,10 @@ export default function InscriptionPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-body-secondary mb-2"
               >
                 Mot de passe <span className="text-red-400/90">*</span>
-                <span className="text-gray-500 text-xs font-normal block sm:inline sm:ml-1">
+                <span className="text-muted-foreground text-xs font-normal block sm:inline sm:ml-1">
                   (6 caractères min.)
                 </span>
               </label>
@@ -1377,7 +1377,7 @@ export default function InscriptionPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="block text-sm font-medium text-body-secondary mb-2"
               >
                 Confirmer le mot de passe <span className="text-red-400/90">*</span>
               </label>
@@ -1417,7 +1417,7 @@ export default function InscriptionPage() {
             <button
               type="submit"
               disabled={loading || isAnalyzingCV}
-              className="w-full min-h-[52px] py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-bold text-base shadow-xl shadow-amber-500/30 hover:shadow-amber-500/50 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 touch-manipulation"
+              className="w-full min-h-[52px] py-3.5 rounded-xl bmp-btn-primary font-bold text-base transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 touch-manipulation"
             >
               {isAnalyzingCV ? (
                 <>
@@ -1435,7 +1435,7 @@ export default function InscriptionPage() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-gray-400 text-sm">
+          <p className="mt-8 text-center text-muted-foreground text-sm">
             Déjà un compte ?{" "}
             <Link
               href="/login"
@@ -1446,7 +1446,7 @@ export default function InscriptionPage() {
           </p>
         </div>
 
-        <p className="text-center text-gray-500 text-sm mt-6">
+        <p className="text-center text-muted-foreground text-sm mt-6">
           <Link href="/" className="hover:text-amber-400 transition-colors">
             ← Retour à l&apos;accueil
           </Link>

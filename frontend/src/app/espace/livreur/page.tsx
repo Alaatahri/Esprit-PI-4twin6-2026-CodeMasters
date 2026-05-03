@@ -25,7 +25,7 @@ export default function EspaceLivreurPage() {
 
   if (!bootstrapped || !user) {
     return (
-      <div className="min-h-[50vh] flex items-center justify-center text-gray-400">
+      <div className="min-h-[50vh] flex items-center justify-center text-muted-foreground">
         Chargement…
       </div>
     );
@@ -33,8 +33,8 @@ export default function EspaceLivreurPage() {
 
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4">
-      <div className="w-full max-w-xl rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-10 text-center">
-        <p className="text-lg sm:text-xl font-semibold text-white">
+      <div className="w-full max-w-xl rounded-3xl border border-border bg-muted backdrop-blur-xl p-10 text-center">
+        <p className="text-lg sm:text-xl font-semibold text-foreground">
           Espace livreur en cours de construction 🚧
         </p>
       </div>

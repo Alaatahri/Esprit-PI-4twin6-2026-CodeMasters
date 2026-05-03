@@ -80,7 +80,7 @@ export function SuiviTimeline({
   };
 
   return (
-    <div className={`rounded-xl border border-white/10 bg-black/25 ${className}`}>
+    <div className={`rounded-xl border border-white/10 bg-muted dark:bg-black/25 ${className}`}>
       <button
         type="button"
         onClick={toggle}
@@ -116,7 +116,7 @@ export function SuiviTimeline({
                 return (
                   <li
                     key={s._id}
-                    className="rounded-lg border border-white/10 bg-black/35 px-2.5 py-2 text-[11px] space-y-1"
+                    className="rounded-lg border border-white/10 bg-muted dark:bg-black/35 px-2.5 py-2 text-[11px] space-y-1"
                   >
                     <div className="flex items-center justify-between gap-2 text-gray-300">
                       <span>

@@ -9,6 +9,7 @@ import { formatApiError } from "@/lib/api-error";
 import { getApiBaseUrl } from "@/lib/api-base";
 import { FieldError, fieldInputClass } from "@/lib/form-ui";
 import { validateEmail, validateLoginPassword } from "@/lib/validators";
+import { cn } from "@/lib/utils";
 
 const API_URL = getApiBaseUrl();
 
@@ -44,9 +45,9 @@ export default function LoginPage() {
               ? "/espace/artisan"
               : r === "livreur"
                 ? "/espace/livreur"
-              : r === "admin"
-                ? "/espace/admin"
-                : "/espace";
+                : r === "admin"
+                  ? "/espace/admin"
+                  : "/espace";
       router.replace(target);
     }
   }, [router]);
@@ -120,9 +121,9 @@ export default function LoginPage() {
               ? "/espace/artisan"
               : r === "livreur"
                 ? "/espace/livreur"
-              : r === "admin"
-                ? "/espace/admin"
-                : "/espace";
+                : r === "admin"
+                  ? "/espace/admin"
+                  : "/espace";
       router.push(target);
     } catch (err: unknown) {
       setError(
@@ -133,44 +134,45 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white flex items-center justify-center px-4 py-10">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-foreground">
       <div className="w-full max-w-md sm:max-w-lg">
         <Link
-          href="/"
-          className="flex items-center justify-center gap-3 mb-8 sm:mb-10 group"
+          href="/espace"
+          className="group mb-8 flex items-center justify-center gap-3 sm:mb-10"
         >
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:shadow-amber-500/50 transition-shadow shrink-0">
-            <Building2 className="w-7 h-7 text-gray-900" />
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bmp-icon-gradient transition-shadow group-hover:shadow-amber-500/40">
+            <Building2 className="h-7 w-7 text-gray-900" />
           </div>
-          <div className="text-left min-w-0">
-            <span className="text-2xl font-bold bg-gradient-to-r from-amber-300 via-white to-amber-100 bg-clip-text text-transparent">
+          <div className="min-w-0 text-left">
+            <span className="bg-gradient-to-r from-brand via-brand-muted to-foreground bg-clip-text text-2xl font-bold text-transparent">
               BMP.tn
             </span>
-            <div className="text-xs text-blue-300/70 font-light tracking-widest mt-0.5">
+            <div className="mt-0.5 text-xs font-light tracking-widest text-muted-foreground">
               CONNEXION
             </div>
           </div>
         </Link>
 
-        <div className="backdrop-blur-2xl bg-white/10 rounded-3xl p-6 sm:p-8 border border-white/20 shadow-2xl">
-          <h1 className="text-xl sm:text-2xl font-bold text-white mb-2 text-center">
+        <div className="rounded-3xl border border-border bg-card p-6 shadow-bmp-md backdrop-blur-sm sm:p-8">
+          <h1 className="mb-2 text-center text-xl font-bold text-foreground sm:text-2xl">
             Connexion
           </h1>
-          <p className="text-gray-400 text-center mb-6 sm:mb-8 text-sm">
+          <p className="mb-6 text-center text-sm text-muted-foreground sm:mb-8">
             Accédez à votre tableau de bord
           </p>
 
           <form noValidate onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             {error && (
               <div
-                className={
+                className={cn(
+                  "flex items-start gap-3 rounded-xl border p-4",
                   emailVerifyHint
-                    ? "flex items-start gap-3 p-4 rounded-xl bg-amber-500/15 border border-[#F5A623]/45 text-amber-100"
-                    : "flex items-start gap-3 p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-200"
-                }
+                    ? "border-brand/40 bg-brand/10 text-foreground dark:text-amber-100"
+                    : "border-destructive/35 bg-destructive/10 text-destructive dark:text-red-200",
+                )}
                 role="alert"
               >
-                <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
                 <span className="text-sm leading-relaxed">{error}</span>
               </div>
             )}
@@ -178,13 +180,13 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="mb-2 block text-sm font-medium text-body-secondary"
               >
-                E-mail <span className="text-red-400/90">*</span>
+                E-mail <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <Mail
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400/70 pointer-events-none"
+                  className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand/70"
                   aria-hidden
                 />
                 <input
@@ -214,13 +216,13 @@ export default function LoginPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-300 mb-2"
+                className="mb-2 block text-sm font-medium text-body-secondary"
               >
-                Mot de passe <span className="text-red-400/90">*</span>
+                Mot de passe <span className="text-destructive">*</span>
               </label>
               <div className="relative">
                 <Lock
-                  className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-400/70 pointer-events-none"
+                  className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand/70"
                   aria-hidden
                 />
                 <input
@@ -246,22 +248,24 @@ export default function LoginPage() {
                 />
               </div>
               <FieldError id="err-login-password" message={fieldErrors.password} />
-              <div style={{ textAlign: 'right', marginTop: '6px' }}>
-                <a href="/forgot-password"
-                  style={{ color: '#F5A623', fontSize: '13px', textDecoration: 'none' }}>
+              <div className="mt-1.5 text-right">
+                <Link
+                  href="/forgot-password"
+                  className="text-[13px] font-medium text-brand hover:text-brand-muted hover:underline"
+                >
                   Mot de passe oublié ?
-                </a>
+                </Link>
               </div>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full min-h-[52px] py-3.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-bold text-base shadow-xl shadow-amber-500/30 hover:shadow-amber-500/50 transition-all disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 touch-manipulation"
+              className="flex min-h-[52px] w-full touch-manipulation items-center justify-center gap-2 rounded-xl bmp-btn-primary py-3.5 text-base font-bold text-gray-900 transition disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" />
                   Connexion…
                 </>
               ) : (
@@ -270,18 +274,18 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-8 text-center text-gray-400 text-sm">
+          <p className="mt-8 text-center text-sm text-muted-foreground">
             Pas encore de compte ?{" "}
             <Link
               href="/inscription"
-              className="text-amber-400 hover:text-amber-300 font-medium transition-colors"
+              className="font-medium text-brand transition-colors hover:text-brand-muted hover:underline"
             >
               S&apos;inscrire
             </Link>
           </p>
 
-          <div className="mt-6 pt-6 border-t border-white/10">
-            <p className="text-xs text-gray-500 text-center mb-3">
+          <div className="mt-6 border-t border-border pt-6">
+            <p className="mb-3 text-center text-xs text-muted-foreground">
               Comptes de test (dev)
             </p>
             <div className="flex flex-wrap justify-center gap-2">
@@ -299,7 +303,7 @@ export default function LoginPage() {
                     setFieldErrors({});
                     setError("");
                   }}
-                  className="px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-amber-400 hover:border-amber-500/30 text-xs transition-colors"
+                  className="rounded-lg border border-border bg-muted px-3 py-1.5 text-xs text-body-secondary transition-colors hover:border-brand/40 hover:text-brand"
                 >
                   {c.label}
                 </button>
@@ -308,8 +312,8 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <p className="text-center text-gray-500 text-sm mt-6">
-          <Link href="/" className="hover:text-amber-400 transition-colors">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          <Link href="/espace" className="hover:text-brand hover:underline">
             ← Retour à l&apos;accueil
           </Link>
         </p>

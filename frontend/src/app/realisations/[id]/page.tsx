@@ -125,7 +125,7 @@ export default function RealisationDetailPage() {
 
   if (state === "loading") {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-gray-400">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4 text-muted-foreground">
         <div className="relative">
           <div className="absolute inset-0 rounded-full bg-amber-500/20 blur-xl" />
           <Loader2 className="relative h-11 w-11 animate-spin text-amber-400/90" />
@@ -140,7 +140,7 @@ export default function RealisationDetailPage() {
       <div className="mx-auto max-w-lg rounded-3xl border border-amber-500/25 bg-gradient-to-b from-amber-950/40 to-gray-950/80 px-8 py-12 text-center space-y-5 shadow-2xl shadow-black/40">
         <p className="text-lg font-semibold text-white">Réalisation introuvable</p>
         {err && (
-          <p className="text-xs text-gray-500 font-mono break-words rounded-lg bg-black/40 px-3 py-2">
+          <p className="text-xs text-muted-foreground font-mono break-words rounded-lg bg-muted dark:bg-black/40 px-3 py-2">
             {err}
           </p>
         )}
@@ -181,7 +181,7 @@ export default function RealisationDetailPage() {
         >
           <Link
             href="/espace"
-            className="group inline-flex items-center gap-2 text-sm text-gray-500 hover:text-amber-200 transition-colors"
+            className="group inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-amber-200 transition-colors"
           >
             <span className="rounded-lg bg-white/5 p-1.5 ring-1 ring-white/10 group-hover:ring-amber-500/30 transition-all">
               <ArrowLeft className="w-4 h-4" />
@@ -202,6 +202,7 @@ export default function RealisationDetailPage() {
                 src={hero}
                 alt=""
                 fill
+                unoptimized
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 1024px"
                 priority
@@ -247,7 +248,7 @@ export default function RealisationDetailPage() {
             initial={{ opacity: 0, y: 6 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08 }}
-            className="text-base text-gray-300 leading-relaxed max-w-3xl border-l-2 border-amber-500/40 pl-5"
+            className="text-base text-body-secondary leading-relaxed max-w-3xl border-l-2 border-amber-500/40 pl-5"
           >
             {project.description}
           </motion.p>
@@ -257,11 +258,11 @@ export default function RealisationDetailPage() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.12 }}
-          className="flex flex-wrap gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 sm:p-5 backdrop-blur-sm"
+          className="flex flex-wrap gap-3 rounded-2xl border border-white/10 bg-card p-4 sm:p-5 backdrop-blur-sm"
         >
           {typeof project.clientRating === "number" && (
-            <div className="flex flex-1 min-w-[200px] items-center gap-3 rounded-xl bg-black/25 px-4 py-3 ring-1 ring-white/5">
-              <span className="text-xs font-medium uppercase tracking-wide text-gray-500">
+            <div className="flex flex-1 min-w-[200px] items-center gap-3 rounded-xl bg-muted dark:bg-black/25 px-4 py-3 ring-1 ring-white/5">
+              <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
                 Avis client
               </span>
               <Stars value={project.clientRating} />
@@ -281,7 +282,7 @@ export default function RealisationDetailPage() {
             )}
           </div>
           {project.updatedAt && (
-            <span className="ml-auto inline-flex items-center gap-2 text-xs text-gray-500 self-center">
+            <span className="ml-auto inline-flex items-center gap-2 text-xs text-muted-foreground self-center">
               <Clock className="w-4 h-4 text-gray-600" />
               {new Date(project.updatedAt).toLocaleDateString("fr-FR", {
                 day: "numeric",
@@ -300,11 +301,11 @@ export default function RealisationDetailPage() {
                 <h2 className="text-lg sm:text-xl font-bold text-white">
                   Avis et retours
                 </h2>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-gray-400">
+                <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs text-muted-foreground">
                   {reviews.length}
                 </span>
               </div>
-              <p className="text-sm text-gray-500 max-w-xl">
+              <p className="text-sm text-muted-foreground max-w-xl">
                 Client, équipes BMP.tn et retours de visiteurs sur cette
                 réalisation.
               </p>
@@ -324,7 +325,7 @@ export default function RealisationDetailPage() {
                       <p className="text-sm font-semibold text-white">
                         {r.author}
                       </p>
-                      <p className="text-[11px] uppercase tracking-wider text-gray-500 mt-0.5">
+                      <p className="text-[11px] uppercase tracking-wider text-muted-foreground mt-0.5">
                         {reviewRoleLabel(r.role)}
                       </p>
                     </div>
@@ -332,7 +333,7 @@ export default function RealisationDetailPage() {
                       <Stars value={r.rating} />
                     )}
                   </div>
-                  <p className="text-sm text-gray-200 leading-relaxed">
+                  <p className="text-sm text-body-secondary leading-relaxed">
                     &ldquo;{r.text}&rdquo;
                   </p>
                 </motion.article>
@@ -349,7 +350,7 @@ export default function RealisationDetailPage() {
                   <Camera className="w-5 h-5 text-sky-400/90" />
                   Sur le chantier
                 </h2>
-                <p className="text-sm text-gray-500 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Photos du journal de suivi (avancement, contrôles, livraison).
                 </p>
               </div>
@@ -366,6 +367,7 @@ export default function RealisationDetailPage() {
                     src={url}
                     alt={`Chantier — photo ${i + 1}`}
                     fill
+                    unoptimized
                     className="object-cover transition duration-300 group-hover:scale-[1.03]"
                     sizes="320px"
                   />
@@ -388,7 +390,7 @@ export default function RealisationDetailPage() {
                   <ArrowLeftRight className="w-5 h-5 text-amber-400/80" />
                   Avant / après
                 </h2>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-muted-foreground">
                   Comparez les photos jumelées — cliquez pour agrandir.
                 </p>
               </div>
@@ -402,7 +404,7 @@ export default function RealisationDetailPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-60px" }}
                   transition={{ duration: 0.4, delay: i * 0.05 }}
-                  className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-0 md:rounded-2xl md:overflow-hidden md:border md:border-white/10 md:bg-black/20"
+                  className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-0 md:rounded-2xl md:overflow-hidden md:border md:border-white/10 md:bg-muted dark:bg-black/20"
                 >
                   <figure className="group relative aspect-[4/3] overflow-hidden rounded-2xl md:rounded-none border border-white/10 md:border-0">
                     <button
@@ -415,6 +417,7 @@ export default function RealisationDetailPage() {
                       src={avant[i]!}
                       alt={`Avant travaux — vue ${i + 1}`}
                       fill
+                      unoptimized
                       className="object-cover transition duration-500 group-hover:scale-[1.02]"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
@@ -437,6 +440,7 @@ export default function RealisationDetailPage() {
                       src={apres[i]!}
                       alt={`Après travaux — vue ${i + 1}`}
                       fill
+                      unoptimized
                       className="object-cover transition duration-500 group-hover:scale-[1.02]"
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
@@ -473,6 +477,7 @@ export default function RealisationDetailPage() {
                         src={url}
                         alt={`Avant ${pairCount + i + 1}`}
                         fill
+                        unoptimized
                         className="object-cover transition group-hover:scale-105"
                         sizes="25vw"
                       />
@@ -498,6 +503,7 @@ export default function RealisationDetailPage() {
                         src={url}
                         alt={`Après ${pairCount + i + 1}`}
                         fill
+                        unoptimized
                         className="object-cover transition group-hover:scale-105"
                         sizes="25vw"
                       />
@@ -510,7 +516,7 @@ export default function RealisationDetailPage() {
         )}
 
         {pairCount === 0 && avant.length === 0 && apres.length === 0 && (
-          <p className="text-center text-sm text-gray-500 py-8">
+          <p className="text-center text-sm text-muted-foreground py-8">
             Aucune photo pour cette fiche pour le moment.
           </p>
         )}
@@ -534,6 +540,7 @@ export default function RealisationDetailPage() {
                         src={url}
                         alt={`Avant ${i + 1}`}
                         fill
+                        unoptimized
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
@@ -559,6 +566,7 @@ export default function RealisationDetailPage() {
                         src={url}
                         alt={`Après ${i + 1}`}
                         fill
+                        unoptimized
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
@@ -611,12 +619,13 @@ export default function RealisationDetailPage() {
                   src={lightbox}
                   alt=""
                   fill
+                  unoptimized
                   className="object-contain"
                   sizes="100vw"
                   priority
                 />
               </div>
-              <p className="mt-3 text-center text-xs text-gray-500">
+              <p className="mt-3 text-center text-xs text-muted-foreground">
                 Échap ou clic en dehors pour fermer
               </p>
             </motion.div>

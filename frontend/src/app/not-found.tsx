@@ -28,18 +28,18 @@ export default function NotFound() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white overflow-hidden">
+    <div className="min-h-screen bg-background text-foreground overflow-hidden">
       {/* Effets de fond */}
       <div className="fixed inset-0 z-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-950/90 via-blue-950/40 to-gray-950/90"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-muted/90 via-background to-muted dark:from-gray-950/90 dark:via-blue-950/40 dark:to-gray-950/90" />
         
         {/* Grille discrète */}
         <div className="absolute inset-0 opacity-10">
           <div 
             className="absolute inset-0" 
             style={{
-              backgroundImage: `linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
-                                linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px)`,
+              backgroundImage: `linear-gradient(to right, var(--border) 1px, transparent 1px),
+                                linear-gradient(to bottom, var(--border) 1px, transparent 1px)`,
               backgroundSize: '50px 50px'
             }}
           />
@@ -104,7 +104,7 @@ export default function NotFound() {
               <div className="w-32 h-32 rounded-full bg-gradient-to-br from-red-500/20 to-amber-500/20 border border-red-500/30 flex items-center justify-center animate-pulse">
                 <AlertTriangle className="w-16 h-16 text-red-400" />
               </div>
-              <div className="absolute -top-2 -right-2 w-12 h-12 rounded-full bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/30">
+              <div className="absolute -top-2 -right-2 w-12 h-12 rounded-full bmp-icon-gradient flex items-center justify-center">
                 <span className="text-gray-900 font-bold text-xl">404</span>
               </div>
             </div>
@@ -127,7 +127,7 @@ export default function NotFound() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-xl lg:text-2xl text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed"
+            className="text-xl lg:text-2xl text-body-secondary mb-8 max-w-2xl mx-auto leading-relaxed"
           >
             Oups ! Il semble que la page que vous cherchez soit en{" "}
             <span className="text-amber-300 font-semibold">construction</span> ou ait été{" "}
@@ -139,17 +139,17 @@ export default function NotFound() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="backdrop-blur-2xl bg-white/10 rounded-3xl p-6 sm:p-8 border border-white/20 mb-12 max-w-2xl mx-auto"
+            className="backdrop-blur-2xl bg-muted rounded-3xl p-6 sm:p-8 border border-border mb-12 max-w-2xl mx-auto"
           >
             <div className="flex items-center justify-center gap-4 mb-4">
               <Construction className="w-8 h-8 text-amber-400" />
               <span className="text-amber-300 font-medium text-lg">En chantier digital</span>
             </div>
-            <p className="text-gray-300 mb-6">
+            <p className="text-body-secondary mb-6">
               Notre équipe travaille dur pour construire la plateforme digitale la plus complète pour la construction. 
               Cette section est peut-être encore en développement ou a été réorganisée.
             </p>
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-400">
+            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
               <Globe className="w-4 h-4" />
               <span>Code d&apos;erreur : 404 - Resource Not Found</span>
             </div>
@@ -166,7 +166,7 @@ export default function NotFound() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-bold shadow-2xl shadow-amber-500/50 hover:shadow-amber-500/70 transition-all duration-300 flex items-center justify-center gap-3 group"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl bmp-btn-primary font-bold transition-all duration-300 flex items-center justify-center gap-3 group"
               >
                 <Home className="w-5 h-5" />
                 <span>Retour à l&apos;accueil</span>
@@ -178,7 +178,7 @@ export default function NotFound() {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto px-8 py-4 rounded-2xl backdrop-blur-2xl bg-white/10 border border-amber-500/30 text-white font-semibold hover:border-amber-500/50 hover:bg-white/20 transition-all duration-300 flex items-center justify-center gap-3 group"
+                className="w-full sm:w-auto px-8 py-4 rounded-2xl backdrop-blur-2xl bg-muted border border-amber-500/30 text-foreground font-semibold hover:border-amber-500/50 hover:bg-accent transition-all duration-300 flex items-center justify-center gap-3 group"
               >
                 <Search className="w-5 h-5" />
                 <span>Demander de l&apos;aide</span>
@@ -193,7 +193,7 @@ export default function NotFound() {
             transition={{ delay: 0.6 }}
             className="max-w-3xl mx-auto"
           >
-            <h3 className="text-xl font-bold text-white mb-6 flex items-center justify-center gap-3">
+            <h3 className="text-xl font-bold text-foreground mb-6 flex items-center justify-center gap-3">
               <div className="w-2 h-2 bg-amber-400 rounded-full animate-pulse"></div>
               <span>Solutions suggérées :</span>
             </h3>
@@ -233,8 +233,8 @@ export default function NotFound() {
                   whileHover={{ y: -5 }}
                   className={`backdrop-blur-xl ${solution.color} rounded-2xl p-5 border ${solution.border} hover:shadow-lg transition-all duration-300`}
                 >
-                  <h4 className="text-lg font-semibold text-white mb-2">{solution.title}</h4>
-                  <p className="text-gray-300 text-sm">{solution.description}</p>
+                  <h4 className="text-lg font-semibold text-foreground mb-2">{solution.title}</h4>
+                  <p className="text-body-secondary text-sm">{solution.description}</p>
                 </motion.div>
               ))}
             </div>
@@ -245,10 +245,10 @@ export default function NotFound() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
-            className="mt-16 pt-8 border-t border-white/10"
+            className="mt-16 pt-8 border-t border-border"
           >
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bmp-icon-gradient flex items-center justify-center">
                 <Construction className="w-6 h-6 text-gray-900" />
               </div>
               <div className="text-left">
@@ -261,12 +261,12 @@ export default function NotFound() {
               </div>
             </div>
             
-            <p className="text-gray-400 text-sm max-w-md mx-auto mb-6">
+            <p className="text-muted-foreground text-sm max-w-md mx-auto mb-6">
               Nous travaillons constamment à améliorer notre plateforme.{" "}
               Merci de votre compréhension pendant que nous bâtissons l&apos;avenir digital de la construction.
             </p>
             
-            <div className="text-gray-500 text-xs">
+            <div className="text-muted-foreground text-xs">
               © 2024 BMP.tn – Erreur 404 • Page non trouvée
             </div>
           </motion.div>

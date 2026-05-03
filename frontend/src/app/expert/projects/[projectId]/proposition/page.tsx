@@ -309,10 +309,10 @@ export default function ExpertProposalPage() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-10 max-w-4xl space-y-6">
         <nav
-          className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-4"
+          className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between border-b border-border pb-4"
           aria-label="Navigation proposition"
         >
           <Link
@@ -322,7 +322,7 @@ export default function ExpertProposalPage() {
             <ArrowLeft className="w-4 h-4" />
             Retour au dossier
           </Link>
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-gray-500">
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
             <Link href="/espace/expert" className="hover:text-amber-400/90">
               Tableau de bord
             </Link>
@@ -339,7 +339,7 @@ export default function ExpertProposalPage() {
           </div>
           <div>
             <h1 className="text-2xl font-bold">Proposition expert</h1>
-            <p className="text-sm text-gray-400">
+            <p className="text-sm text-muted-foreground">
               Générez un brouillon IA (prix, durée, texte structuré), éditez librement, puis validez
               l&apos;envoi au client.
             </p>
@@ -365,13 +365,13 @@ export default function ExpertProposalPage() {
 
             {proposalLocked ? (
               <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100 space-y-2">
-                <p className="font-medium text-white">
+                <p className="font-medium text-foreground">
                   {contractFullySigned
                     ? "Proposition commerciale verrouillée (contrat signé par le client et vous)."
                     : "Le client a accepté votre proposition commerciale. Aucune nouvelle offre n’est possible depuis cet écran."}
                 </p>
                 {acceptedProposal ? (
-                  <p className="text-xs text-gray-300">
+                  <p className="text-xs text-body-secondary">
                     Prix retenu :{" "}
                     <span className="text-amber-200 font-semibold">
                       {Math.round(acceptedProposal.proposedPrice ?? 0).toLocaleString("fr-FR")}{" "}
@@ -382,7 +382,7 @@ export default function ExpertProposalPage() {
                       : null}
                   </p>
                 ) : null}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Poursuivez le dossier depuis le hub projet (contrat, photos, suivi).
                 </p>
               </div>
@@ -390,7 +390,7 @@ export default function ExpertProposalPage() {
 
             {!proposalLocked && counteredProposal ? (
               <div className="rounded-2xl border border-sky-500/30 bg-sky-500/10 px-4 py-3 text-sm text-sky-100 space-y-2">
-                <p className="font-medium text-white">Contre-proposition du client</p>
+                <p className="font-medium text-foreground">Contre-proposition du client</p>
                 {typeof counteredProposal.clientCounterPrice === "number" ? (
                   <p>
                     Prix souhaité :{" "}
@@ -403,11 +403,11 @@ export default function ExpertProposalPage() {
                   </p>
                 ) : null}
                 {counteredProposal.clientCounterMessage ? (
-                  <p className="text-gray-300 whitespace-pre-wrap">
+                  <p className="text-body-secondary whitespace-pre-wrap">
                     {counteredProposal.clientCounterMessage}
                   </p>
                 ) : null}
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   Ajustez l&apos;éditeur ci-dessous puis enregistrez la révision.
                 </p>
               </div>
@@ -416,9 +416,9 @@ export default function ExpertProposalPage() {
             <ExpertProjectDossier project={project} />
 
             {isAssignedExpert && !proposalLocked ? (
-              <section className="rounded-2xl border border-white/10 bg-black/25 p-5 space-y-3">
+              <section className="rounded-2xl border border-border bg-muted dark:bg-black/25 p-5 space-y-3">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="text-sm font-medium text-white inline-flex items-center gap-2">
+                  <p className="text-sm font-medium text-foreground inline-flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-amber-300" />
                     Assistance IA (brouillon)
                   </p>
@@ -432,7 +432,7 @@ export default function ExpertProposalPage() {
                   </button>
                 </div>
                 {aiErr ? <p className="text-xs text-red-300">{aiErr}</p> : null}
-                <p className="text-xs text-gray-500 leading-relaxed">
+                <p className="text-xs text-muted-foreground leading-relaxed">
                   Relisez et modifiez le texte avant envoi — vous restez responsable du contenu final.
                 </p>
               </section>
@@ -451,10 +451,10 @@ export default function ExpertProposalPage() {
             ) : null}
 
             {proposalLocked ? null : (
-            <form noValidate onSubmit={submit} className="rounded-2xl border border-white/10 bg-black/30 p-5 space-y-4">
+            <form noValidate onSubmit={submit} className="rounded-2xl border border-border bg-muted dark:bg-black/30 p-5 space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="prop-price" className="block text-[11px] text-gray-400 mb-1">
+                  <label htmlFor="prop-price" className="block text-[11px] text-muted-foreground mb-1">
                     Prix proposé (TND) <span className="text-red-400/90">*</span>
                   </label>
                   <input
@@ -477,7 +477,7 @@ export default function ExpertProposalPage() {
                   <FieldError id="err-prop-price" message={fieldErrors.price} />
                 </div>
                 <div>
-                  <label htmlFor="prop-days" className="block text-[11px] text-gray-400 mb-1">
+                  <label htmlFor="prop-days" className="block text-[11px] text-muted-foreground mb-1">
                     Durée estimée (jours) <span className="text-red-400/90">*</span>
                   </label>
                   <input
@@ -502,7 +502,7 @@ export default function ExpertProposalPage() {
               </div>
 
               <div>
-                <label className="block text-[11px] text-gray-400 mb-1">
+                <label className="block text-[11px] text-muted-foreground mb-1">
                   Notes techniques (éditeur) <span className="text-red-400/90">*</span>
                 </label>
                 <ProposalRichEditor
@@ -523,7 +523,7 @@ export default function ExpertProposalPage() {
               </div>
 
               <div>
-                <label htmlFor="prop-mat" className="block text-[11px] text-gray-400 mb-1">
+                <label htmlFor="prop-mat" className="block text-[11px] text-muted-foreground mb-1">
                   Suggestions matériaux (optionnel)
                 </label>
                 <textarea
@@ -544,7 +544,7 @@ export default function ExpertProposalPage() {
                     ? "Attribuez-vous le dossier (accepter l’invitation) pour envoyer."
                     : undefined
                 }
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bmp-btn-primary font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 w-full sm:w-auto"
               >
                 {sending ? (
                   <>

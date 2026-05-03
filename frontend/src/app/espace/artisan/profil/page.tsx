@@ -153,14 +153,14 @@ export default function ArtisanProfilPage() {
   if (!loadingUser && !user) {
     return (
       <div className="max-w-2xl mx-auto text-center space-y-6">
-        <h1 className="text-2xl font-bold text-white">Profil artisan</h1>
-        <p className="text-gray-400 text-sm">
+        <h1 className="text-2xl font-bold text-foreground">Profil artisan</h1>
+        <p className="text-muted-foreground text-sm">
           Connectez-vous en tant qu&apos;artisan pour accéder à votre profil,
           vos notes et votre historique.
         </p>
         <button
           onClick={() => router.push("/login")}
-          className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold shadow-lg shadow-amber-500/30"
+          className="px-6 py-3 rounded-xl bmp-btn-primary font-semibold"
         >
           Aller à la connexion
         </button>
@@ -171,12 +171,12 @@ export default function ArtisanProfilPage() {
   if (!loadingUser && user && user.role !== "artisan") {
     return (
       <div className="max-w-2xl mx-auto text-center space-y-4">
-        <h1 className="text-2xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-foreground">
           Espace réservé aux artisans
         </h1>
-        <p className="text-gray-400 text-sm">
+        <p className="text-muted-foreground text-sm">
           Vous êtes connecté en tant que{" "}
-          <span className="font-semibold text-amber-300">{user.role}</span>.
+          <span className="font-semibold text-brand dark:text-amber-300">{user.role}</span>.
         </p>
       </div>
     );
@@ -198,15 +198,15 @@ export default function ArtisanProfilPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/espace/artisan"
-            className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-2 text-sm text-gray-300 hover:text-white hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
+            className="inline-flex items-center gap-2 rounded-xl bg-muted border border-border px-4 py-2 text-sm text-body-secondary hover:text-foreground hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
             title="Retour"
           >
             <ArrowLeft className="w-4 h-4" />
             Retour
           </Link>
           <div>
-            <h1 className="text-xl font-semibold text-white">Mon profil artisan</h1>
-            <p className="text-xs text-gray-400">
+            <h1 className="text-xl font-semibold text-foreground">Mon profil artisan</h1>
+            <p className="text-xs text-muted-foreground">
               Détails, notes et feedbacks des clients.
             </p>
           </div>
@@ -214,7 +214,7 @@ export default function ArtisanProfilPage() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-200">
+        <div className="rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-800 dark:text-red-200">
           {error}
         </div>
       )}
@@ -222,59 +222,59 @@ export default function ArtisanProfilPage() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         {/* Profil */}
         <section className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-7">
+          <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-                <span className="text-xl font-bold text-amber-300">
+                <span className="text-xl font-bold text-brand dark:text-amber-300">
                   {d.nom?.charAt(0).toUpperCase() || "A"}
                 </span>
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-white">{d.nom}</h2>
-                <p className="text-xs text-amber-300/80 uppercase tracking-[0.2em]">
+                <h2 className="text-xl font-semibold text-foreground">{d.nom}</h2>
+                <p className="text-xs uppercase tracking-[0.2em] text-brand dark:text-amber-300/80">
                   artisan
                 </p>
               </div>
             </div>
 
             <div className="mt-5 space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-gray-300">
-                <Mail className="w-4 h-4 text-amber-300" />
-                <span className="text-gray-400">Email:</span>
-                <span className="text-gray-200">{d.email}</span>
+              <div className="flex items-center gap-2 text-body-secondary">
+                <Mail className="h-4 w-4 text-brand dark:text-amber-300" />
+                <span className="text-muted-foreground">Email:</span>
+                <span className="text-body-secondary">{d.email}</span>
               </div>
               {d.telephone && (
-                <div className="flex items-center gap-2 text-gray-300">
-                  <Phone className="w-4 h-4 text-amber-300" />
-                  <span className="text-gray-400">Téléphone:</span>
-                  <span className="text-gray-200">{d.telephone}</span>
+                <div className="flex items-center gap-2 text-body-secondary">
+                  <Phone className="h-4 w-4 text-brand dark:text-amber-300" />
+                  <span className="text-muted-foreground">Téléphone:</span>
+                  <span className="text-body-secondary">{d.telephone}</span>
                 </div>
               )}
               {d.specialite && (
-                <div className="flex items-center gap-2 text-gray-300">
-                  <Briefcase className="w-4 h-4 text-emerald-300" />
-                  <span className="text-gray-400">Spécialité:</span>
-                  <span className="text-gray-200">{d.specialite}</span>
+                <div className="flex items-center gap-2 text-body-secondary">
+                  <Briefcase className="h-4 w-4 text-emerald-800 dark:text-emerald-300" />
+                  <span className="text-muted-foreground">Spécialité:</span>
+                  <span className="text-body-secondary">{d.specialite}</span>
                 </div>
               )}
               {typeof d.experience_annees === "number" && (
-                <div className="flex items-center gap-2 text-gray-300">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-300" />
-                  <span className="text-gray-400">Expérience:</span>
-                  <span className="text-gray-200">
+                <div className="flex items-center gap-2 text-body-secondary">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-800 dark:text-emerald-300" />
+                  <span className="text-muted-foreground">Expérience:</span>
+                  <span className="text-body-secondary">
                     {d.experience_annees} an{d.experience_annees > 1 ? "s" : ""}
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="mt-6 rounded-2xl bg-black/30 border border-white/10 p-4 space-y-2">
-              <div className="flex items-center gap-2 text-amber-300">
+            <div className="mt-6 rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-2">
+              <div className="flex items-center gap-2 text-brand dark:text-amber-300">
                 <MapPin className="w-4 h-4" />
                 <p className="font-medium text-sm">Zones de travail</p>
               </div>
               {zones.length === 0 ? (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-muted-foreground">
                   Aucune zone renseignée.
                 </p>
               ) : (
@@ -282,7 +282,7 @@ export default function ArtisanProfilPage() {
                   {zones.map((label, idx) => (
                     <span
                       key={`${label}-${idx}`}
-                      className="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-3 py-1 text-[11px] text-gray-200"
+                      className="inline-flex items-center rounded-full bg-muted border border-border px-3 py-1 text-[11px] text-body-secondary"
                     >
                       {label}
                     </span>
@@ -293,36 +293,36 @@ export default function ArtisanProfilPage() {
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-2xl bg-black/30 border border-white/10 p-4 space-y-1">
-              <p className="text-xs text-gray-500">Projets terminés</p>
-              <p className="text-2xl font-semibold text-white">{completed.length}</p>
+            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
+              <p className="text-xs text-muted-foreground">Projets terminés</p>
+              <p className="text-2xl font-semibold text-foreground">{completed.length}</p>
             </div>
-            <div className="rounded-2xl bg-black/30 border border-white/10 p-4 space-y-1">
-              <p className="text-xs text-gray-500">Note moyenne</p>
+            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
+              <p className="text-xs text-muted-foreground">Note moyenne</p>
               {avgRating === null ? (
-                <p className="text-sm text-gray-400">—</p>
+                <p className="text-sm text-muted-foreground">—</p>
               ) : (
                 <div className="space-y-1">
-                  <p className="text-2xl font-semibold text-white">
+                  <p className="text-2xl font-semibold text-foreground">
                     {avgRating.toFixed(1)}
                   </p>
                   <Stars value={avgRating} />
                 </div>
               )}
             </div>
-            <div className="rounded-2xl bg-black/30 border border-white/10 p-4 space-y-1">
-              <p className="text-xs text-gray-500">Feedbacks</p>
-              <p className="text-2xl font-semibold text-white">{feedbacks.length}</p>
+            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
+              <p className="text-xs text-muted-foreground">Feedbacks</p>
+              <p className="text-2xl font-semibold text-foreground">{feedbacks.length}</p>
             </div>
           </div>
         </section>
 
         {/* Historique + feedbacks */}
         <section className="space-y-6">
-          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-7">
-            <div className="flex items-center gap-2 mb-4 text-amber-300">
+          <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
+            <div className="mb-4 flex items-center gap-2 text-brand dark:text-amber-300">
               <MessageCircle className="w-5 h-5" />
-              <h2 className="text-lg font-semibold text-white">
+              <h2 className="text-lg font-semibold text-foreground">
                 Avis & feedbacks des clients
               </h2>
             </div>
@@ -332,7 +332,7 @@ export default function ArtisanProfilPage() {
                 <div className="w-8 h-8 rounded-full border-2 border-amber-500/40 border-t-amber-400 animate-spin" />
               </div>
             ) : feedbacks.length === 0 ? (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Aucun feedback pour le moment. Quand un client note un projet
                 terminé, il apparaîtra ici.
               </p>
@@ -341,29 +341,29 @@ export default function ArtisanProfilPage() {
                 {feedbacks.map((f) => (
                   <div
                     key={f.projectId}
-                    className="rounded-2xl border border-white/10 bg-black/30 px-4 py-4 space-y-2"
+                    className="rounded-2xl border border-border bg-muted dark:bg-black/30 px-4 py-4 space-y-2"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-medium text-white line-clamp-1">
+                      <p className="font-medium text-foreground line-clamp-1">
                         {f.titre}
                       </p>
                       {typeof f.artisanRating === "number" ? (
                         <div className="flex items-center gap-2">
                           <Stars value={f.artisanRating} />
-                          <span className="text-[11px] text-gray-400">
+                          <span className="text-[11px] text-muted-foreground">
                             {f.artisanRating}/5
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-gray-500">
+                        <span className="text-[11px] text-muted-foreground">
                           Pas de note
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-300 whitespace-pre-line">
+                    <p className="text-sm text-body-secondary whitespace-pre-line">
                       {f.clientComment}
                     </p>
-                    <p className="text-[11px] text-gray-500">
+                    <p className="text-[11px] text-muted-foreground">
                       {f.updatedAt
                         ? `Mis à jour: ${new Date(f.updatedAt).toLocaleDateString()}`
                         : ""}
@@ -374,10 +374,10 @@ export default function ArtisanProfilPage() {
             )}
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl p-6 sm:p-7">
-            <div className="flex items-center gap-2 mb-4 text-emerald-300">
+          <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
+            <div className="mb-4 flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
               <CheckCircle2 className="w-5 h-5" />
-              <h2 className="text-lg font-semibold text-white">
+              <h2 className="text-lg font-semibold text-foreground">
                 Projets terminés (historique)
               </h2>
             </div>
@@ -387,7 +387,7 @@ export default function ArtisanProfilPage() {
                 <div className="w-8 h-8 rounded-full border-2 border-emerald-500/40 border-t-emerald-300 animate-spin" />
               </div>
             ) : completed.length === 0 ? (
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 Aucun projet terminé associé à votre compte pour l’instant.
               </p>
             ) : (
@@ -398,26 +398,26 @@ export default function ArtisanProfilPage() {
                     className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-4 space-y-2"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-medium text-white line-clamp-1">
+                      <p className="font-medium text-foreground line-clamp-1">
                         {p.titre}
                       </p>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-medium text-emerald-300">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
                         Terminé
                       </span>
                     </div>
-                    <p className="text-xs text-gray-300 line-clamp-2">
+                    <p className="text-xs text-body-secondary line-clamp-2">
                       {p.description}
                     </p>
                     {typeof p.budget_estime === "number" && (
-                      <p className="text-[11px] text-gray-400">
+                      <p className="text-[11px] text-muted-foreground">
                         Budget:{" "}
-                        <span className="text-gray-200">
+                        <span className="text-body-secondary">
                           {p.budget_estime.toLocaleString("fr-FR")} TND
                         </span>
                       </p>
                     )}
                     {typeof p.artisanRating === "number" && (
-                      <div className="flex items-center gap-2 text-[11px] text-gray-400">
+                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
                         <Stars value={p.artisanRating} />
                         <span>Note artisan</span>
                       </div>

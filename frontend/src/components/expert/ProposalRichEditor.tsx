@@ -43,12 +43,12 @@ export function ProposalRichEditor({
 
   if (!editor) {
     return (
-      <div className="rounded-xl border border-white/15 bg-black/40 min-h-[220px] animate-pulse" />
+      <div className="rounded-xl border border-white/15 bg-muted dark:bg-black/40 min-h-[220px] animate-pulse" />
     );
   }
 
   return (
-    <div className="rounded-xl border border-white/15 bg-black/40 overflow-hidden focus-within:ring-2 focus-within:ring-amber-500/30">
+    <div className="rounded-xl border border-white/15 bg-muted dark:bg-black/40 overflow-hidden focus-within:ring-2 focus-within:ring-amber-500/30">
       <EditorContent
         editor={editor}
         className="prose prose-invert prose-sm max-w-none px-3 py-3 min-h-[220px] [&_.ProseMirror]:min-h-[200px] [&_.ProseMirror]:outline-none [&_.ProseMirror]:text-gray-100 [&_.ProseMirror_p]:my-2 [&_.ProseMirror_h2]:text-lg [&_.ProseMirror_h3]:text-base"

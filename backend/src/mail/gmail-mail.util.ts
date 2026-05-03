@@ -24,6 +24,10 @@ export function createGmailSmtpTransporter(): nodemailer.Transporter {
     secure,
     auth: { user: creds.user, pass: creds.pass },
     ...(secure ? {} : { requireTLS: true }),
+    // Évite que l'API paraisse "bloquée" si SMTP est lent (réseau/TLS/DNS).
+    connectionTimeout: 15_000,
+    greetingTimeout: 15_000,
+    socketTimeout: 20_000,
     tls: {
       rejectUnauthorized: process.env.MAIL_TLS_REJECT_UNAUTHORIZED !== 'false',
     },

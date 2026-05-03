@@ -129,7 +129,7 @@ export default function ExpertDemandeDetailPage() {
     data?.project?._id != null ? String(data.project._id) : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-10 max-w-3xl space-y-6">
         <Link
           href="/expert/nouveaux-projets"
@@ -157,21 +157,21 @@ export default function ExpertDemandeDetailPage() {
                 <h1 className="text-2xl font-bold">
                   {data.project?.titre ?? "Demande de matching"}
                 </h1>
-                <p className="text-sm text-gray-400 mt-1">
+                <p className="text-sm text-muted-foreground mt-1">
                   Fiche demande · invitation personnalisée
                 </p>
               </div>
             </div>
 
-            <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 space-y-4">
+            <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
               <h2 className="text-sm font-semibold text-amber-200/90 flex items-center gap-2">
                 <BadgeCheck className="w-4 h-4" />
                 Statut de l&apos;invitation
               </h2>
               <dl className="grid sm:grid-cols-2 gap-3 text-sm">
                 <div>
-                  <dt className="text-gray-500">État</dt>
-                  <dd className="text-white font-medium capitalize">
+                  <dt className="text-muted-foreground">État</dt>
+                  <dd className="text-foreground font-medium capitalize">
                     {(() => {
                       const expired =
                         data.request.status === "pending" &&
@@ -189,13 +189,13 @@ export default function ExpertDemandeDetailPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500">Qui a répondu</dt>
-                  <dd className="text-white font-medium">
+                  <dt className="text-muted-foreground">Qui a répondu</dt>
+                  <dd className="text-foreground font-medium">
                     {data.request.status === "accepted" ||
                     data.request.status === "refused" ? (
                       <>
                         {userName(data.request.expertId)}{" "}
-                        <span className="text-gray-500 font-normal">
+                        <span className="text-muted-foreground font-normal">
                           (expert invité)
                         </span>
                       </>
@@ -205,32 +205,32 @@ export default function ExpertDemandeDetailPage() {
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500">Envoyée le</dt>
-                  <dd className="text-gray-200">{fmtDate(data.request.sentAt)}</dd>
+                  <dt className="text-muted-foreground">Envoyée le</dt>
+                  <dd className="text-body-secondary">{fmtDate(data.request.sentAt)}</dd>
                 </div>
                 <div>
-                  <dt className="text-gray-500">Expire le</dt>
-                  <dd className="text-gray-200">{fmtDate(data.request.expiresAt)}</dd>
+                  <dt className="text-muted-foreground">Expire le</dt>
+                  <dd className="text-body-secondary">{fmtDate(data.request.expiresAt)}</dd>
                 </div>
                 {data.request.respondedAt ? (
                   <div className="sm:col-span-2">
-                    <dt className="text-gray-500">Réponse le</dt>
-                    <dd className="text-gray-200">
+                    <dt className="text-muted-foreground">Réponse le</dt>
+                    <dd className="text-body-secondary">
                       {fmtDate(data.request.respondedAt)}
                     </dd>
                   </div>
                 ) : null}
                 <div>
-                  <dt className="text-gray-500">Score de matching</dt>
-                  <dd className="text-gray-200">
+                  <dt className="text-muted-foreground">Score de matching</dt>
+                  <dd className="text-body-secondary">
                     {typeof data.request.matchScore === "number"
                       ? data.request.matchScore.toFixed(1)
                       : "—"}
                   </dd>
                 </div>
                 <div className="sm:col-span-2">
-                  <dt className="text-gray-500">Compétences attendues</dt>
-                  <dd className="text-gray-200">
+                  <dt className="text-muted-foreground">Compétences attendues</dt>
+                  <dd className="text-body-secondary">
                     {(data.request.requiredCompetences ?? []).join(", ") || "—"}
                   </dd>
                 </div>
@@ -238,10 +238,10 @@ export default function ExpertDemandeDetailPage() {
             </section>
 
             {data.project ? (
-              <section className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 space-y-4">
-                <h2 className="text-sm font-semibold text-white">Projet</h2>
+              <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
+                <h2 className="text-sm font-semibold text-foreground">Projet</h2>
                 {data.project.description ? (
-                  <p className="text-sm text-gray-300 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-sm text-body-secondary leading-relaxed whitespace-pre-wrap">
                     {data.project.description}
                   </p>
                 ) : null}
@@ -249,8 +249,8 @@ export default function ExpertDemandeDetailPage() {
                   <div className="flex gap-2">
                     <MapPin className="w-4 h-4 text-amber-400/80 shrink-0 mt-0.5" />
                     <div>
-                      <dt className="text-gray-500">Lieu</dt>
-                      <dd className="text-gray-200">
+                      <dt className="text-muted-foreground">Lieu</dt>
+                      <dd className="text-body-secondary">
                         {[data.project.ville, data.project.adresse]
                           .filter(Boolean)
                           .join(" · ") || "—"}
@@ -258,16 +258,16 @@ export default function ExpertDemandeDetailPage() {
                     </div>
                   </div>
                   <div>
-                    <dt className="text-gray-500">Catégorie / urgence</dt>
-                    <dd className="text-gray-200">
+                    <dt className="text-muted-foreground">Catégorie / urgence</dt>
+                    <dd className="text-body-secondary">
                       {[data.project.categorie, data.project.urgence]
                         .filter(Boolean)
                         .join(" · ") || "—"}
                     </dd>
                   </div>
                   <div>
-                    <dt className="text-gray-500">Surface / type</dt>
-                    <dd className="text-gray-200">
+                    <dt className="text-muted-foreground">Surface / type</dt>
+                    <dd className="text-body-secondary">
                       {[
                         data.project.surface_m2 != null
                           ? `${data.project.surface_m2} m²`
@@ -281,8 +281,8 @@ export default function ExpertDemandeDetailPage() {
                   <div className="flex gap-2">
                     <Calendar className="w-4 h-4 text-amber-400/80 shrink-0 mt-0.5" />
                     <div>
-                      <dt className="text-gray-500">Budget / dates</dt>
-                      <dd className="text-gray-200">
+                      <dt className="text-muted-foreground">Budget / dates</dt>
+                      <dd className="text-body-secondary">
                         {[
                           data.project.budget_estime != null
                             ? `${data.project.budget_estime} TND`
@@ -299,14 +299,14 @@ export default function ExpertDemandeDetailPage() {
                   <div className="sm:col-span-2 flex gap-2">
                     <User className="w-4 h-4 text-amber-400/80 shrink-0 mt-0.5" />
                     <div>
-                      <dt className="text-gray-500">Client</dt>
-                      <dd className="text-gray-200">
+                      <dt className="text-muted-foreground">Client</dt>
+                      <dd className="text-body-secondary">
                         {userName(
                           data.project.clientId as PopulatedUser | undefined,
                         )}
                         {typeof data.project.clientId === "object" &&
                         data.project.clientId?.email ? (
-                          <span className="text-gray-500">
+                          <span className="text-muted-foreground">
                             {" "}
                             · {data.project.clientId.email}
                           </span>
@@ -317,7 +317,7 @@ export default function ExpertDemandeDetailPage() {
                   {data.project.expertId &&
                   typeof data.project.expertId === "object" ? (
                     <div className="sm:col-span-2">
-                      <dt className="text-gray-500">
+                      <dt className="text-muted-foreground">
                         Expert assigné sur le projet
                       </dt>
                       <dd className="text-emerald-200 font-medium">
@@ -328,13 +328,13 @@ export default function ExpertDemandeDetailPage() {
                 </dl>
               </section>
             ) : (
-              <p className="text-sm text-gray-500">Projet non chargé.</p>
+              <p className="text-sm text-muted-foreground">Projet non chargé.</p>
             )}
 
             {projectId ? (
               <Link
                 href={`/expert/projects/${encodeURIComponent(projectId)}?from=nouveaux`}
-                className="inline-flex rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 px-5 py-2.5 text-sm font-semibold text-gray-900 hover:opacity-95"
+                className="inline-flex rounded-xl bmp-btn-primary px-5 py-2.5 text-sm font-semibold text-gray-900 hover:opacity-95"
               >
                 Ouvrir le dossier
               </Link>

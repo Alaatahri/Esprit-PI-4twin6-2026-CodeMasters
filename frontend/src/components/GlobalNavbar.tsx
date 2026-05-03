@@ -30,6 +30,25 @@ import {
   type BMPUser,
 } from "@/lib/auth";
 import { fetchUnreadCount } from "@/lib/messages-api";
+import { cn } from "@/lib/utils";
+
+function navLinkDesktop(active: boolean) {
+  return cn(
+    "flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all shrink-0 whitespace-nowrap border border-transparent",
+    active
+      ? "bg-brand/15 text-brand border-brand/35 shadow-bmp-xs dark:bg-brand/20 dark:border-brand/45"
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+  );
+}
+
+function navLinkMobile(active: boolean) {
+  return cn(
+    "flex items-center gap-3 px-4 py-3 rounded-xl transition border border-transparent",
+    active
+      ? "bg-brand/15 text-brand border-brand/35 dark:bg-brand/22 dark:border-brand/45"
+      : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+  );
+}
 
 const baseNavItems = [
   { key: "home", href: "/espace", label: "Mon espace", icon: Home },
@@ -174,18 +193,18 @@ export default function GlobalNavbar() {
 
   if (!mounted) {
     return (
-      <header className="sticky top-0 z-50 border-b border-white/5 bg-gray-950/90 backdrop-blur-2xl">
+      <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl shadow-bmp-xs supports-[backdrop-filter]:bg-background/75">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/30">
-                <Building2 className="w-5 h-5 text-gray-900" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bmp-icon-gradient">
+                <Building2 className="h-5 w-5 text-gray-900" />
               </div>
-              <span className="text-lg font-bold bg-gradient-to-r from-amber-300 to-white bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-brand to-brand-muted bg-clip-text text-lg font-bold text-transparent">
                 BMP.tn
               </span>
             </div>
-            <div className="w-10 h-10 rounded-xl border border-white/5 bg-black/30" />
+            <div className="h-10 w-10 rounded-xl border border-border bg-muted" />
           </div>
         </div>
       </header>
@@ -193,18 +212,18 @@ export default function GlobalNavbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/5 bg-gray-950/90 backdrop-blur-2xl">
+    <header className="sticky top-0 z-50 border-b border-border bg-background/90 backdrop-blur-xl shadow-bmp-xs supports-[backdrop-filter]:bg-background/75">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between gap-4">
           <Link href="/espace" className="flex items-center gap-3 shrink-0">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/30">
+            <div className="w-10 h-10 rounded-xl bmp-icon-gradient flex items-center justify-center">
               <Building2 className="w-5 h-5 text-gray-900" />
             </div>
             <div className="hidden sm:block">
-              <span className="text-lg font-bold bg-gradient-to-r from-amber-300 to-white bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-brand via-brand-muted to-foreground bg-clip-text text-lg font-bold text-transparent">
                 BMP.tn
               </span>
-              <div className="text-[10px] text-amber-400/80 font-medium tracking-widest">
+              <div className="text-[10px] font-medium tracking-widest text-muted-foreground">
                 PLATEFORME
               </div>
             </div>
@@ -217,11 +236,7 @@ export default function GlobalNavbar() {
                 <Link
                   key={item.key ?? item.href}
                   href={item.href}
-                  className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all shrink-0 whitespace-nowrap ${
-                    isActive(item.href)
-                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                      : "text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
-                  }`}
+                  className={navLinkDesktop(isActive(item.href))}
                 >
                   <Icon className="w-4 h-4" />
                   {item.label}
@@ -230,7 +245,7 @@ export default function GlobalNavbar() {
             })}
 
             {extraClientItems.length > 0 && (
-              <div className="flex items-center gap-1 ml-2 pl-2 border-l border-white/5 shrink-0">
+              <div className="ml-2 flex shrink-0 items-center gap-1 border-l border-border pl-2">
                 {extraClientItems.map((it) => {
                   const ExtraIcon = it.icon;
                   return (
@@ -238,11 +253,10 @@ export default function GlobalNavbar() {
                       key={it.href}
                       href={it.href}
                       title={it.title}
-                      className={`inline-flex items-center gap-2 px-3 sm:px-4 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                        isActive(it.href)
-                          ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                          : "text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
-                      }`}
+                      className={cn(
+                        navLinkDesktop(isActive(it.href)),
+                        "inline-flex px-3 sm:px-4",
+                      )}
                     >
                       {ExtraIcon ? (
                         <ExtraIcon className="w-4 h-4 shrink-0 opacity-90" />
@@ -255,16 +269,15 @@ export default function GlobalNavbar() {
             )}
 
             {user && (
-              <div className="flex items-center gap-1 ml-2 pl-2 border-l border-white/5 shrink-0">
+              <div className="ml-2 flex shrink-0 items-center gap-1 border-l border-border pl-2">
                 {(normalizeRole(user.role) === "expert" ||
                   user.role === "admin") && (
                   <Link
                     href="/expert/tous-les-projets"
-                    className={`inline-flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                      isActive("/expert/tous-les-projets")
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                        : "text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
-                    }`}
+                    className={cn(
+                      navLinkDesktop(isActive("/expert/tous-les-projets")),
+                      "inline-flex",
+                    )}
                   >
                     <Layers className="w-4 h-4" />
                     Tous les projets
@@ -273,11 +286,10 @@ export default function GlobalNavbar() {
                 {normalizeRole(user.role) === "expert" && (
                   <Link
                     href="/expert/projets"
-                    className={`inline-flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                      isActive("/expert/projets")
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                        : "text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
-                    }`}
+                    className={cn(
+                      navLinkDesktop(isActive("/expert/projets")),
+                      "inline-flex",
+                    )}
                   >
                     <FolderKanban className="w-4 h-4" />
                     Projets
@@ -286,11 +298,10 @@ export default function GlobalNavbar() {
                 {normalizeRole(user.role) === "expert" && (
                   <Link
                     href="/expert/nouveaux-projets"
-                    className={`inline-flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                      isActive("/expert/nouveaux-projets")
-                        ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                        : "text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
-                    }`}
+                    className={cn(
+                      navLinkDesktop(isActive("/expert/nouveaux-projets")),
+                      "inline-flex",
+                    )}
                   >
                     <ClipboardList className="w-4 h-4" />
                     Invitations
@@ -298,16 +309,15 @@ export default function GlobalNavbar() {
                 )}
                 <Link
                   href="/messages"
-                  className={`inline-flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-all whitespace-nowrap shrink-0 ${
-                    isActive("/messages")
-                      ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                      : "text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
-                  }`}
+                  className={cn(
+                    navLinkDesktop(isActive("/messages")),
+                    "inline-flex",
+                  )}
                 >
                   <MessageCircle className="w-4 h-4" />
                   Messages
                   {unreadMessages > 0 && (
-                    <span className="min-w-[1.25rem] h-5 px-1.5 rounded-full bg-amber-500 text-gray-900 text-[10px] font-bold flex items-center justify-center">
+                    <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand-muted px-1.5 text-[10px] font-bold text-brand-foreground">
                       {unreadMessages > 99 ? "99+" : unreadMessages}
                     </span>
                   )}
@@ -319,20 +329,20 @@ export default function GlobalNavbar() {
           <div className="flex items-center gap-2 sm:gap-3">
             {user ? (
               <>
-                <div className="hidden sm:flex items-center gap-3 pl-2 border-l border-white/5">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
-                    <span className="text-sm font-bold text-amber-300">
+                <div className="hidden items-center gap-3 border-l border-border pl-2 sm:flex">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-brand/35 bg-brand/15">
+                    <span className="text-sm font-bold text-brand">
                       {user.nom?.charAt(0).toUpperCase() || "U"}
                     </span>
                   </div>
                   <div className="leading-tight">
-                    <p className="text-sm font-medium text-white">{user.nom}</p>
-                    <p className="text-xs text-amber-400/80 capitalize">{user.role}</p>
+                    <p className="text-sm font-medium text-foreground">{user.nom}</p>
+                    <p className="text-xs capitalize text-muted-foreground">{user.role}</p>
                   </div>
                 </div>
                 <button
                   onClick={handleLogout}
-                  className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-black/30 border border-white/5 text-gray-300/80 hover:text-amber-200 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
+                  className="hidden items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-muted-foreground transition-all hover:border-brand/35 hover:bg-accent hover:text-accent-foreground sm:flex"
                   title="Déconnexion"
                 >
                   <LogOut className="w-4 h-4" />
@@ -342,7 +352,7 @@ export default function GlobalNavbar() {
             ) : (
               <Link
                 href="/login"
-                className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold hover:shadow-lg hover:shadow-amber-500/30 transition-all"
+                className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bmp-btn-primary font-semibold hover:shadow-lg transition-all"
               >
                 Connexion
               </Link>
@@ -350,7 +360,7 @@ export default function GlobalNavbar() {
 
             <button
               onClick={() => setMobileOpen((v) => !v)}
-              className="lg:hidden p-2 rounded-xl text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
+              className="rounded-xl p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground lg:hidden"
               aria-label="Menu"
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -370,28 +380,30 @@ export default function GlobalNavbar() {
         <button
           type="button"
           onClick={() => setMobileOpen(false)}
-          className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity ${
-            mobileOpen ? "opacity-100" : "opacity-0"
-          }`}
+          className={cn(
+            "absolute inset-0 bg-foreground/45 backdrop-blur-sm transition-opacity dark:bg-black/65",
+            mobileOpen ? "opacity-100" : "opacity-0",
+          )}
           aria-label="Fermer le menu"
         />
 
         {/* Panel */}
         <aside
-          className={`absolute right-0 top-0 h-full w-[min(92vw,420px)] border-l border-white/5 bg-gray-950/98 backdrop-blur-2xl shadow-2xl shadow-black/70 transition-transform duration-300 ease-out ${
-            mobileOpen ? "translate-x-0" : "translate-x-full"
-          }`}
+          className={cn(
+            "absolute right-0 top-0 h-full w-[min(92vw,420px)] border-l border-border bg-card/98 shadow-bmp-lg backdrop-blur-xl transition-transform duration-300 ease-out dark:shadow-black/50",
+            mobileOpen ? "translate-x-0" : "translate-x-full",
+          )}
         >
-          <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
+          <div className="flex items-center justify-between border-b border-border px-4 py-4">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center shadow-lg shadow-amber-500/20">
-                <Building2 className="w-4.5 h-4.5 text-gray-900" />
+              <div className="w-9 h-9 rounded-xl bmp-icon-gradient flex items-center justify-center">
+                <Building2 className="h-[18px] w-[18px] text-gray-900" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-white leading-tight">
+                <p className="text-sm font-semibold leading-tight text-foreground">
                   BMP.tn
                 </p>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-muted-foreground">
                   Menu
                   {user ? ` · ${user.nom}` : ""}
                 </p>
@@ -400,14 +412,14 @@ export default function GlobalNavbar() {
             <button
               type="button"
               onClick={() => setMobileOpen(false)}
-              className="p-2 rounded-xl text-gray-300/80 hover:text-amber-100 hover:bg-amber-500/10"
+              className="rounded-xl p-2 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
               aria-label="Fermer"
             >
               <X className="w-6 h-6" />
             </button>
           </div>
 
-          <nav className="px-3 py-3 flex flex-col gap-1 overflow-y-auto h-[calc(100vh-73px)] scrollbar-bmp">
+          <nav className="flex h-[calc(100vh-73px)] flex-col gap-1 overflow-y-auto px-3 py-3 scrollbar-bmp">
             {navItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -415,11 +427,7 @@ export default function GlobalNavbar() {
                   key={item.key ?? item.href}
                   href={item.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                    isActive(item.href)
-                      ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
-                      : "text-gray-200/80 hover:bg-amber-500/10 hover:text-amber-100"
-                  }`}
+                  className={navLinkMobile(isActive(item.href))}
                 >
                   <Icon className="w-5 h-5" />
                   {item.label}
@@ -429,7 +437,7 @@ export default function GlobalNavbar() {
             })}
 
             {extraClientItems.length > 0 && (
-              <div className="mt-2 pt-2 border-t border-white/5">
+              <div className="mt-2 border-t border-border pt-2">
                 {extraClientItems.map((it) => {
                   const ExtraIcon = it.icon;
                   return (
@@ -438,11 +446,7 @@ export default function GlobalNavbar() {
                       href={it.href}
                       title={it.title}
                       onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                        isActive(it.href)
-                          ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
-                          : "text-gray-200/80 hover:bg-amber-500/10 hover:text-amber-100"
-                      }`}
+                      className={navLinkMobile(isActive(it.href))}
                     >
                       {ExtraIcon ? (
                         <ExtraIcon className="w-5 h-5 shrink-0 opacity-90" />
@@ -456,17 +460,13 @@ export default function GlobalNavbar() {
             )}
 
             {user && (
-              <div className="mt-2 pt-2 border-t border-white/5 space-y-1">
+              <div className="mt-2 space-y-1 border-t border-border pt-2">
                 {(normalizeRole(user.role) === "expert" ||
                   user.role === "admin") && (
                   <Link
                     href="/expert/tous-les-projets"
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                      isActive("/expert/tous-les-projets")
-                        ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
-                        : "text-gray-200/80 hover:bg-amber-500/10 hover:text-amber-100"
-                    }`}
+                    className={navLinkMobile(isActive("/expert/tous-les-projets"))}
                   >
                     <Layers className="w-5 h-5" />
                     Tous les projets
@@ -477,11 +477,7 @@ export default function GlobalNavbar() {
                   <Link
                     href="/expert/projets"
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                      isActive("/expert/projets")
-                        ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
-                        : "text-gray-200/80 hover:bg-amber-500/10 hover:text-amber-100"
-                    }`}
+                    className={navLinkMobile(isActive("/expert/projets"))}
                   >
                     <FolderKanban className="w-5 h-5" />
                     Mes projets
@@ -492,11 +488,7 @@ export default function GlobalNavbar() {
                   <Link
                     href="/expert/nouveaux-projets"
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                      isActive("/expert/nouveaux-projets")
-                        ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
-                        : "text-gray-200/80 hover:bg-amber-500/10 hover:text-amber-100"
-                    }`}
+                    className={navLinkMobile(isActive("/expert/nouveaux-projets"))}
                   >
                     <ClipboardList className="w-5 h-5" />
                     Invitations
@@ -506,16 +498,12 @@ export default function GlobalNavbar() {
                 <Link
                   href="/messages"
                   onClick={() => setMobileOpen(false)}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-xl transition ${
-                    isActive("/messages")
-                      ? "bg-amber-500/15 text-amber-200 border border-amber-500/20"
-                      : "text-gray-200/80 hover:bg-amber-500/10 hover:text-amber-100"
-                  }`}
+                  className={navLinkMobile(isActive("/messages"))}
                 >
                   <MessageCircle className="w-5 h-5" />
                   Messages
                   {unreadMessages > 0 && (
-                    <span className="min-w-[1.25rem] h-6 px-2 rounded-full bg-amber-500 text-gray-900 text-[11px] font-bold flex items-center justify-center">
+                    <span className="flex h-6 min-w-[1.25rem] items-center justify-center rounded-full bg-brand-muted px-2 text-[11px] font-bold text-brand-foreground">
                       {unreadMessages > 99 ? "99+" : unreadMessages}
                     </span>
                   )}
@@ -524,11 +512,11 @@ export default function GlobalNavbar() {
               </div>
             )}
 
-            <div className="mt-2 pt-3 border-t border-white/5">
+            <div className="mt-2 border-t border-border pt-3">
               {user ? (
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-200/80 hover:bg-amber-500/10 hover:text-amber-200 border border-white/5 bg-black/20"
+                  className="flex w-full items-center gap-3 rounded-xl border border-border bg-muted/50 px-4 py-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground"
                 >
                   <LogOut className="w-5 h-5" />
                   Déconnexion
@@ -537,7 +525,7 @@ export default function GlobalNavbar() {
                 <Link
                   href="/login"
                   onClick={() => setMobileOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bmp-btn-primary font-semibold"
                 >
                   Connexion
                 </Link>

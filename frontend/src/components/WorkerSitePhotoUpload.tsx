@@ -171,7 +171,7 @@ export function WorkerSitePhotoUpload({
     <form
       noValidate
       onSubmit={submit}
-      className="rounded-2xl border border-white/10 bg-black/30 p-4 space-y-4"
+      className="rounded-2xl border border-white/10 bg-muted dark:bg-black/30 p-4 space-y-4"
     >
       <div className="flex items-center gap-2 text-sm font-semibold text-white">
         <Camera className="w-4 h-4 text-amber-300" />
@@ -238,7 +238,7 @@ export function WorkerSitePhotoUpload({
       <button
         type="submit"
         disabled={loading || !file}
-        className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
+        className="inline-flex items-center justify-center gap-2 rounded-xl bmp-btn-primary font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
       >
         {loading ? (
           <>

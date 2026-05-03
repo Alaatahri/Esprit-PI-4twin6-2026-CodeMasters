@@ -5,6 +5,7 @@ import {
   ConflictException,
   UnauthorizedException,
   Logger,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { randomBytes } from 'crypto';
@@ -238,11 +239,22 @@ export class UserService {
     return { message: 'Email vérifié avec succès !' };
   }
 
-  async forgotPassword(email: string): Promise<{ message: string }> {
+  async forgotPassword(
+    email: string,
+  ): Promise<{ message: string; mailMode?: 'smtp' | 'ethereal' | 'none' }> {
     const normalized = String(email || '').trim().toLowerCase();
     if (!normalized) {
       throw new BadRequestException('Email manquant');
     }
+
+    const smtpOk = this.mailService.isConfigured();
+    const etherealDev =
+      !smtpOk && process.env.USE_ETHEREAL_IN_DEV?.trim() === 'true';
+    const mailMode: 'smtp' | 'ethereal' | 'none' = smtpOk
+      ? 'smtp'
+      : etherealDev
+        ? 'ethereal'
+        : 'none';
 
     const user = await this.userModel.findOne({ email: normalized }).exec();
     if (user) {
@@ -250,9 +262,17 @@ export class UserService {
         normalized,
         60 * 60 * 1000,
       );
-      await this.mailService.sendPasswordResetEmail({
-        to: normalized,
-        token,
+      // Envoi en arrière-plan : on répond vite, même si SMTP est lent.
+      // (La réponse reste neutre pour éviter l’énumération d’e-mails.)
+      setImmediate(() => {
+        this.mailService
+          .sendPasswordResetEmail({ to: normalized, token })
+          .catch((e: unknown) => {
+            const msg = e instanceof Error ? e.message : String(e);
+            this.logger.error(
+              `forgotPassword async: échec envoi e-mail pour ${normalized}: ${msg}`,
+            );
+          });
       });
     }
 
@@ -260,6 +280,7 @@ export class UserService {
     return {
       message:
         'Si un compte existe pour cet e-mail, un lien de réinitialisation vient d’être envoyé.',
+      mailMode,
     };
   }
 

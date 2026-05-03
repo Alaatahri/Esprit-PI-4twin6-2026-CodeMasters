@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getStoredUser, type BMPUser } from "@/lib/auth";
 import { GuestLandingShowcase } from "@/components/GuestLandingShowcase";
+import { cn } from "@/lib/utils";
 
 const modules = [
   {
@@ -81,9 +82,9 @@ export default function EspacePage() {
 
   if (!bootstrapped || redirecting) {
     return (
-      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-gray-400">
-        <Loader2 className="h-10 w-10 animate-spin text-amber-400/80" aria-hidden />
-        <p className="text-sm">
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-muted-foreground">
+        <Loader2 className="h-10 w-10 animate-spin text-brand" aria-hidden />
+        <p className="text-sm text-body-secondary">
           {redirecting ? "Redirection vers votre espace…" : "Chargement…"}
         </p>
       </div>
@@ -94,45 +95,50 @@ export default function EspacePage() {
 
   return (
     <div className="space-y-16 lg:space-y-24">
-      {/* Welcome hero */}
       <motion.section
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative rounded-3xl overflow-hidden border border-white/10 bg-white/5 backdrop-blur-xl"
+        className="relative overflow-hidden rounded-3xl border border-border bg-card shadow-bmp-md"
       >
         <div className="absolute inset-0">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1200&q=80"
             alt=""
-            className="w-full h-full object-cover opacity-40"
+            className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-950/90 via-amber-950/50 to-gray-950/90" />
+          <div className="bmp-hero-scrim absolute inset-0" aria-hidden />
         </div>
-        <div className="relative px-6 py-12 sm:px-10 sm:py-16 lg:px-14 lg:py-20 text-center">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/20 border border-amber-500/40 mb-6">
-            <HardHat className="w-8 h-8 text-amber-400" />
+        <div className="relative px-6 py-12 text-center sm:px-10 sm:py-16 lg:px-14 lg:py-20">
+          <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl border border-white/30 bg-white/15 backdrop-blur-sm">
+            <HardHat className="h-8 w-8 text-bmp-hero-title" />
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
-            Bienvenue sur <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">BMP.tn</span>
+          <h1 className="mb-4 text-3xl font-bold text-bmp-hero-title sm:text-4xl lg:text-5xl">
+            Bienvenue sur{" "}
+            <span className="bg-gradient-to-r from-amber-50 to-amber-100 bg-clip-text text-transparent">
+              BMP.tn
+            </span>
           </h1>
-          <p className="text-gray-300 max-w-2xl mx-auto text-lg mb-4">
+          <p className="text-bmp-hero-subtitle mx-auto mb-4 max-w-2xl text-lg">
             {isGuest
               ? "La plateforme qui connecte clients, experts et artisans pour des chantiers suivis de bout en bout."
               : "Accédez à vos outils de gestion de chantier, devis et marketplace depuis un seul espace."}
           </p>
           {isGuest && (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
+            <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
                 href="/inscription"
-                className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-7 py-3 text-sm shadow-lg shadow-amber-500/25 w-full sm:w-auto"
+                className="inline-flex w-full items-center justify-center rounded-2xl bmp-btn-primary px-7 py-3 text-sm font-semibold transition sm:w-auto"
               >
                 Commencer gratuitement
               </Link>
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center rounded-2xl border border-white/25 bg-white/5 text-white font-medium px-7 py-3 text-sm hover:bg-white/10 w-full sm:w-auto"
+                className={cn(
+                  "inline-flex w-full items-center justify-center rounded-2xl border px-7 py-3 text-sm font-semibold backdrop-blur-sm transition sm:w-auto",
+                  "border-[rgba(255,255,255,0.55)] bg-white/12 text-bmp-hero-title hover:bg-white/22",
+                )}
               >
                 Connexion
               </Link>
@@ -143,17 +149,16 @@ export default function EspacePage() {
 
       {isGuest && <GuestLandingShowcase />}
 
-      {/* Module cards */}
       <section>
         <motion.h2
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="text-xl font-semibold text-gray-300 mb-8 text-center sm:text-left"
+          className="mb-8 text-center text-xl font-semibold text-foreground sm:text-left"
         >
           {isGuest ? "Découvrez les outils BMP.tn" : "Nos modules"}
         </motion.h2>
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+        <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
           {modules.map((mod, i) => {
             const Icon = mod.icon;
             return (
@@ -165,28 +170,37 @@ export default function EspacePage() {
               >
                 <Link
                   href={mod.href}
-                  className="group block h-full rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl overflow-hidden hover:border-amber-500/30 hover:bg-white/10 transition-all duration-300"
+                  className="group block h-full overflow-hidden rounded-2xl border border-border bg-card shadow-bmp-sm transition-all duration-300 hover:border-brand/35 hover:shadow-bmp-md"
                 >
-                  <div className="aspect-[4/3] relative overflow-hidden">
+                  <div className="relative aspect-[4/3] overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={mod.image}
                       alt={mod.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-950/95 via-gray-950/40 to-transparent" />
-                    <div className={`absolute bottom-4 left-4 right-4 flex items-center gap-3`}>
-                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${mod.color} flex items-center justify-center shadow-lg`}>
-                        <Icon className="w-5 h-5 text-white" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-transparent dark:from-black/85" />
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3">
+                      <div
+                        className={cn(
+                          "flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br shadow-bmp-sm",
+                          mod.color,
+                        )}
+                      >
+                        <Icon className="h-5 w-5 text-white" />
                       </div>
-                      <span className="text-lg font-bold text-white drop-shadow-lg">{mod.title}</span>
+                      <span className="text-lg font-bold text-white drop-shadow-md">
+                        {mod.title}
+                      </span>
                     </div>
                   </div>
                   <div className="p-5">
-                    <p className="text-gray-400 text-sm mb-4 line-clamp-2">{mod.description}</p>
-                    <span className="inline-flex items-center gap-2 text-amber-400 font-medium text-sm group-hover:gap-3 transition-all">
+                    <p className="mb-4 line-clamp-2 text-sm text-body-secondary">
+                      {mod.description}
+                    </p>
+                    <span className="inline-flex items-center gap-2 text-sm font-medium text-brand transition-all group-hover:gap-3">
                       {mod.label}
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="h-4 w-4" />
                     </span>
                   </div>
                 </Link>
@@ -196,51 +210,50 @@ export default function EspacePage() {
         </div>
       </section>
 
-      {/* Quick actions strip */}
       <motion.section
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="grid grid-cols-1 sm:grid-cols-3 gap-4"
+        className="grid grid-cols-1 gap-4 sm:grid-cols-3"
       >
         <Link
           href="/gestion-chantier"
-          className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-amber-500/30 hover:bg-amber-500/10 transition-all group"
+          className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-bmp-xs transition hover:border-brand/35 hover:shadow-bmp-sm"
         >
-          <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Briefcase className="w-6 h-6 text-amber-400" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-brand/10 transition-transform group-hover:scale-105">
+            <Briefcase className="h-6 w-6 text-brand" />
           </div>
           <div>
-            <p className="font-medium text-white">Gestion de Chantier</p>
-            <p className="text-xs text-gray-500">Projets & suivi</p>
+            <p className="font-medium text-foreground">Gestion de Chantier</p>
+            <p className="text-xs text-muted-foreground">Projets & suivi</p>
           </div>
-          <ArrowRight className="w-5 h-5 text-amber-400/50 ml-auto" />
+          <ArrowRight className="ml-auto h-5 w-5 text-brand/60" />
         </Link>
         <Link
           href="/gestion-devis-facturation"
-          className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-blue-500/30 hover:bg-blue-500/10 transition-all group"
+          className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-bmp-xs transition hover:border-sky-500/40 hover:shadow-bmp-sm"
         >
-          <div className="w-12 h-12 rounded-xl bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Calculator className="w-6 h-6 text-blue-400" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/15 transition-transform group-hover:scale-105 dark:bg-sky-500/20">
+            <Calculator className="h-6 w-6 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
-            <p className="font-medium text-white">Devis & Facturation</p>
-            <p className="text-xs text-gray-500">Devis IA</p>
+            <p className="font-medium text-foreground">Devis & Facturation</p>
+            <p className="text-xs text-muted-foreground">Devis IA</p>
           </div>
-          <ArrowRight className="w-5 h-5 text-blue-400/50 ml-auto" />
+          <ArrowRight className="ml-auto h-5 w-5 text-sky-600/60 dark:text-sky-400/60" />
         </Link>
         <Link
           href="/gestion-marketplace"
-          className="flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-emerald-500/30 hover:bg-emerald-500/10 transition-all group"
+          className="group flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-bmp-xs transition hover:border-emerald-500/40 hover:shadow-bmp-sm"
         >
-          <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Package className="w-6 h-6 text-emerald-400" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/15 transition-transform group-hover:scale-105 dark:bg-emerald-500/20">
+            <Package className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div>
-            <p className="font-medium text-white">Marketplace</p>
-            <p className="text-xs text-gray-500">Catalogue B2B</p>
+            <p className="font-medium text-foreground">Marketplace</p>
+            <p className="text-xs text-muted-foreground">Catalogue B2B</p>
           </div>
-          <ArrowRight className="w-5 h-5 text-emerald-400/50 ml-auto" />
+          <ArrowRight className="ml-auto h-5 w-5 text-emerald-600/60 dark:text-emerald-400/60" />
         </Link>
       </motion.section>
     </div>

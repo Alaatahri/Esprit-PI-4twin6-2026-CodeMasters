@@ -122,7 +122,7 @@ export default function ExpertTousLesProjetsPage() {
   }, [rows]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-10 max-w-5xl space-y-6">
         <Link
           href="/espace"
@@ -139,7 +139,7 @@ export default function ExpertTousLesProjetsPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold">Tous les projets</h1>
-              <p className="text-sm text-gray-400 mt-1 max-w-xl">
+              <p className="text-sm text-muted-foreground mt-1 max-w-xl">
                 Vue globale des dossiers créés sur la plateforme : statut,
                 client, expert assigné, et résultat des invitations de matching
                 (acceptation par un expert).
@@ -149,7 +149,7 @@ export default function ExpertTousLesProjetsPage() {
           <div className="flex flex-wrap gap-2">
             <Link
               href="/expert/nouveaux-projets"
-              className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-sm text-white/90 hover:bg-white/10"
+              className="inline-flex items-center justify-center rounded-2xl border border-border bg-muted px-4 py-2 text-sm text-foreground/90 hover:bg-muted"
             >
               Mes invitations
             </Link>
@@ -162,10 +162,10 @@ export default function ExpertTousLesProjetsPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-gray-300 flex flex-wrap gap-x-6 gap-y-2">
+        <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-body-secondary flex flex-wrap gap-x-6 gap-y-2">
           <span>
             Total dossiers :{" "}
-            <strong className="text-white">{counts.total}</strong>
+            <strong className="text-foreground">{counts.total}</strong>
           </span>
           <span>
             Avec expert sur la fiche :{" "}
@@ -187,7 +187,7 @@ export default function ExpertTousLesProjetsPage() {
             {err}
           </div>
         ) : rows.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.02] px-6 py-12 text-center text-sm text-gray-400">
+          <div className="rounded-2xl border border-dashed border-border bg-muted/60 px-6 py-12 text-center text-sm text-muted-foreground">
             Aucun projet en base pour l’instant.
           </div>
         ) : (
@@ -222,16 +222,16 @@ export default function ExpertTousLesProjetsPage() {
               return (
                 <article
                   key={pid}
-                  className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:p-5 hover:border-amber-500/25 transition"
+                  className="rounded-2xl border border-border bg-card p-4 sm:p-5 hover:border-amber-500/25 transition"
                 >
                   <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
                     <div className="min-w-0 space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
-                        <h2 className="text-base font-semibold text-white line-clamp-2">
+                        <h2 className="text-base font-semibold text-foreground line-clamp-2">
                           {p.titre ?? "Sans titre"}
                         </h2>
                         {p.statut ? (
-                          <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full border border-white/15 bg-white/5 text-gray-300">
+                          <span className="text-[10px] uppercase tracking-wide px-2 py-0.5 rounded-full border border-border bg-muted text-body-secondary">
                             {p.statut}
                           </span>
                         ) : null}
@@ -242,19 +242,19 @@ export default function ExpertTousLesProjetsPage() {
                         ) : null}
                       </div>
                       {p.ville ? (
-                        <p className="text-xs text-gray-500 flex items-center gap-1">
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
                           <MapPin className="w-3.5 h-3.5" />
                           {p.ville}
                         </p>
                       ) : null}
-                      <div className="grid sm:grid-cols-2 gap-2 text-xs text-gray-400">
+                      <div className="grid sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
                         <p className="flex items-start gap-2">
-                          <User className="w-3.5 h-3.5 shrink-0 mt-0.5 text-gray-500" />
+                          <User className="w-3.5 h-3.5 shrink-0 mt-0.5 text-muted-foreground" />
                           <span>
-                            <span className="text-gray-500">Client :</span>{" "}
-                            <span className="text-gray-200">{client}</span>
+                            <span className="text-muted-foreground">Client :</span>{" "}
+                            <span className="text-body-secondary">{client}</span>
                             {clientRole ? (
-                              <span className="text-gray-500">
+                              <span className="text-muted-foreground">
                                 {" "}
                                 · {clientRole}
                               </span>
@@ -264,7 +264,7 @@ export default function ExpertTousLesProjetsPage() {
                         <p className="flex items-start gap-2">
                           <BadgeCheck className="w-3.5 h-3.5 shrink-0 mt-0.5 text-emerald-400/80" />
                           <span>
-                            <span className="text-gray-500">
+                            <span className="text-muted-foreground">
                               Expert sur la fiche :
                             </span>{" "}
                             {assigned ? (
@@ -273,21 +273,21 @@ export default function ExpertTousLesProjetsPage() {
                                   {assigned}
                                 </span>
                                 {assignedRole ? (
-                                  <span className="text-gray-500">
+                                  <span className="text-muted-foreground">
                                     {" "}
                                     · {assignedRole}
                                   </span>
                                 ) : null}
                               </>
                             ) : (
-                              <span className="text-gray-500">non assigné</span>
+                              <span className="text-muted-foreground">non assigné</span>
                             )}
                           </span>
                         </p>
                         <p className="flex items-start gap-2 sm:col-span-2">
                           <Clock className="w-3.5 h-3.5 shrink-0 mt-0.5 text-amber-400/70" />
                           <span>
-                            <span className="text-gray-500">Matching :</span>{" "}
+                            <span className="text-muted-foreground">Matching :</span>{" "}
                             {m.inviteCount} invitation(s) · {m.pending}{" "}
                             en attente · {m.refused} refus / expiré
                             {acceptedName ? (
@@ -298,14 +298,14 @@ export default function ExpertTousLesProjetsPage() {
                                   acceptée par {acceptedName}
                                 </span>
                                 {acceptedRole ? (
-                                  <span className="text-gray-500">
+                                  <span className="text-muted-foreground">
                                     {" "}
                                     ({acceptedRole})
                                   </span>
                                 ) : null}
                               </>
                             ) : m.inviteCount > 0 ? (
-                              <span className="text-gray-500">
+                              <span className="text-muted-foreground">
                                 {" "}
                                 · aucune acceptation enregistrée
                               </span>
@@ -316,7 +316,7 @@ export default function ExpertTousLesProjetsPage() {
                     </div>
                     <Link
                       href={`/expert/projects/${encodeURIComponent(pid)}?from=catalog`}
-                      className="shrink-0 inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 px-4 py-2.5 text-sm font-semibold text-gray-900 hover:opacity-95"
+                      className="shrink-0 inline-flex items-center justify-center rounded-xl bmp-btn-primary px-4 py-2.5 text-sm font-semibold text-gray-900 hover:opacity-95"
                     >
                       Ouvrir
                     </Link>
