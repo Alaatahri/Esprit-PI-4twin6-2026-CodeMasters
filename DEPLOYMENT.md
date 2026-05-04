@@ -78,9 +78,7 @@ BACKEND_ORIGIN=http://127.0.0.1:3001
 
 Si tu utilises `vercel.json` avec `experimentalServices` (front + Nest sous `/_/backend`) :
 
-- **Sans variable** `BACKEND_ORIGIN` sur Vercel, le front déduit automatiquement  
-  `https://<hôte-de-la-requête>/_/backend` (voir `src/lib/server-backend-origin.ts` et le relais `app/api/[...path]`).  
-  Cela évite les appels vers `127.0.0.1:3001` en production.
+- **Sans variable** `BACKEND_ORIGIN` sur Vercel, le relais utilise **`https://${VERCEL_URL}/_/backend`** (variable système Vercel), **pas** l’`Host` de la requête — sinon erreur **`DNS_HOSTNAME_RESOLVED_PRIVATE`** sur les `fetch` serverless. Voir `src/lib/server-backend-origin.ts`.
 - Si l’API est **ailleurs** (Railway), définir `BACKEND_ORIGIN` comme en section 3.
 - **CORS** côté Nest : inclure l’URL du site (ex. `https://esprit-pi-4twin6-2026-code-masters.vercel.app`) dans `CORS_ORIGINS` ou `FRONTEND_URL`.
 
