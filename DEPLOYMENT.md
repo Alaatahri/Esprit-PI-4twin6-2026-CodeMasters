@@ -86,7 +86,7 @@ Si tu utilises `vercel.json` avec `experimentalServices` (front + Nest sous `/_/
 
 Si le relais `/api` reçoit une page HTML **« Authentication Required »** au lieu du JSON Nest, c’est la [Deployment Protection](https://vercel.com/docs/security/deployment-protection) (ex. *Vercel Authentication*).
 
-1. **Recommandé** : activer [**Protection Bypass for Automation**](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation) dans les réglages du projet. Vercel expose alors **`VERCEL_AUTOMATION_BYPASS_SECRET`** ; le code du relais envoie l’en-tête **`x-vercel-protection-bypass`** vers les URL `*.vercel.app` (service backend sous `/_/backend`).
+1. **Recommandé** : activer [**Protection Bypass for Automation**](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation) dans les réglages du projet. Vercel injecte **`VERCEL_AUTOMATION_BYPASS_SECRET`** sur les déploiements. Le relais `/api` envoie **`x-vercel-protection-bypass`** (en-tête **et** paramètre d’URL) vers les hôtes `*.vercel.app`. Si le secret n’apparaît pas sur le service **frontend** (multi-services), ajoutez une variable **`VERCEL_PROTECTION_BYPASS`** avec la **même valeur** que le secret affiché dans le dashboard.
 2. **Ou** : désactiver la protection SSO sur les déploiements preview / production selon votre politique.
 3. **Ou** : API sur Railway + `BACKEND_ORIGIN` — pas de SSO Vercel sur ce domaine.
 

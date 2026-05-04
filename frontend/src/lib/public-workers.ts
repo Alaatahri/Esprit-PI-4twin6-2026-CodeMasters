@@ -81,20 +81,60 @@ async function parseError(res: Response): Promise<string> {
   return text || res.statusText || `Erreur ${res.status}`;
 }
 
+const VERCEL_AUTH_HINT =
+  "Protection Vercel (SSO) : Dashboard → Deployment Protection → « Protection Bypass for Automation », variable VERCEL_AUTOMATION_BYPASS_SECRET (ou VERCEL_PROTECTION_BYPASS manuelle sur le service frontend), puis redéploiement. Ou API sur Railway + BACKEND_ORIGIN.";
+
+function bodyLooksLikeVercelAuthHtml(text: string): boolean {
+  return (
+    text.includes("Authentication Required") ||
+    (text.includes("<!doctype html") &&
+      text.includes("vercel") &&
+      text.includes("x-vercel-protection-bypass"))
+  );
+}
+
+/** Lit le corps une fois ; détecte la page SSO Vercel renvoyée à la place du JSON. */
+async function parseJsonOrThrow<T>(res: Response): Promise<T> {
+  const text = await res.text();
+  if (bodyLooksLikeVercelAuthHtml(text)) {
+    throw new Error(VERCEL_AUTH_HINT);
+  }
+  if (!res.ok) {
+    try {
+      const j = JSON.parse(text) as { message?: string; error?: string };
+      if (typeof j?.message === "string" && j.message.trim()) {
+        throw new Error(j.message.trim());
+      }
+    } catch (e) {
+      if (e instanceof Error && !(e instanceof SyntaxError)) throw e;
+    }
+    throw new Error(
+      text.trim().slice(0, 400) || res.statusText || `Erreur ${res.status}`,
+    );
+  }
+  try {
+    return JSON.parse(text) as T;
+  } catch {
+    throw new Error(
+      text.trimStart().startsWith("<")
+        ? VERCEL_AUTH_HINT
+        : `Réponse non JSON (${res.status}) : ${text.slice(0, 160)}…`,
+    );
+  }
+}
+
 export async function fetchPublicWorkers(): Promise<PublicWorker[]> {
   const res = await fetch(`${API_URL}/users/public/workers`, {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error(await parseError(res));
-  return res.json();
+  return parseJsonOrThrow<PublicWorker[]>(res);
 }
 
 export async function fetchShowcaseProjects(): Promise<ShowcaseProjectApi[]> {
   const res = await fetch(`${API_URL}/projects/public/showcase`, {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error(await parseError(res));
-  return res.json();
+  return parseJsonOrThrow<ShowcaseProjectApi[]>(res);
 }
 
 export async function fetchShowcaseProjectById(
@@ -103,8 +143,7 @@ export async function fetchShowcaseProjectById(
   const res = await fetch(`${API_URL}/projects/public/showcase/${id}`, {
     cache: "no-store",
   });
-  if (!res.ok) throw new Error(await parseError(res));
-  return res.json();
+  return parseJsonOrThrow<ShowcaseProjectDetailApi>(res);
 }
 
 /** Image de secours stable (chantier) — évite les 404 Unsplash si un lien disparaît. */

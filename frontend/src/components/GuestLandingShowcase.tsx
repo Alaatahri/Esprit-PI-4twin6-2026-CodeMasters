@@ -160,28 +160,46 @@ export function GuestLandingShowcase() {
           </p>
         )}
         <p className="text-sm leading-relaxed text-muted-foreground">
-          1) Terminal 1 — backend :{" "}
-          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-brand dark:text-amber-200/90">
-            cd backend
-          </code>{" "}
-          puis{" "}
-          <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-brand dark:text-amber-200/90">
-            npm run start:dev
-          </code>
-          <br />
-          2) MongoDB doit tourner (variable{" "}
-          <code className="rounded bg-muted px-1 font-mono">MONGODB_URI</code> dans{" "}
-          <code className="rounded bg-muted px-1 font-mono">backend/.env</code> si
-          besoin).
-          <br />
-          3) Si le backend est sur une autre adresse, créez{" "}
-          <code className="rounded bg-muted px-1 font-mono">
-            frontend/.env.local
-          </code>{" "}
-          avec :{" "}
-          <code className="mt-2 block break-all rounded bg-muted px-2 py-1.5 text-left font-mono text-brand dark:text-amber-200/90">
-            BACKEND_ORIGIN=http://localhost:3001
-          </code>
+          {errorDetail?.includes("Vercel") ||
+          errorDetail?.includes("vercel") ||
+          errorDetail?.includes("SSO") ? (
+            <>
+              Déploiement sur <strong>Vercel</strong> : la protection SSO bloque
+              l’appel interne vers l’API. Dans le projet Vercel →{" "}
+              <strong>Deployment Protection</strong> → activez{" "}
+              <strong>Protection Bypass for Automation</strong>, puis redéployez
+              (variable <code className="rounded bg-muted px-1 font-mono">VERCEL_AUTOMATION_BYPASS_SECRET</code>
+              ). Vous pouvez aussi copier le secret dans une variable{" "}
+              <code className="rounded bg-muted px-1 font-mono">VERCEL_PROTECTION_BYPASS</code>{" "}
+              sur le service <strong>frontend</strong>. Sinon : API sur Railway +{" "}
+              <code className="rounded bg-muted px-1 font-mono">BACKEND_ORIGIN</code>.
+            </>
+          ) : (
+            <>
+              1) Terminal 1 — backend :{" "}
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-brand dark:text-amber-200/90">
+                cd backend
+              </code>{" "}
+              puis{" "}
+              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-brand dark:text-amber-200/90">
+                npm run start:dev
+              </code>
+              <br />
+              2) MongoDB doit tourner (variable{" "}
+              <code className="rounded bg-muted px-1 font-mono">MONGODB_URI</code> dans{" "}
+              <code className="rounded bg-muted px-1 font-mono">backend/.env</code> si
+              besoin).
+              <br />
+              3) Si le backend est sur une autre adresse, créez{" "}
+              <code className="rounded bg-muted px-1 font-mono">
+                frontend/.env.local
+              </code>{" "}
+              avec :{" "}
+              <code className="mt-2 block break-all rounded bg-muted px-2 py-1.5 text-left font-mono text-brand dark:text-amber-200/90">
+                BACKEND_ORIGIN=http://localhost:3001
+              </code>
+            </>
+          )}
         </p>
         <button
           type="button"
