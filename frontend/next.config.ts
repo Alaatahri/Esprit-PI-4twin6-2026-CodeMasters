@@ -1,15 +1,12 @@
 import type { NextConfig } from "next";
 import path from "path";
+import { resolveBackendOriginAtBuildTime } from "./src/lib/server-backend-origin";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
   /** Proxy API NestJS (port 3001) quand le front utilise une URL relative `/api`. */
   async rewrites() {
-    const backend =
-      process.env.BACKEND_ORIGIN ||
-      process.env.NEXT_PUBLIC_BACKEND_ORIGIN ||
-      "http://127.0.0.1:3001";
-    const origin = backend.replace(/\/$/, "");
+    const origin = resolveBackendOriginAtBuildTime();
     return [
       {
         source: "/api/:path*",
