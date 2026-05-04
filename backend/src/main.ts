@@ -1,11 +1,12 @@
 import 'dotenv/config';
 
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { json, urlencoded } from 'express';
 import { join } from 'path';
 import { AppModule } from './app.module';
+import { buildCorsOrigins } from './cors-origins';
 
 /** Limite corps JSON (photos base64 sur /api/suivi/photo) — évite 413 Payload Too Large */
 const BODY_LIMIT = '35mb';
@@ -26,14 +27,14 @@ async function bootstrap() {
     index: false,
   });
 
-  // Enable CORS for frontend (vitrine) and admin (backend-react)
+  const corsOrigins = buildCorsOrigins();
+  if (corsOrigins.length === 0 && process.env.NODE_ENV === 'production') {
+    new Logger('Bootstrap').warn(
+      'CORS : définissez CORS_ORIGINS (ex. https://votre-app.vercel.app) et/ou FRONTEND_URL — sinon le navigateur bloquera les appels depuis le front.',
+    );
+  }
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'http://127.0.0.1:3000',
-      'http://localhost:5173',
-      'http://127.0.0.1:5173',
-    ],
+    origin: corsOrigins.length > 0 ? corsOrigins : false,
     credentials: true,
   });
 
