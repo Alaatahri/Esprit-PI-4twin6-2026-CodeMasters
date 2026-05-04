@@ -82,6 +82,14 @@ Si tu utilises `vercel.json` avec `experimentalServices` (front + Nest sous `/_/
 - Si l’API est **ailleurs** (Railway), définir `BACKEND_ORIGIN` comme en section 3.
 - **CORS** côté Nest : inclure l’URL du site (ex. `https://esprit-pi-4twin6-2026-code-masters.vercel.app`) dans `CORS_ORIGINS` ou `FRONTEND_URL`.
 
+### 5.1 Protection Vercel (SSO) sur les previews
+
+Si le relais `/api` reçoit une page HTML **« Authentication Required »** au lieu du JSON Nest, c’est la [Deployment Protection](https://vercel.com/docs/security/deployment-protection) (ex. *Vercel Authentication*).
+
+1. **Recommandé** : activer [**Protection Bypass for Automation**](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation) dans les réglages du projet. Vercel expose alors **`VERCEL_AUTOMATION_BYPASS_SECRET`** ; le code du relais envoie l’en-tête **`x-vercel-protection-bypass`** vers les URL `*.vercel.app` (service backend sous `/_/backend`).
+2. **Ou** : désactiver la protection SSO sur les déploiements preview / production selon votre politique.
+3. **Ou** : API sur Railway + `BACKEND_ORIGIN` — pas de SSO Vercel sur ce domaine.
+
 ---
 
 ## 6. Fichiers modifiés côté code

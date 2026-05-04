@@ -59,6 +59,19 @@ async function proxy(req: NextRequest, context: Ctx): Promise<NextResponse> {
     headers.delete("transfer-encoding");
   }
 
+  /** Contournement [Protection Bypass for Automation](https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation) : sans ça, les fetch serverless vers `*.vercel.app/_/backend` reçoivent la page « Authentication Required ». */
+  const bypassSecret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET?.trim();
+  if (bypassSecret) {
+    try {
+      const h = new URL(backendOrigin).hostname;
+      if (h.endsWith(".vercel.app")) {
+        headers.set("x-vercel-protection-bypass", bypassSecret);
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+
   const fetchInit: RequestInit = {
     method: req.method,
     headers,
@@ -72,6 +85,23 @@ async function proxy(req: NextRequest, context: Ctx): Promise<NextResponse> {
 
   try {
     const res = await forward(backendOrigin);
+    const ct = res.headers.get("content-type") || "";
+    if (ct.includes("text/html")) {
+      const peek = (await res.clone().text()).slice(0, 4000);
+      if (
+        peek.includes("Authentication Required") ||
+        peek.includes("x-vercel-protection-bypass")
+      ) {
+        return NextResponse.json(
+          {
+            error: "vercel_deployment_protection",
+            message:
+              "L’API sur Vercel est protégée (SSO). Dans le projet Vercel : Deployment Protection → activer « Protection Bypass for Automation », puis redéployer. Vercel injecte VERCEL_AUTOMATION_BYPASS_SECRET ; le relais /api l’envoie automatiquement vers *.vercel.app. Alternative : désactiver la protection sur les previews, ou héberger l’API hors Vercel (BACKEND_ORIGIN).",
+          },
+          { status: 502 },
+        );
+      }
+    }
     return pipeResponse(res);
   } catch (e) {
     const alt = alternateLoopbackOrigin(backendOrigin);
