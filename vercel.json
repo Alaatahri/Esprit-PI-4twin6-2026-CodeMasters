@@ -6,7 +6,7 @@
       "framework": "nextjs"
     },
     "backend": {
-      "entrypoint": "backend",
+      "entrypoint": "backend/src/main.ts",
       "routePrefix": "/_/backend",
       "framework": "nestjs"
     }
