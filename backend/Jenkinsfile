@@ -20,6 +20,22 @@ pipeline {
       }
     }
 
+    stage('SonarQube Analysis') {
+      steps {
+        withSonarQubeEnv('SonarQube') {
+          dir('backend') {
+            sh '''
+              npx sonar-scanner \
+                -Dsonar.projectKey=bmp-backend \
+                -Dsonar.sources=src \
+                -Dsonar.host.url=http://host.docker.internal:9000 \
+                -Dsonar.token=${SONAR_AUTH_TOKEN}
+            '''
+          }
+        }
+      }
+    }
+
     stage('Run Tests') {
       steps {
         dir('backend') {
