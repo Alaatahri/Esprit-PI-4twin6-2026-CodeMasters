@@ -1,0 +1,39 @@
+pipeline {
+  agent any
+
+  stages {
+    stage('Pull Latest Image') {
+      steps {
+        sh 'docker pull jedidisy/bmp-backend:latest'
+      }
+    }
+
+    stage('Stop Old Container') {
+      steps {
+        sh 'docker stop bmp-backend || true'
+        sh 'docker rm bmp-backend || true'
+      }
+    }
+
+    stage('Deploy') {
+      steps {
+        sh 'docker run -d --name bmp-backend -p 3000:3000 jedidisy/bmp-backend:latest'
+      }
+    }
+
+    stage('Health Check') {
+      steps {
+        sh 'sleep 5 && docker ps | grep bmp-backend'
+      }
+    }
+  }
+
+  post {
+    success {
+      echo 'Backend deployed successfully!'
+    }
+    failure {
+      sh 'docker logs bmp-backend || true'
+    }
+  }
+}
