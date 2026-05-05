@@ -1,9 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { AccessibilityProvider } from "@/components/AccessibilityProvider";
-import { KeyboardTTS } from "@/components/KeyboardTTS";
-import { LanguageProvider } from "@/components/LanguageProvider";
 import { ChatbotLayout } from "@/components/ChatbotLayout";
 import GlobalNavbar from "@/components/GlobalNavbar";
 import SiteFooter from "@/components/SiteFooter";
@@ -23,10 +20,6 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "BMP.tn – Construction Digitale",
   description: "La plateforme intelligente qui connecte, automatise et optimise la chaîne de valeur du secteur de la construction.",
-  icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
-    shortcut: "/favicon.svg",
-  },
 };
 
 export const viewport = {
@@ -52,17 +45,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-background text-foreground scrollbar-bmp`}
       >
-        <AccessibilityProvider>
-          <LanguageProvider>
-            <AppPreviewChrome>
-              <GlobalNavbar />
-              <div className="flex min-h-0 flex-1 flex-col">{children}</div>
-              <SiteFooter />
-              <KeyboardTTS />
-              <ChatbotLayout />
-            </AppPreviewChrome>
-          </LanguageProvider>
-        </AccessibilityProvider>
+        <AppPreviewChrome>
+          <GlobalNavbar />
+          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+          <SiteFooter />
+          {/* Chatbot intégré - affiché sur toutes les pages */}
+          <ChatbotLayout />
+        </AppPreviewChrome>
       </body>
     </html>
   );

@@ -25,9 +25,8 @@ export async function calculateETA(origin: Coordinates, destination: Coordinates
         origins: [{ lat: origin.lat, lng: origin.lng }],
         destinations: [{ lat: destination.lat, lng: destination.lng }],
         key: GOOGLE_MAPS_API_KEY,
-        // traffic_model nécessite un instant ; "now" est accepté par l’API Google
-        departure_time: "now" as unknown as Date,
-      },
+        departure_time: 'now', // Uses predictive traffic
+      }
     });
 
     const element = response.data.rows[0].elements[0];
