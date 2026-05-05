@@ -17,7 +17,7 @@ pipeline {
 
     stage('Deploy') {
       steps {
-        sh 'docker run -d --name bmp-backend -p 3000:3000 jedidisy/bmp-backend:latest'
+        sh 'docker run -d --name bmp-backend -p 3100:3000 jedidisy/bmp-backend:latest'
       }
     }
 
