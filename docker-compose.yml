@@ -1,0 +1,51 @@
+services:
+  mongodb:
+    image: mongo:7
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: bmp
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - bmp-network
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - mongodb
+    networks:
+      - bmp-network
+
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - backend
+    networks:
+      - bmp-network
+
+  admin:
+    build:
+      context: ./backend-react
+    ports:
+      - "3002:80"
+    depends_on:
+      - backend
+    networks:
+      - bmp-network
+
+volumes:
+  mongo_data:
+
+networks:
+  bmp-network:

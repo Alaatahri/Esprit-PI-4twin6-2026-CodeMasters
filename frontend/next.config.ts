@@ -3,6 +3,7 @@ import path from "path";
 import { resolveBackendOriginAtBuildTime } from "./src/lib/server-backend-origin";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   outputFileTracingRoot: path.join(__dirname),
   /** Proxy API NestJS (port 3001) quand le front utilise une URL relative `/api`. */
   async rewrites() {
