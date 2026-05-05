@@ -24,6 +24,19 @@ type PopulatedProject = {
   description?: string;
 };
 
+type ExpertRow = {
+  _id: string;
+  prenom?: string;
+  nom?: string;
+  email?: string;
+  telephone?: string;
+  competences?: string[];
+  avatarUrl?: string;
+  bio?: string;
+  expertApprovalStatus?: string;
+  createdAt?: string;
+};
+
 export type MatchingRequestRow = {
   _id: string;
   status: string;
@@ -55,6 +68,7 @@ function refLabel(
 export default function AdminSpacePage() {
   const [user, setUser] = useState<BMPUser | null>(null);
   const [rows, setRows] = useState<MatchingRequestRow[]>([]);
+  const [pendingExperts, setPendingExperts] = useState<ExpertRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
 
@@ -66,6 +80,7 @@ export default function AdminSpacePage() {
     const u = getStoredUser();
     if (!u || normalizeRole(u.role) !== "admin") {
       setRows([]);
+      setPendingExperts([]);
       setLoading(false);
       return;
     }
@@ -88,9 +103,20 @@ export default function AdminSpacePage() {
       }
       const data = (await res.json()) as MatchingRequestRow[];
       setRows(Array.isArray(data) ? data : []);
+
+      const resExperts = await fetch(`${API_URL}/users/admin/experts/pending`, {
+        cache: "no-store",
+      });
+      if (resExperts.ok) {
+        const j = (await resExperts.json()) as ExpertRow[];
+        setPendingExperts(Array.isArray(j) ? j : []);
+      } else {
+        setPendingExperts([]);
+      }
     } catch (e) {
       setErr(e instanceof Error ? e.message : "Erreur");
       setRows([]);
+      setPendingExperts([]);
     } finally {
       setLoading(false);
     }
@@ -102,15 +128,10 @@ export default function AdminSpacePage() {
 
   if (user && normalizeRole(user.role) !== "admin") {
     return (
-      <div className="mx-auto max-w-2xl space-y-4 px-4 py-10">
-        <h1 className="text-2xl font-bold text-foreground">Espace admin</h1>
-        <p className="text-sm text-muted-foreground">
-          Accès réservé aux administrateurs.
-        </p>
-        <Link
-          href="/espace"
-          className="text-sm font-medium text-brand hover:text-brand-muted hover:underline"
-        >
+      <div className="max-w-2xl mx-auto space-y-4 px-4 py-10">
+        <h1 className="text-2xl font-bold text-foreground dark:text-white">Espace admin</h1>
+        <p className="text-sm text-muted-foreground dark:text-gray-400">Accès réservé aux administrateurs.</p>
+        <Link href="/espace" className="text-amber-400 hover:underline text-sm">
           Retour
         </Link>
       </div>
@@ -118,11 +139,11 @@ export default function AdminSpacePage() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 py-10">
+    <div className="max-w-6xl mx-auto space-y-6 px-4 py-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Espace admin</h1>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <h1 className="text-2xl font-bold text-foreground dark:text-white">Espace admin</h1>
+          <p className="text-sm text-muted-foreground dark:text-gray-400 mt-1">
             Invitations matching : projets et experts ciblés (scores automatiques).
           </p>
         </div>
@@ -130,7 +151,7 @@ export default function AdminSpacePage() {
           type="button"
           disabled={loading}
           onClick={() => void load()}
-          className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-medium text-card-foreground shadow-bmp-xs transition hover:bg-accent hover:text-accent-foreground disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl border border-border dark:border-white/15 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm text-foreground dark:text-white hover:bg-black/5 dark:bg-white/10 disabled:opacity-50"
         >
           {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
           Actualiser
@@ -138,35 +159,29 @@ export default function AdminSpacePage() {
       </div>
 
       {err ? (
-        <div className="rounded-xl border border-destructive/35 bg-destructive/10 px-4 py-3 text-sm text-destructive dark:text-red-200">
+        <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {err}
         </div>
       ) : null}
 
-      <section className="overflow-hidden rounded-2xl border border-border bg-card text-card-foreground shadow-bmp-sm">
-        <div className="flex items-center gap-2 border-b border-border bg-muted/30 px-4 py-3">
-          <Users className="h-5 w-5 text-brand" />
-          <h2 className="text-sm font-semibold text-foreground">
-            Matching & invitations
-          </h2>
-          <span className="ml-auto text-xs text-muted-foreground">
-            {rows.length} ligne(s)
-          </span>
+      <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] overflow-hidden">
+        <div className="flex items-center gap-2 border-b border-border dark:border-white/10 px-4 py-3">
+          <Users className="w-5 h-5 text-amber-400" />
+          <h2 className="text-sm font-semibold text-foreground dark:text-white">Matching & invitations</h2>
+          <span className="text-xs text-foreground dark:text-gray-500 ml-auto">{rows.length} ligne(s)</span>
         </div>
 
         {loading ? (
           <div className="flex justify-center py-16">
-            <Loader2 className="h-10 w-10 animate-spin text-brand" />
+            <Loader2 className="w-10 h-10 animate-spin text-amber-400" />
           </div>
         ) : rows.length === 0 ? (
-          <p className="px-4 py-8 text-sm text-muted-foreground">
-            Aucune invitation enregistrée.
-          </p>
+          <p className="text-sm text-foreground dark:text-gray-500 px-4 py-8">Aucune invitation enregistrée.</p>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-border text-[11px] uppercase tracking-wide text-muted-foreground">
+                <tr className="border-b border-border dark:border-white/10 text-[11px] uppercase text-foreground dark:text-gray-500">
                   <th className="px-3 py-2 font-medium">Projet</th>
                   <th className="px-3 py-2 font-medium">Expert invité</th>
                   <th className="px-3 py-2 font-medium">Score</th>
@@ -175,7 +190,7 @@ export default function AdminSpacePage() {
                   <th className="px-3 py-2 font-medium">Expire</th>
                 </tr>
               </thead>
-              <tbody className="text-muted-foreground">
+              <tbody className="text-muted-foreground dark:text-gray-300">
                 {rows.map((r) => {
                   const pid =
                     typeof r.projectId === "object" && r.projectId && "_id" in r.projectId
@@ -184,16 +199,13 @@ export default function AdminSpacePage() {
                         ? r.projectId
                         : "";
                   return (
-                    <tr
-                      key={r._id}
-                      className="border-b border-border transition-colors hover:bg-muted/40"
-                    >
+                    <tr key={r._id} className="border-b border-border dark:border-white/5 hover:bg-white/[0.02]">
                       <td className="px-3 py-2 align-top">
-                        <span className="font-medium text-foreground">
+                        <span className="text-foreground dark:text-white font-medium">
                           {refLabel(r.projectId as PopulatedProject, "—")}
                         </span>
                         {pid ? (
-                          <span className="mt-0.5 block font-mono text-[10px] text-muted-foreground">
+                          <span className="block text-[10px] text-gray-600 font-mono mt-0.5">
                             {pid}
                           </span>
                         ) : null}
@@ -201,7 +213,7 @@ export default function AdminSpacePage() {
                       <td className="px-3 py-2 align-top">
                         <span>{refLabel(r.expertId as PopulatedUser, "—")}</span>
                         {typeof r.expertId === "object" && r.expertId && "email" in r.expertId ? (
-                          <span className="block text-[11px] text-muted-foreground">
+                          <span className="block text-[11px] text-foreground dark:text-gray-500">
                             {(r.expertId as PopulatedUser).email}
                           </span>
                         ) : null}
@@ -213,22 +225,22 @@ export default function AdminSpacePage() {
                         <span
                           className={
                             r.status === "accepted"
-                              ? "font-medium text-emerald-600 dark:text-emerald-400"
+                              ? "text-emerald-400"
                               : r.status === "refused"
-                                ? "font-medium text-destructive dark:text-red-400"
+                                ? "text-red-400/90"
                                 : r.isExpired
-                                  ? "font-medium text-warning-foreground dark:text-amber-300"
-                                  : "text-foreground"
+                                  ? "text-amber-400"
+                                  : "text-muted-foreground dark:text-gray-300"
                           }
                         >
                           {r.status}
                           {r.isExpired && r.status === "pending" ? " (expiré)" : ""}
                         </span>
                       </td>
-                      <td className="px-3 py-2 align-top text-[11px] text-muted-foreground">
+                      <td className="px-3 py-2 align-top text-[11px] text-foreground dark:text-gray-500">
                         {r.sentAt ? new Date(r.sentAt).toLocaleString("fr-FR") : "—"}
                       </td>
-                      <td className="px-3 py-2 align-top text-[11px] text-muted-foreground">
+                      <td className="px-3 py-2 align-top text-[11px] text-foreground dark:text-gray-500">
                         {r.expiresAt ? new Date(r.expiresAt).toLocaleString("fr-FR") : "—"}
                       </td>
                     </tr>
@@ -240,10 +252,100 @@ export default function AdminSpacePage() {
         )}
       </section>
 
-      <p className="text-xs text-muted-foreground">
+      <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] overflow-hidden">
+        <div className="flex items-center gap-2 border-b border-border dark:border-white/10 px-4 py-3">
+          <Users className="w-5 h-5 text-amber-400" />
+          <h2 className="text-sm font-semibold text-foreground dark:text-white">Validation des experts</h2>
+          <span className="text-xs text-foreground dark:text-gray-500 ml-auto">
+            {pendingExperts.length} en attente
+          </span>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-10">
+            <Loader2 className="w-8 h-8 animate-spin text-amber-400" />
+          </div>
+        ) : pendingExperts.length === 0 ? (
+          <p className="text-sm text-foreground dark:text-gray-500 px-4 py-6">
+            Aucun expert en attente.
+          </p>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead>
+                <tr className="border-b border-border dark:border-white/10 text-[11px] uppercase text-foreground dark:text-gray-500">
+                  <th className="px-3 py-2 font-medium">Expert</th>
+                  <th className="px-3 py-2 font-medium">Contact</th>
+                  <th className="px-3 py-2 font-medium">Compétences</th>
+                  <th className="px-3 py-2 font-medium">Créé</th>
+                  <th className="px-3 py-2 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="text-muted-foreground dark:text-gray-300">
+                {pendingExperts.map((ex) => {
+                  const label =
+                    [ex.prenom, ex.nom].filter(Boolean).join(" ").trim() ||
+                    ex.email ||
+                    ex._id;
+                  return (
+                    <tr key={ex._id} className="border-b border-border dark:border-white/5 hover:bg-white/[0.02]">
+                      <td className="px-3 py-2 align-top">
+                        <span className="text-foreground dark:text-white font-medium">{label}</span>
+                        <span className="block text-[10px] text-gray-600 font-mono mt-0.5">
+                          {ex._id}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2 align-top text-[12px] text-muted-foreground dark:text-gray-400">
+                        <div>{ex.email || "—"}</div>
+                        <div>{ex.telephone || "—"}</div>
+                      </td>
+                      <td className="px-3 py-2 align-top text-[12px] text-muted-foreground dark:text-gray-400">
+                        {(ex.competences || []).slice(0, 6).join(", ") || "—"}
+                      </td>
+                      <td className="px-3 py-2 align-top text-[11px] text-foreground dark:text-gray-500">
+                        {ex.createdAt ? new Date(ex.createdAt).toLocaleString("fr-FR") : "—"}
+                      </td>
+                      <td className="px-3 py-2 align-top text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            className="rounded-lg bg-emerald-500/15 border border-emerald-500/30 px-3 py-1.5 text-[12px] text-emerald-200 hover:bg-emerald-500/25"
+                            onClick={async () => {
+                              await fetch(`${API_URL}/users/admin/experts/${ex._id}/approve`, {
+                                method: "POST",
+                              });
+                              void load();
+                            }}
+                          >
+                            Approuver
+                          </button>
+                          <button
+                            type="button"
+                            className="rounded-lg bg-red-500/15 border border-red-500/30 px-3 py-1.5 text-[12px] text-red-200 hover:bg-red-500/25"
+                            onClick={async () => {
+                              await fetch(`${API_URL}/users/admin/experts/${ex._id}/reject`, {
+                                method: "POST",
+                              });
+                              void load();
+                            }}
+                          >
+                            Refuser
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+
+      <p className="text-xs text-gray-600">
         Le matching est déclenché automatiquement à la création du projet (côté backend). Vous pouvez aussi
         relancer manuellement via l&apos;API{" "}
-        <code className="text-muted-foreground">POST /api/admin/matching/trigger/:projectId</code> si besoin.
+        <code className="text-foreground dark:text-gray-500">POST /api/admin/matching/trigger/:projectId</code> si besoin.
       </p>
     </div>
   );

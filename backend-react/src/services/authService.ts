@@ -43,10 +43,7 @@ class AuthService {
       return { user, token };
     } catch (error: any) {
       console.error('Erreur complète:', error);
-      const raw = error.response?.data?.message;
-      const errorMessage = Array.isArray(raw)
-        ? raw.join(' ')
-        : raw || error.message || 'Erreur de connexion';
+      const errorMessage = error.response?.data?.message || error.message || 'Erreur de connexion';
       throw new Error(errorMessage);
     }
   }

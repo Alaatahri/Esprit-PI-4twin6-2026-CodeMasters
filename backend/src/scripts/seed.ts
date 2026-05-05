@@ -11,6 +11,7 @@ import {
   SuiviProjectDocument,
 } from '../suivi-project/schemas/suivi-project.schema';
 import { Alert, AlertDocument } from '../alerts/schemas/alert.schema';
+import { Vehicle, VehicleDocument } from '../marketplace/schemas/vehicle.schema';
 import { Model, Types } from 'mongoose';
 
 async function seed() {
@@ -22,6 +23,7 @@ async function seed() {
     getModelToken(SuiviProject.name),
   );
   const alertModel = app.get<Model<AlertDocument>>(getModelToken(Alert.name));
+  const vehicleModel = app.get<Model<VehicleDocument>>(getModelToken(Vehicle.name));
   const devisService = app.get(DevisService);
   const marketplaceService = app.get(MarketplaceService);
 
@@ -722,65 +724,379 @@ async function seed() {
       console.log('✅ Quotes created: 1 with 3 items');
     }
 
-    // Créer des produits marketplace
-    console.log('\n📝 Creating marketplace products...');
-    const existingProduits = await marketplaceService.findAllProduits();
+    // Créer des produits marketplace (catalogue réaliste + photos affichables)
+    console.log('\n📝 Ensuring marketplace catalog (realistic products + photos)...');
 
-    if (existingProduits.length === 0 && manufacturer) {
-      const produit1 = await marketplaceService.createProduit({
-        nom: 'Ciment Portland CPJ45',
-        description:
-          'Ciment de qualité supérieure pour tous types de travaux de construction',
-        prix: 12.5,
-        stock: 500,
-        image_url: 'https://example.com/products/ciment.jpg',
-        vendeurId: new Types.ObjectId(manufacturer._id),
+    // 1) S'assurer qu'il existe 2 vendeurs (fournisseurs)
+    const defaultManufacturer = manufacturer;
+    const supplierEmail = 'fournisseur@bmp.tn';
+    let supplier = supplierEmail
+      ? ((await userService.findByEmail(supplierEmail)) as any)
+      : null;
+    if (!supplier) {
+      supplier = await userService.create({
+        nom: 'Société BTP Matériaux',
+        email: supplierEmail,
+        mot_de_passe: 'password123',
+        role: 'manufacturer',
+        telephone: '+216 70 111 222',
+      } as any);
+      console.log(`✅ Marketplace vendor created: ${supplierEmail}`);
+    }
+
+    const vendors: Array<{ id: Types.ObjectId; label: string }> = [];
+    if (defaultManufacturer?._id) {
+      vendors.push({
+        id: new Types.ObjectId(defaultManufacturer._id),
+        label: 'manufacturer',
       });
+    }
+    if (supplier?._id) {
+      vendors.push({ id: new Types.ObjectId(supplier._id), label: 'supplier' });
+    }
 
-      const produit2 = await marketplaceService.createProduit({
-        nom: 'Briques Rouges 20x10x5',
-        description: 'Briques en terre cuite pour construction traditionnelle',
-        prix: 0.85,
-        stock: 10000,
-        image_url: 'https://example.com/products/briques.jpg',
-        vendeurId: new Types.ObjectId(manufacturer._id),
-      });
+    if (vendors.length === 0) {
+      console.log('⚠️  Aucun vendeur marketplace trouvé — produits ignorés.');
+    } else {
+      const [v1, v2] = vendors;
+      const tunisWarehouse = {
+        ville: 'Tunis',
+        adresse: 'Zone industrielle Charguia 1',
+        lat: 36.8443,
+        lng: 10.2174,
+      };
+      const sfaxWarehouse = {
+        ville: 'Sfax',
+        adresse: 'Zone industrielle Poudrière 1',
+        lat: 34.7561,
+        lng: 10.7606,
+      };
+      const sousseWarehouse = {
+        ville: 'Sousse',
+        adresse: 'Zone industrielle Sidi Abdelhamid',
+        lat: 35.8613,
+        lng: 10.6035,
+      };
 
-      await marketplaceService.createProduit({
-        nom: 'Tôles Galvanisées',
-        description: 'Tôles en acier galvanisé pour toiture, épaisseur 0.5mm',
-        prix: 25.0,
-        stock: 200,
-        image_url: 'https://example.com/products/toles.jpg',
-        vendeurId: new Types.ObjectId(manufacturer._id),
-      });
+      // Photos HTTPS stables (Unsplash) — affichables côté <img> (pas de binaire ajouté au repo)
+      // ⚠️ Important: `source.unsplash.com` redirige et peut être bloqué / cache → on préfère `images.unsplash.com/photo-...`
+      // pour éviter que toutes les cartes retombent sur le même fallback.
+      const catalog = [
+        {
+          nom: 'Ciment Portland CPJ 42.5 — sac 50 kg',
+          description:
+            'Ciment pour béton/mortier. Idéal fondations, dalles et maçonnerie. Livraison palette possible.',
+          prix: 18.9,
+          stock: 420,
+          categorie: 'Ciments & liants',
+          poids_kg: 50,
+          image_url:
+            'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=1200&q=85&auto=format&fit=crop',
+          emplacement: tunisWarehouse,
+          vendeurId: (v1 ?? v2).id,
+        },
+        {
+          nom: 'Briques rouges — palette 500 unités',
+          description:
+            'Briques en terre cuite pour gros œuvre. Palette filmée, stockage sec.',
+          prix: 395,
+          stock: 65,
+          categorie: 'Gros œuvre',
+          poids_kg: 850,
+          image_url:
+            'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?w=1200&q=85&auto=format&fit=crop',
+          emplacement: sfaxWarehouse,
+          vendeurId: (v2 ?? v1).id,
+        },
+        {
+          nom: 'Acier HA Ø12 — barre 12 m (B500)',
+          description:
+            'Fer à béton haute adhérence. Pour longrines, poteaux, chaînages.',
+          prix: 42.5,
+          stock: 900,
+          categorie: 'Acier & armatures',
+          poids_kg: 10.6,
+          image_url:
+            'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=1200&q=85&auto=format&fit=crop',
+          emplacement: tunisWarehouse,
+          vendeurId: (v1 ?? v2).id,
+        },
+        {
+          nom: 'Treillis soudé ST25C — panneau 2.4 x 6 m',
+          description:
+            'Treillis pour dalle/chape. Maille 15x15, rigidité chantier.',
+          prix: 118,
+          stock: 140,
+          categorie: 'Acier & armatures',
+          poids_kg: 28,
+          image_url:
+            'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=85&auto=format&fit=crop',
+          emplacement: sousseWarehouse,
+          vendeurId: (v2 ?? v1).id,
+        },
+        {
+          nom: 'Sable 0/4 — big bag 1 m³',
+          description:
+            'Sable alluvionnaire pour béton et enduits. Big bag sur palette.',
+          prix: 72,
+          stock: 50,
+          categorie: 'Granulats',
+          poids_kg: 1400,
+          image_url:
+            'https://images.unsplash.com/photo-1523413651479-59755e0c44ad?w=1200&q=85&auto=format&fit=crop',
+          emplacement: sfaxWarehouse,
+          vendeurId: (v1 ?? v2).id,
+        },
+        {
+          nom: 'Gravier 8/16 — big bag 1 m³',
+          description:
+            'Granulats pour béton. Stock calibré et pesé en big bag.',
+          prix: 89,
+          stock: 38,
+          categorie: 'Granulats',
+          poids_kg: 1500,
+          image_url:
+            'https://images.unsplash.com/photo-1595846519844-68b4e6b7b0b0?w=1200&q=85&auto=format&fit=crop',
+          emplacement: sousseWarehouse,
+          vendeurId: (v2 ?? v1).id,
+        },
+        {
+          nom: 'Carrelage grès cérame 60x60 — 1.44 m²/boîte',
+          description:
+            'Grès cérame (sol/mur). Résistant, facile d’entretien. Livraison sur palette.',
+          prix: 49,
+          stock: 220,
+          categorie: 'Revêtements',
+          poids_kg: 28,
+          image_url:
+            'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=85&auto=format&fit=crop',
+          emplacement: tunisWarehouse,
+          vendeurId: (v2 ?? v1).id,
+        },
+        {
+          nom: 'Peinture acrylique mate — blanc 10 L',
+          description:
+            'Peinture intérieure murs/plafonds. Rendement ~12 m²/L selon support.',
+          prix: 82,
+          stock: 160,
+          categorie: 'Peinture',
+          poids_kg: 13,
+          image_url:
+            'https://images.unsplash.com/photo-1562259949-e8e7689d7828?w=1200&q=85&auto=format&fit=crop',
+          emplacement: sousseWarehouse,
+          vendeurId: (v1 ?? v2).id,
+        },
+        {
+          nom: 'Tuyau PVC évacuation Ø100 — longueur 2 m',
+          description:
+            'PVC assainissement, joints inclus. Usage eaux usées/pluviales.',
+          prix: 19.5,
+          stock: 380,
+          categorie: 'Plomberie',
+          poids_kg: 2.5,
+          image_url:
+            'https://images.unsplash.com/photo-1595846519844-68b4e6b7b0b0?w=1200&q=85&auto=format&fit=crop',
+          emplacement: tunisWarehouse,
+          vendeurId: (v2 ?? v1).id,
+        },
+        {
+          nom: 'Mortier-colle C2 — sac 25 kg',
+          description:
+            'Mortier-colle haute adhérence pour carrelage intérieur/extérieur.',
+          prix: 17.2,
+          stock: 520,
+          categorie: 'Ciments & liants',
+          poids_kg: 25,
+          image_url:
+            'https://images.unsplash.com/photo-1615478503562-ec2d8cdb833d?w=1200&q=85&auto=format&fit=crop',
+          emplacement: sfaxWarehouse,
+          vendeurId: (v1 ?? v2).id,
+        },
+        {
+          nom: 'Plaque de plâtre BA13 — 2.5 m',
+          description:
+            'Plaque standard pour cloisons et doublages. Compatible rails/montants.',
+          prix: 18,
+          stock: 700,
+          categorie: 'Second œuvre',
+          poids_kg: 22,
+          image_url:
+            'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=85&auto=format&fit=crop',
+          emplacement: tunisWarehouse,
+          vendeurId: (v2 ?? v1).id,
+        },
+        {
+          nom: 'Isolant laine de verre — rouleau 10 m²',
+          description:
+            'Isolation thermique/acoustique. Idéal cloisons et faux-plafonds.',
+          prix: 39,
+          stock: 260,
+          categorie: 'Second œuvre',
+          poids_kg: 8,
+          image_url:
+            'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=85&auto=format&fit=crop',
+          emplacement: sousseWarehouse,
+          vendeurId: (v1 ?? v2).id,
+        },
+      ];
 
-      console.log('✅ Products created: 3');
+      // Produits legacy présents dans ta DB (anciens seeds) → on les resynchronise aussi
+      const legacyCatalog = [
+        {
+          nom: 'Ciment Portland CPJ45',
+          image_url: 'https://images.unsplash.com/photo-1589939705384-5185137a7f0f?w=1200&q=85&auto=format&fit=crop',
+          categorie: 'Ciments & liants',
+        },
+        {
+          nom: 'Briques Rouges 20x10x5',
+          image_url: 'https://images.unsplash.com/photo-1604328698692-f76ea9498e76?w=1200&q=85&auto=format&fit=crop',
+          categorie: 'Gros œuvre',
+        },
+        {
+          nom: 'Tôles Galvanisées',
+          image_url: 'https://images.unsplash.com/photo-1533106418989-88406c7cc8ca?w=1200&q=85&auto=format&fit=crop',
+          categorie: 'Métallerie',
+        },
+      ];
 
-      // Créer une commande
-      if (client) {
-        const commande = await marketplaceService.createCommande({
-          clientId: new Types.ObjectId(client._id),
-          montant_total: 0,
-          statut: 'En attente',
-          date_commande: new Date('2024-02-20'),
-        });
+      const existingProduits = await marketplaceService.findAllProduits();
 
-        await marketplaceService.createCommandeItem({
-          commandeId: new Types.ObjectId((commande as any)._id),
-          produitId: new Types.ObjectId((produit1 as any)._id),
-          quantite: 50,
-          prix: 12.5,
-        });
+      const byName = (n: string) =>
+        existingProduits.find((p: any) => (p.nom || '').trim() === n);
 
-        await marketplaceService.createCommandeItem({
-          commandeId: new Types.ObjectId((commande as any)._id),
-          produitId: new Types.ObjectId((produit2 as any)._id),
-          quantite: 500,
-          prix: 0.85,
-        });
+      let created = 0;
+      let updated = 0;
 
-        console.log('✅ Order created: 1 with 2 items');
+      for (const p of catalog) {
+        const found: any = byName(p.nom);
+        if (!found?._id) {
+          await marketplaceService.createProduit({
+            ...p,
+            vendeurId: p.vendeurId,
+          });
+          created++;
+        } else {
+          // Toujours synchroniser le catalogue “réel” (titre → photo cohérente)
+          await marketplaceService.updateProduit(String(found._id), {
+            description: p.description,
+            prix: p.prix,
+            stock: p.stock,
+            image_url: p.image_url,
+            categorie: p.categorie,
+            emplacement: p.emplacement,
+            poids_kg: p.poids_kg,
+            vendeurId: p.vendeurId,
+          });
+          updated++;
+        }
+      }
+
+      // Synchroniser les legacy (sans toucher prix/stock si on veut juste corriger l'image/catégorie)
+      for (const l of legacyCatalog) {
+        const found: any = byName(l.nom);
+        if (found?._id) {
+          await marketplaceService.updateProduit(String(found._id), {
+            image_url: l.image_url,
+            categorie: (found.categorie && String(found.categorie).trim()) ? found.categorie : l.categorie,
+          });
+          updated++;
+        }
+      }
+
+      console.log(`✅ Marketplace catalog ready: ${created} created, ${updated} updated`);
+
+      // 0) Livreurs / véhicules disponibles (pour choisir un livreur au checkout)
+      console.log('\n📝 Ensuring delivery vehicles (livreurs) ...');
+      const existingVehicles = await vehicleModel.find().exec();
+      if (!existingVehicles || existingVehicles.length === 0) {
+        const fleet = [
+          {
+            nom: 'Express BTP — Utilitaire',
+            type: 'utilitaire',
+            capacite_tonnes: 1.2,
+            prix_km: 1.9,
+            prix_base: 8,
+            position_actuelle: { lat: 36.8065, lng: 10.1815 },
+            disponible: true,
+            statut_disponible: true,
+            chauffeur_nom: 'Sami B.',
+            chauffeur_telephone: '+216 99 111 222',
+            immatriculation: 'TN-187-AB',
+            note_moyenne: 4.6,
+            nombre_courses: 128,
+          },
+          {
+            nom: 'Rapido — Camion benne',
+            type: 'camion_benne',
+            capacite_tonnes: 12,
+            prix_km: 2.6,
+            prix_base: 25,
+            position_actuelle: { lat: 35.8256, lng: 10.6369 },
+            disponible: true,
+            statut_disponible: true,
+            chauffeur_nom: 'Karim D.',
+            chauffeur_telephone: '+216 55 333 444',
+            immatriculation: 'TN-924-CD',
+            note_moyenne: 4.4,
+            nombre_courses: 86,
+          },
+          {
+            nom: 'Béton Pro — Camion toupie',
+            type: 'camion_toupie',
+            capacite_tonnes: 18,
+            prix_km: 2.3,
+            prix_base: 30,
+            position_actuelle: { lat: 34.7561, lng: 10.7606 },
+            disponible: true,
+            statut_disponible: true,
+            chauffeur_nom: 'Ahmed K.',
+            chauffeur_telephone: '+216 21 555 666',
+            immatriculation: 'TN-502-EF',
+            note_moyenne: 4.7,
+            nombre_courses: 201,
+          },
+        ];
+        await vehicleModel.insertMany(fleet);
+        console.log(`✅ Vehicles created: ${fleet.length}`);
+      } else {
+        // S'assurer qu'au moins un véhicule est disponible
+        await vehicleModel.updateMany({}, { $set: { disponible: true, statut_disponible: true } }).exec();
+        console.log(`📋 Vehicles already present: ${existingVehicles.length} (marked available)`);
+      }
+
+      // 2) Scénario "vrai": Ahmed passe une commande (avec mode de paiement + livraison)
+      const ahmed = (await userService.findByEmail('ahmed@example.com')) as any;
+      if (ahmed?._id) {
+        const commandesAhmed = await marketplaceService.findByClient(
+          String(ahmed._id),
+        );
+        if (!Array.isArray(commandesAhmed) || commandesAhmed.length === 0) {
+          const produitsNow = (await marketplaceService.findAllProduits()) as any[];
+          const pick = (name: string) =>
+            produitsNow.find((x: any) => (x.nom || '').trim() === name);
+          const ciment = pick('Ciment Portland CPJ 42.5 — sac 50 kg');
+          const carrelage = pick('Carrelage grès cérame 60x60 — 1.44 m²/boîte');
+          const peinture = pick('Peinture acrylique mate — blanc 10 L');
+          const acier = pick('Acier HA Ø12 — barre 12 m (B500)');
+
+          const items = [
+            ciment ? { produitId: String(ciment._id), quantite: 12 } : null,
+            carrelage ? { produitId: String(carrelage._id), quantite: 10 } : null,
+            peinture ? { produitId: String(peinture._id), quantite: 2 } : null,
+            acier ? { produitId: String(acier._id), quantite: 20 } : null,
+          ].filter(Boolean) as Array<{ produitId: string; quantite: number }>;
+
+          if (items.length > 0) {
+            await marketplaceService.createCommande({
+              clientId: String(ahmed._id),
+              items,
+              mode_paiement: '50/50',
+              prix_livraison: 45,
+              statut: 'En préparation',
+            });
+            console.log('✅ Marketplace scenario: commande démo créée pour ahmed@example.com (50/50 + livraison)');
+          }
+        }
       }
     }
 
@@ -979,36 +1295,6 @@ async function seed() {
         console.log(
           `   ✅ [MOHAMED IA] Créé: ${spec.titre} (0 %, artisan accepté)`,
         );
-      }
-
-      // Projet unique pour tester vite l’upload photo / IA (avancement initial modéré)
-      const IA_QUICK_TITLE = '[DÉMO IA] Test upload photo & avancement';
-      const allForIaQuick = await projectService.findAll(800);
-      const hasIaQuick = allForIaQuick.some(
-        (p: any) =>
-          p.titre === IA_QUICK_TITLE && String(p.clientId) === String(ahmedId),
-      );
-      if (!hasIaQuick) {
-        await projectService.create({
-          titre: IA_QUICK_TITLE,
-          description:
-            'Chantier dédié au test du flux suivi photo (analyse IA). Client Ahmed, expert Sara, artisan Mohamed accepté. Avancement de départ 18 %.',
-          date_debut: new Date(Date.now() - 20 * 86400000),
-          date_fin_prevue: new Date(Date.now() + 60 * 86400000),
-          budget_estime: 62000,
-          statut: 'En cours',
-          avancement_global: 18,
-          clientId: ahmedId,
-          expertId: expertOid,
-          applications: [
-            {
-              artisanId: artisanOid,
-              statut: 'acceptee',
-              createdAt: new Date(),
-            },
-          ],
-        });
-        console.log(`   ✅ [IA QUICK] Créé: ${IA_QUICK_TITLE}`);
       }
     } else {
       console.log(
@@ -1714,74 +2000,6 @@ async function seed() {
     console.log(
       '\n   🔑 Client test: ahmed@example.com / password123 — projets « [AHMED TEST] … » (suivi, matching, alerte).',
     );
-
-    console.log('\n' + '='.repeat(72));
-    console.log(
-      '🔐 COMPTES DE TEST BMP.tn — mot de passe par défaut: password123 (admin: admin123)',
-    );
-    console.log('='.repeat(72));
-    const accountLines: Array<{ role: string; email: string; pass: string; note: string }> = [
-      {
-        role: 'client',
-        email: 'ahmed@example.com',
-        pass: 'password123',
-        note: 'Espace client, suivi, [AHMED TEST], [MOHAMED IA TEST], [DÉMO IA]',
-      },
-      {
-        role: 'client',
-        email: 'leila@example.com',
-        pass: 'password123',
-        note: 'Client démo secondaire',
-      },
-      {
-        role: 'client',
-        email: 'omar@example.com',
-        pass: 'password123',
-        note: 'Client démo tertiaire',
-      },
-      {
-        role: 'expert',
-        email: 'sara@example.com',
-        pass: 'password123',
-        note: 'Expert principal démo — suivi photo, dossiers Ahmed',
-      },
-      {
-        role: 'artisan',
-        email: 'mohamed@example.com',
-        pass: 'password123',
-        note: 'Gestion chantier / upload photo IA (projets acceptés)',
-      },
-      {
-        role: 'manufacturer',
-        email: 'fatma@example.com',
-        pass: 'password123',
-        note: 'Fournisseur marketplace',
-      },
-      {
-        role: 'admin',
-        email: 'admin@bmp.tn',
-        pass: 'admin123',
-        note: 'Admin — matching, notifications, alertes',
-      },
-    ];
-    for (const a of accountLines) {
-      console.log(
-        `   • [${a.role.padEnd(12)}] ${a.email.padEnd(28)} / ${a.pass.padEnd(12)} — ${a.note}`,
-      );
-    }
-    console.log(
-      '   • [expert       ] expert.peinture@bmp.tn … expert.carrelage@bmp.tn / password123 — experts matching (8 comptes)',
-    );
-    console.log(
-      '   • [artisan      ] artisan.menuiserie@bmp.tn (+ autres @bmp.tn) / password123 — vitrine',
-    );
-    console.log(
-      '\n   📷 Test analyse photo IA (Next.js): connectez-vous expert (sara@…) ou artisan (mohamed@…),',
-    );
-    console.log(
-      '      ouvrez un projet assigné → suivi photo / gestion chantier. Clé ANTHROPIC_API_KEY requise pour Claude.',
-    );
-    console.log('='.repeat(72));
   } catch (error) {
     console.error('❌ Error seeding database:', error);
     throw error;
@@ -1789,5 +2007,6 @@ async function seed() {
     await app.close();
   }
 }
+
 
 seed();

@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+}
+
+model User {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  email            String   @unique
+  name             String?
+  companyName      String?
+  taxId            String?
+  isVerified       Boolean  @default(false)
+  orders           Order[]
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model Product {
+  id                     String             @id @default(auto()) @map("_id") @db.ObjectId
+  name                   String
+  description            String
+  price                  Float
+  currentStock           Int                @default(0)
+  minimumStock           Int                @default(100)
+  predictedStockOutDate  DateTime?
+  model3dUrl             String?
+  imageUrl               String?
+  transactions           StockTransaction[]
+  orderItems             OrderItem[]
+  predictions            Prediction[]
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+}
+
+model Order {
+  id                 String      @id @default(auto()) @map("_id") @db.ObjectId
+  orderNumber        String      @unique // e.g. INV-YYYY-MM-XXXX
+  userId             String      @db.ObjectId
+  user               User        @relation(fields: [userId], references: [id])
+  items              OrderItem[]
+  totalAmount        Float
+  paymentStatus      String      @default("PENDING") // PENDING, PAID, FAILED
+  stripeSessionId    String?     @unique
+  stockReservedUntil DateTime?
+  delivery           Delivery?
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+}
+
+model OrderItem {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String   @db.ObjectId
+  order     Order    @relation(fields: [orderId], references: [id])
+  productId String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Float    // Price at the time of order
+}
+
+model StockTransaction {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId      String   @db.ObjectId
+  product        Product  @relation(fields: [productId], references: [id])
+  quantityChange Int      // Positive for restock, negative for sale
+  type           String   // SALE, RESTOCK, ADJUSTMENT
+  timestamp      DateTime @default(now())
+}
+
+model Delivery {
+  id                 String    @id @default(auto()) @map("_id") @db.ObjectId
+  orderId            String    @unique @db.ObjectId
+  order              Order     @relation(fields: [orderId], references: [id])
+  status             String    @default("PENDING") // PENDING, IN_TRANSIT, DELIVERED, DELAYED
+  eta                DateTime?
+  actualDeliveryTime DateTime?
+  delayReasons       String?
+  weatherData        String?   // JSON string
+  currentLocationLat Float?
+  currentLocationLng Float?
+  destinationLat     Float?
+  destinationLng     Float?
+  updatedAt          DateTime  @updatedAt
+}
+
+model Prediction {
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  productId     String   @db.ObjectId
+  product       Product  @relation(fields: [productId], references: [id])
+  predictedDate DateTime
+  confidence    Float    // 0 to 1
+  actualDate    DateTime?
+  createdAt     DateTime @default(now())
+}

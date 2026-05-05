@@ -81,60 +81,20 @@ async function parseError(res: Response): Promise<string> {
   return text || res.statusText || `Erreur ${res.status}`;
 }
 
-const VERCEL_AUTH_HINT =
-  "Protection Vercel (SSO) : Dashboard → Deployment Protection → « Protection Bypass for Automation », variable VERCEL_AUTOMATION_BYPASS_SECRET (ou VERCEL_PROTECTION_BYPASS manuelle sur le service frontend), puis redéploiement. Ou API sur Railway + BACKEND_ORIGIN.";
-
-function bodyLooksLikeVercelAuthHtml(text: string): boolean {
-  return (
-    text.includes("Authentication Required") ||
-    (text.includes("<!doctype html") &&
-      text.includes("vercel") &&
-      text.includes("x-vercel-protection-bypass"))
-  );
-}
-
-/** Lit le corps une fois ; détecte la page SSO Vercel renvoyée à la place du JSON. */
-async function parseJsonOrThrow<T>(res: Response): Promise<T> {
-  const text = await res.text();
-  if (bodyLooksLikeVercelAuthHtml(text)) {
-    throw new Error(VERCEL_AUTH_HINT);
-  }
-  if (!res.ok) {
-    try {
-      const j = JSON.parse(text) as { message?: string; error?: string };
-      if (typeof j?.message === "string" && j.message.trim()) {
-        throw new Error(j.message.trim());
-      }
-    } catch (e) {
-      if (e instanceof Error && !(e instanceof SyntaxError)) throw e;
-    }
-    throw new Error(
-      text.trim().slice(0, 400) || res.statusText || `Erreur ${res.status}`,
-    );
-  }
-  try {
-    return JSON.parse(text) as T;
-  } catch {
-    throw new Error(
-      text.trimStart().startsWith("<")
-        ? VERCEL_AUTH_HINT
-        : `Réponse non JSON (${res.status}) : ${text.slice(0, 160)}…`,
-    );
-  }
-}
-
 export async function fetchPublicWorkers(): Promise<PublicWorker[]> {
   const res = await fetch(`${API_URL}/users/public/workers`, {
     cache: "no-store",
   });
-  return parseJsonOrThrow<PublicWorker[]>(res);
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
 }
 
 export async function fetchShowcaseProjects(): Promise<ShowcaseProjectApi[]> {
   const res = await fetch(`${API_URL}/projects/public/showcase`, {
     cache: "no-store",
   });
-  return parseJsonOrThrow<ShowcaseProjectApi[]>(res);
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
 }
 
 export async function fetchShowcaseProjectById(
@@ -143,50 +103,21 @@ export async function fetchShowcaseProjectById(
   const res = await fetch(`${API_URL}/projects/public/showcase/${id}`, {
     cache: "no-store",
   });
-  return parseJsonOrThrow<ShowcaseProjectDetailApi>(res);
+  if (!res.ok) throw new Error(await parseError(res));
+  return res.json();
 }
 
-/** Image de secours stable (chantier) — évite les 404 Unsplash si un lien disparaît. */
-export const FALLBACK_SHOWCASE_IMAGE =
-  "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1600&q=80";
-
-/** Placeholders vitrine : picsum (seed fixe) pour ne pas dépendre du catalogue Unsplash. */
 export const SHOWCASE_IMAGES = [
-  "https://picsum.photos/seed/bmp-showcase-1/1600/1100",
-  "https://picsum.photos/seed/bmp-showcase-2/1600/1100",
-  "https://picsum.photos/seed/bmp-showcase-3/1600/1100",
-  "https://picsum.photos/seed/bmp-showcase-4/1600/1100",
-  "https://picsum.photos/seed/bmp-showcase-5/1600/1100",
-  "https://picsum.photos/seed/bmp-showcase-6/1600/1100",
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=80",
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900&q=80",
+  "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=900&q=80",
+  "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=900&q=80",
+  "https://images.unsplash.com/photo-1556912172-45b7abe8b7e1?w=900&q=80",
+  "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=900&q=80",
 ];
 
 export function pickShowcaseImage(index: number): string {
   return SHOWCASE_IMAGES[index % SHOWCASE_IMAGES.length];
-}
-
-/**
- * Anciens liens Unsplash encore en base mais retirés du catalogue (404).
- * À enrichir si d’autres IDs cassent — évite les requêtes mortes vers `/_next/image`.
- */
-const DEAD_IMAGE_URL_MARKERS = [
-  "photo-1600573472592-701b2c0100c7",
-  "photo-1600607687644-c7171b42498b",
-] as const;
-
-export function isDeadImageUrl(url: string): boolean {
-  const u = url.trim();
-  return DEAD_IMAGE_URL_MARKERS.some((m) => u.includes(m));
-}
-
-/** Garde uniquement les URLs encore valides (hors liste morte). */
-export function filterWorkingImageUrls(urls: string[] | undefined): string[] {
-  if (!urls?.length) return [];
-  return urls.filter((u): u is string => Boolean(u) && !isDeadImageUrl(u));
-}
-
-function firstWorkingUrl(urls: string[] | undefined): string | undefined {
-  const list = filterWorkingImageUrls(urls);
-  return list[0];
 }
 
 /** Image de couverture vitrine : préfère « après », sinon « avant », sinon placeholder. */
@@ -194,9 +125,9 @@ export function showcaseCoverImage(
   p: Pick<ShowcaseProjectApi, "photosApres" | "photosAvant">,
   fallbackIndex: number,
 ): string {
-  const after = firstWorkingUrl(p.photosApres?.filter(Boolean));
-  if (after) return after;
-  const before = firstWorkingUrl(p.photosAvant?.filter(Boolean));
-  if (before) return before;
+  const ap = p.photosApres?.filter(Boolean);
+  const av = p.photosAvant?.filter(Boolean);
+  if (ap?.length) return ap[0]!;
+  if (av?.length) return av[0]!;
   return pickShowcaseImage(fallbackIndex);
 }

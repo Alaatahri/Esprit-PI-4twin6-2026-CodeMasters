@@ -171,11 +171,11 @@ export default function ExpertProjetRapportPage() {
   const p = data?.project;
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-foreground dark:text-white">
       <div className="container mx-auto px-4 py-10 max-w-3xl space-y-8">
         <Link
           href="/expert/tous-les-projets"
-          className="inline-flex items-center gap-2 text-sm text-amber-400/90 hover:text-amber-300"
+          className="inline-flex items-center gap-2 text-sm text-amber-400/90 hover:text-amber-700 dark:text-amber-300"
         >
           <ArrowLeft className="w-4 h-4" />
           Tous les projets
@@ -191,22 +191,22 @@ export default function ExpertProjetRapportPage() {
             {err}
           </div>
         ) : !p ? (
-          <p className="text-muted-foreground">Aucune donnée.</p>
+          <p className="text-muted-foreground dark:text-gray-400">Aucune donnée.</p>
         ) : (
           <>
             <header className="space-y-2">
               <p className="text-xs uppercase tracking-wider text-amber-400/80">
                 Rapport de dossier
               </p>
-              <h1 className="text-2xl font-bold text-foreground">{p.titre}</h1>
+              <h1 className="text-2xl font-bold text-foreground dark:text-white">{p.titre}</h1>
               <div className="flex flex-wrap gap-2 text-xs">
                 {p.statut ? (
-                  <span className="px-2 py-0.5 rounded-full border border-border bg-muted">
+                  <span className="px-2 py-0.5 rounded-full border border-border dark:border-white/15 bg-black/5 dark:bg-white/5">
                     {p.statut}
                   </span>
                 ) : null}
                 {p.requestStatus ? (
-                  <span className="px-2 py-0.5 rounded-full border border-amber-500/25 bg-amber-500/10 text-amber-200">
+                  <span className="px-2 py-0.5 rounded-full border border-amber-500/25 bg-amber-500/10 text-amber-800 dark:text-amber-200">
                     {p.requestStatus}
                   </span>
                 ) : null}
@@ -218,15 +218,15 @@ export default function ExpertProjetRapportPage() {
               </div>
             </header>
 
-            <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
-              <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <User className="w-4 h-4 text-amber-300" />
+            <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+              <h2 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
+                <User className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                 Client
               </h2>
               <dl className="grid gap-2 text-sm">
                 <div className="flex flex-wrap gap-x-2">
-                  <dt className="text-muted-foreground">Nom</dt>
-                  <dd className="text-body-secondary">
+                  <dt className="text-foreground dark:text-gray-500">Nom</dt>
+                  <dd className="text-foreground dark:text-gray-200">
                     {personLabel(
                       typeof p.clientId === "object" ? p.clientId : undefined,
                     )}
@@ -234,19 +234,19 @@ export default function ExpertProjetRapportPage() {
                 </div>
                 {typeof p.clientId === "object" && p.clientId?.email ? (
                   <div>
-                    <span className="text-muted-foreground">E-mail · </span>
-                    <span className="text-body-secondary">{p.clientId.email}</span>
+                    <span className="text-foreground dark:text-gray-500">E-mail · </span>
+                    <span className="text-muted-foreground dark:text-gray-300">{p.clientId.email}</span>
                   </div>
                 ) : null}
                 {typeof p.clientId === "object" && p.clientId?.telephone ? (
                   <div>
-                    <span className="text-muted-foreground">Téléphone · </span>
-                    <span className="text-body-secondary">{p.clientId.telephone}</span>
+                    <span className="text-foreground dark:text-gray-500">Téléphone · </span>
+                    <span className="text-muted-foreground dark:text-gray-300">{p.clientId.telephone}</span>
                   </div>
                 ) : null}
                 <div>
-                  <span className="text-muted-foreground">Rôle · </span>
-                  <span className="text-body-secondary">
+                  <span className="text-foreground dark:text-gray-500">Rôle · </span>
+                  <span className="text-foreground dark:text-gray-200">
                     {typeof p.clientId === "object"
                       ? roleLabel(p.clientId.role)
                       : "—"}
@@ -255,15 +255,15 @@ export default function ExpertProjetRapportPage() {
               </dl>
             </section>
 
-            <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
-              <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+            <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+              <h2 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-300" />
                 Expert assigné sur la fiche
               </h2>
               {p.expertId ? (
                 <dl className="text-sm space-y-2">
                   <div>
-                    <span className="text-muted-foreground">Identité · </span>
+                    <span className="text-foreground dark:text-gray-500">Identité · </span>
                     <span className="text-emerald-200/95">
                       {personLabel(
                         typeof p.expertId === "object" ? p.expertId : undefined,
@@ -272,47 +272,47 @@ export default function ExpertProjetRapportPage() {
                   </div>
                   {typeof p.expertId === "object" && p.expertId.email ? (
                     <div>
-                      <span className="text-muted-foreground">E-mail · </span>
+                      <span className="text-foreground dark:text-gray-500">E-mail · </span>
                       {p.expertId.email}
                     </div>
                   ) : null}
                   <div>
-                    <span className="text-muted-foreground">Rôle · </span>
+                    <span className="text-foreground dark:text-gray-500">Rôle · </span>
                     {typeof p.expertId === "object"
                       ? roleLabel(p.expertId.role)
                       : "Expert"}
                   </div>
                   {typeof p.expertId === "object" &&
                   (p.expertId.competences?.length ?? 0) > 0 ? (
-                    <div className="text-xs text-muted-foreground">
+                    <div className="text-xs text-muted-foreground dark:text-gray-400">
                       Compétences :{" "}
                       {(p.expertId.competences ?? []).join(", ")}
                     </div>
                   ) : null}
                 </dl>
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground dark:text-gray-500">
                   Aucun expert n’est encore assigné sur ce dossier.
                 </p>
               )}
             </section>
 
-            <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
-              <h2 className="text-sm font-semibold text-foreground">Description & besoin</h2>
-              <p className="text-sm text-body-secondary whitespace-pre-wrap leading-relaxed">
+            <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-4">
+              <h2 className="text-sm font-semibold text-foreground dark:text-white">Description & besoin</h2>
+              <p className="text-sm text-muted-foreground dark:text-gray-300 whitespace-pre-wrap leading-relaxed">
                 {p.description ?? "—"}
               </p>
-              <div className="grid sm:grid-cols-2 gap-3 text-xs text-muted-foreground">
+              <div className="grid sm:grid-cols-2 gap-3 text-xs text-muted-foreground dark:text-gray-400">
                 {p.categorie ? (
                   <div>
                     Catégorie :{" "}
-                    <span className="text-body-secondary">{p.categorie}</span>
+                    <span className="text-foreground dark:text-gray-200">{p.categorie}</span>
                   </div>
                 ) : null}
                 {p.urgence ? (
                   <div>
                     Urgence :{" "}
-                    <span className="text-body-secondary">{p.urgence}</span>
+                    <span className="text-foreground dark:text-gray-200">{p.urgence}</span>
                   </div>
                 ) : null}
                 {p.ville ? (
@@ -355,20 +355,20 @@ export default function ExpertProjetRapportPage() {
               </div>
               {p.preferences_materiaux ? (
                 <div>
-                  <p className="text-[11px] uppercase text-muted-foreground mb-1">
+                  <p className="text-[11px] uppercase text-foreground dark:text-gray-500 mb-1">
                     Préférences matériaux
                   </p>
-                  <p className="text-sm text-body-secondary whitespace-pre-wrap">
+                  <p className="text-sm text-muted-foreground dark:text-gray-300 whitespace-pre-wrap">
                     {p.preferences_materiaux}
                   </p>
                 </div>
               ) : null}
               {p.exigences_techniques ? (
                 <div>
-                  <p className="text-[11px] uppercase text-muted-foreground mb-1">
+                  <p className="text-[11px] uppercase text-foreground dark:text-gray-500 mb-1">
                     Exigences techniques
                   </p>
-                  <p className="text-sm text-body-secondary whitespace-pre-wrap">
+                  <p className="text-sm text-muted-foreground dark:text-gray-300 whitespace-pre-wrap">
                     {p.exigences_techniques}
                   </p>
                 </div>
@@ -376,9 +376,9 @@ export default function ExpertProjetRapportPage() {
             </section>
 
             {(p.pieces_jointes?.length ?? 0) > 0 ? (
-              <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
-                <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                  <Paperclip className="w-4 h-4 text-amber-300" />
+              <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+                <h2 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
+                  <Paperclip className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                   Pièces jointes
                 </h2>
                 <ul className="space-y-2 text-sm break-all">
@@ -388,7 +388,7 @@ export default function ExpertProjetRapportPage() {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-amber-300 hover:underline"
+                        className="text-amber-700 dark:text-amber-300 hover:underline"
                       >
                         {url}
                       </a>
@@ -399,8 +399,8 @@ export default function ExpertProjetRapportPage() {
             ) : null}
 
             {(p.photos_site?.length ?? 0) > 0 ? (
-              <section className="rounded-2xl border border-border bg-card p-5 space-y-3">
-                <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+                <h2 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
                   <ImageIcon className="w-4 h-4 text-emerald-300" />
                   Photos du site (client)
                 </h2>
@@ -413,7 +413,7 @@ export default function ExpertProjetRapportPage() {
                       href={src || url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="aspect-square rounded-lg overflow-hidden border border-border bg-muted dark:bg-black/40"
+                      className="aspect-square rounded-lg overflow-hidden border border-border dark:border-white/10 bg-black/5 dark:bg-black/40"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
@@ -428,13 +428,13 @@ export default function ExpertProjetRapportPage() {
               </section>
             ) : null}
 
-            <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
-              <h2 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <ClipboardList className="w-4 h-4 text-amber-300" />
+            <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-4">
+              <h2 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
+                <ClipboardList className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                 Invitations matching (experts contactés)
               </h2>
               {!data?.matchingRequests?.length ? (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-foreground dark:text-gray-500">
                   Aucune invitation envoyée (matching non lancé ou en erreur à la
                   création).
                 </p>
@@ -443,7 +443,7 @@ export default function ExpertProjetRapportPage() {
                   {data.matchingRequests.map((r) => (
                     <div
                       key={r._id}
-                      className="rounded-xl border border-border bg-muted dark:bg-black/25 p-4 text-sm"
+                      className="rounded-xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/25 p-4 text-sm"
                     >
                       <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
                         <span
@@ -452,7 +452,7 @@ export default function ExpertProjetRapportPage() {
                               ? "border-emerald-500/35 bg-emerald-500/15 text-emerald-200"
                               : r.status === "refused"
                                 ? "border-red-500/30 bg-red-500/10 text-red-200"
-                                : "border-amber-500/30 bg-amber-500/10 text-amber-200"
+                                : "border-amber-500/30 bg-amber-500/10 text-amber-800 dark:text-amber-200"
                           }`}
                         >
                           {r.status === "accepted"
@@ -462,27 +462,27 @@ export default function ExpertProjetRapportPage() {
                               : "En attente"}
                         </span>
                         {typeof r.matchScore === "number" ? (
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-foreground dark:text-gray-500">
                             Score {r.matchScore.toFixed(1)}
                           </span>
                         ) : null}
                       </div>
-                      <p className="text-body-secondary">
+                      <p className="text-foreground dark:text-gray-200">
                         {personLabel(r.expertId)}{" "}
                         {r.expertId?.role ? (
-                          <span className="text-muted-foreground">
+                          <span className="text-foreground dark:text-gray-500">
                             ({roleLabel(r.expertId.role)})
                           </span>
                         ) : null}
                       </p>
-                      <p className="text-[11px] text-muted-foreground mt-1">
+                      <p className="text-[11px] text-foreground dark:text-gray-500 mt-1">
                         Envoyé {fmtDate(r.sentAt)}
                         {r.respondedAt
                           ? ` · Réponse ${fmtDate(r.respondedAt)}`
                           : ""}
                       </p>
                       {(r.requiredCompetences?.length ?? 0) > 0 ? (
-                        <p className="text-xs text-muted-foreground mt-2">
+                        <p className="text-xs text-muted-foreground dark:text-gray-400 mt-2">
                           Compétences cibles :{" "}
                           {(r.requiredCompetences ?? []).join(", ")}
                         </p>
@@ -493,40 +493,40 @@ export default function ExpertProjetRapportPage() {
               )}
             </section>
 
-            <section className="rounded-2xl border border-border bg-card p-5 space-y-4">
-              <h2 className="text-sm font-semibold text-foreground">
+            <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-4">
+              <h2 className="text-sm font-semibold text-foreground dark:text-white">
                 Propositions commerciales
               </h2>
               {!data?.proposals?.length ? (
-                <p className="text-sm text-muted-foreground">Aucune proposition.</p>
+                <p className="text-sm text-foreground dark:text-gray-500">Aucune proposition.</p>
               ) : (
                 <div className="space-y-4">
                   {data.proposals.map((pr) => (
                     <div
                       key={pr._id}
-                      className="rounded-xl border border-border bg-muted dark:bg-black/25 p-4 text-sm space-y-2"
+                      className="rounded-xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/25 p-4 text-sm space-y-2"
                     >
                       <div className="flex flex-wrap justify-between gap-2">
-                        <span className="text-amber-200 font-semibold">
+                        <span className="text-amber-800 dark:text-amber-200 font-semibold">
                           {Math.round(pr.proposedPrice).toLocaleString("fr-FR")}{" "}
                           TND
                         </span>
-                        <span className="text-muted-foreground">
+                        <span className="text-muted-foreground dark:text-gray-400">
                           {pr.estimatedDurationDays} j ·{" "}
-                          <span className="text-muted-foreground">{pr.status}</span>
+                          <span className="text-foreground dark:text-gray-500">{pr.status}</span>
                         </span>
                       </div>
-                      <p className="text-muted-foreground text-xs">
+                      <p className="text-foreground dark:text-gray-500 text-xs">
                         Par {personLabel(pr.expertId)}{" "}
                         {pr.expertId?.role
                           ? `(${roleLabel(pr.expertId.role)})`
                           : ""}
                       </p>
-                      <p className="text-body-secondary whitespace-pre-wrap">
+                      <p className="text-muted-foreground dark:text-gray-300 whitespace-pre-wrap">
                         {pr.technicalNotes}
                       </p>
                       {pr.materialSuggestions ? (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-foreground dark:text-gray-500">
                           Matériaux : {pr.materialSuggestions}
                         </p>
                       ) : null}
@@ -537,23 +537,23 @@ export default function ExpertProjetRapportPage() {
             </section>
 
             {(p.expertComment || p.expertFeedback) && (
-              <section className="rounded-2xl border border-border bg-card p-5 space-y-2 text-sm">
+              <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-2 text-sm">
                 {p.expertComment ? (
                   <div>
-                    <p className="text-[11px] text-muted-foreground uppercase mb-1">
+                    <p className="text-[11px] text-foreground dark:text-gray-500 uppercase mb-1">
                       Commentaire expert (vitrine)
                     </p>
-                    <p className="text-body-secondary whitespace-pre-wrap">
+                    <p className="text-muted-foreground dark:text-gray-300 whitespace-pre-wrap">
                       {p.expertComment}
                     </p>
                   </div>
                 ) : null}
                 {p.expertFeedback ? (
                   <div>
-                    <p className="text-[11px] text-muted-foreground uppercase mb-1">
+                    <p className="text-[11px] text-foreground dark:text-gray-500 uppercase mb-1">
                       Retour expert dossier
                     </p>
-                    <p className="text-body-secondary whitespace-pre-wrap">
+                    <p className="text-muted-foreground dark:text-gray-300 whitespace-pre-wrap">
                       {p.expertFeedback}
                     </p>
                   </div>
@@ -561,7 +561,7 @@ export default function ExpertProjetRapportPage() {
               </section>
             )}
 
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-[11px] text-foreground dark:text-gray-500">
               Création : {fmtDate(p.createdAt)} · Mise à jour :{" "}
               {fmtDate(p.updatedAt)}
             </p>
@@ -569,19 +569,19 @@ export default function ExpertProjetRapportPage() {
             <div className="flex flex-wrap gap-3 pt-2">
               <Link
                 href={`/expert/projects/${encodeURIComponent(projectId)}/proposition`}
-                className="inline-flex rounded-xl border border-border bg-muted px-4 py-2 text-sm text-foreground/90 hover:bg-muted"
+                className="inline-flex rounded-xl border border-border dark:border-white/15 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm text-foreground/90 dark:text-white/90 hover:bg-black/5 dark:bg-white/10"
               >
                 Proposition
               </Link>
               <Link
                 href={`/expert/projects/${encodeURIComponent(projectId)}/photos`}
-                className="inline-flex rounded-xl border border-border bg-muted px-4 py-2 text-sm text-foreground/90 hover:bg-muted"
+                className="inline-flex rounded-xl border border-border dark:border-white/15 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm text-foreground/90 dark:text-white/90 hover:bg-black/5 dark:bg-white/10"
               >
                 Photos projet
               </Link>
               <Link
                 href={`/expert/projects/${encodeURIComponent(projectId)}/suivi-photo`}
-                className="inline-flex rounded-xl border border-border bg-muted px-4 py-2 text-sm text-foreground/90 hover:bg-muted"
+                className="inline-flex rounded-xl border border-border dark:border-white/15 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm text-foreground/90 dark:text-white/90 hover:bg-black/5 dark:bg-white/10"
               >
                 Suivi photo
               </Link>

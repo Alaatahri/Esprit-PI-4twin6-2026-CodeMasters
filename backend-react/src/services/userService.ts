@@ -9,8 +9,6 @@ export interface User {
   role: 'client' | 'expert' | 'artisan' | 'manufacturer' | 'admin';
   telephone: string;
   createdAt?: string;
-  /** Absent ou true = vérifié (legacy) ; false = en attente de confirmation e-mail */
-  isEmailVerified?: boolean;
 }
 
 export const userService = {

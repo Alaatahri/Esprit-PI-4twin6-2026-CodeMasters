@@ -1,10 +1,7 @@
-// [DESIGN ONLY - BMP.tn Backoffice Redesign]
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Layout from './layouts/Layout';
 import Login from './pages/Login';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
 import Dashboard from './pages/Dashboard';
 import ProjectsList from './pages/ProjectsList';
 import ProjectDetails from './pages/ProjectDetails';
@@ -14,12 +11,14 @@ import Profile from './pages/Profile';
 import MatchingAdmin from './pages/MatchingAdmin';
 import ExpertRequests from './pages/ExpertRequests';
 import MesProjets from './pages/MesProjets';
+import AdminMarketplace from './pages/AdminMarketplace';
+import AdminMarketplaceSimple from './pages/AdminMarketplaceSimple';
 
 const PrivateRoute = ({ children }: { children: React.ReactElement }) => {
   const { isAuthenticated, isLoading } = useAuth();
   
   if (isLoading) {
-    return <div className="bmp-route-loading">Chargement...</div>;
+    return <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>Chargement...</div>;
   }
   
   return isAuthenticated ? children : <Navigate to="/login" />;
@@ -28,9 +27,8 @@ const PrivateRoute = ({ children }: { children: React.ReactElement }) => {
 function AppRoutes() {
   return (
     <Routes>
+      <Route path="/admin/marketplace" element={<AdminMarketplace />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/reset-password" element={<ResetPassword />} />
       <Route
         path="/"
         element={
@@ -121,6 +119,7 @@ function AppRoutes() {
           </PrivateRoute>
         }
       />
+      <Route path="/admin/marketplace" element={<AdminMarketplaceSimple />} />
       <Route path="*" element={<Navigate to="/" />} />
     </Routes>
   );

@@ -77,27 +77,27 @@ export default function ExpertSuiviPhotoPage() {
 
   if (user && normalizeRole(user.role) !== "expert") {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
-        <p className="text-muted-foreground">Accès réservé aux experts.</p>
+      <div className="min-h-screen bg-gray-950 text-foreground dark:text-white flex items-center justify-center px-4">
+        <p className="text-muted-foreground dark:text-gray-400">Accès réservé aux experts.</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-foreground dark:text-white">
       <div className="container mx-auto px-4 py-10 max-w-2xl">
         <Link
           href={hubHref}
-          className="inline-flex items-center gap-2 text-sm text-amber-400/90 hover:text-amber-300 mb-6"
+          className="inline-flex items-center gap-2 text-sm text-amber-400/90 hover:text-amber-700 dark:text-amber-300 mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Retour au dossier
         </Link>
 
-        <h1 className="text-2xl font-bold text-foreground mb-2">
+        <h1 className="text-2xl font-bold text-foreground dark:text-white mb-2">
           Suivi photo du chantier
         </h1>
-        <p className="text-sm text-muted-foreground mb-8">
+        <p className="text-sm text-muted-foreground dark:text-gray-400 mb-8">
           Envoyez une photo pour analyse automatique de l&apos;avancement.
         </p>
 
@@ -118,20 +118,20 @@ export default function ExpertSuiviPhotoPage() {
               + Ajouter des photos à la galerie avant / après du projet
             </Link>
 
-            <div className="rounded-2xl border border-border bg-muted p-5 mb-8 space-y-3">
-              <p className="text-lg font-semibold text-foreground">{project.titre}</p>
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
+            <div className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 p-5 mb-8 space-y-3">
+              <p className="text-lg font-semibold text-foreground dark:text-white">{project.titre}</p>
+              <div className="flex items-center justify-between text-xs text-muted-foreground dark:text-gray-400">
                 <span className="inline-flex items-center gap-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   Avancement global
                 </span>
-                <span className="text-amber-300 font-semibold tabular-nums">
+                <span className="text-amber-700 dark:text-amber-300 font-semibold tabular-nums">
                   {clampPct(project.avancement_global)}%
                 </span>
               </div>
-              <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+              <div className="h-2.5 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
                 <div
-                  className="h-full rounded-full bmp-progress-accent transition-all"
+                  className="h-full rounded-full bg-gradient-to-r from-amber-500 to-yellow-400 transition-all"
                   style={{
                     width: `${clampPct(project.avancement_global)}%`,
                   }}
@@ -148,7 +148,7 @@ export default function ExpertSuiviPhotoPage() {
             ) : null}
 
             <div className="mt-6">
-              <h3 className="text-sm font-semibold text-foreground mb-2">
+              <h3 className="text-sm font-semibold text-foreground dark:text-white mb-2">
                 Journal de suivi
               </h3>
               <SuiviTimeline projectId={project._id} apiBaseUrl={API_URL} />

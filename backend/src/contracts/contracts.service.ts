@@ -5,7 +5,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import PDFDocument from 'pdfkit';
+// pdfkit est CommonJS -> l'import default peut casser selon le transpile TS/ESM.
+// On force `require` pour obtenir le constructeur.
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const PDFDocument = require('pdfkit');
 import { Model, Types } from 'mongoose';
 import { existsSync, unlinkSync } from 'fs';
 import { join } from 'path';

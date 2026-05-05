@@ -10,14 +10,6 @@ export function formatApiError(data: unknown, fallback = "Erreur"): string {
       ? m
       : "Le serveur API ne répond pas. Démarrez le backend (port 3001) ou vérifiez BACKEND_ORIGIN.";
   }
-  if (
-    typeof o.error === "string" &&
-    o.error === "vercel_deployment_protection" &&
-    typeof m === "string" &&
-    m.trim()
-  ) {
-    return m;
-  }
   return fallback;
 }
 

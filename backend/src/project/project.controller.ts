@@ -13,7 +13,6 @@ import {
   Req,
   UploadedFiles,
   UseInterceptors,
-  ServiceUnavailableException,
 } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -41,26 +40,9 @@ export class ProjectController {
 
   @Post()
   async create(@Body() createProjectDto: CreateProjectDto) {
-    let created: Project;
-    try {
-      created = await this.projectService.create(
-        createProjectDto as unknown as Partial<Project>,
-      );
-    } catch (err: any) {
-      const msg = String(err?.message ?? err ?? 'Erreur lors de la création du projet.');
-      const isDbIssue =
-        /MongoServerSelectionError|ECONNREFUSED|EAI_AGAIN|timed out|ECONNRESET|connect/i.test(
-          msg,
-        );
-      if (isDbIssue) {
-        throw new ServiceUnavailableException(
-          'Base de données indisponible. Réessayez plus tard.',
-        );
-      }
-      // Permet d’éviter les 500 non désirés : les erreurs validation/cast redeviennent des 400
-      if (err instanceof BadRequestException) throw err;
-      throw new BadRequestException(msg);
-    }
+    const created = await this.projectService.create(
+      createProjectDto as unknown as Partial<Project>,
+    );
     // Déclenchement automatique du matching pour alimenter "Nouveaux projets" côté expert.
     try {
       const id =

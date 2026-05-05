@@ -1,9 +1,8 @@
-// [DESIGN ONLY - BMP.tn Backoffice Redesign]
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+﻿import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ReactNode, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { NotificationBell } from '../components/NotificationBell';
-import './Layout.css';
+import '../components/layouts/Layout.css';
 
 interface LayoutProps {
   children: ReactNode;
@@ -49,6 +48,15 @@ const IconMesProjets = () => (
   </svg>
 );
 
+// ⭐ ICÔNE MARKETPLACE
+const IconMarketplace = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <path d="M16 10a4 4 0 0 1-8 0" />
+  </svg>
+);
+
 const IconMenu = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <line x1="3" y1="12" x2="21" y2="12" />
@@ -71,9 +79,7 @@ const Layout = ({ children }: LayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const isActive = (path: string) => {
-    if (path === '/') {
-      return location.pathname === '/';
-    }
+    if (path === '/') return location.pathname === '/';
     return location.pathname.startsWith(path);
   };
 
@@ -92,21 +98,15 @@ const Layout = ({ children }: LayoutProps) => {
     </svg>
   );
 
+  // ⭐ MENU AVEC MARKETPLACE (visible pour admin uniquement)
   const menuItems = [
     { path: '/', label: 'Dashboard', icon: IconDashboard },
     { path: '/projects', label: 'Projets', icon: IconProjects },
-    ...(user?.role !== 'client'
-      ? [{ path: '/users', label: 'Utilisateurs', icon: IconUsers }]
-      : []),
-    ...(user?.role === 'admin' || user?.role === 'expert'
-      ? [{ path: '/admin/matching', label: 'Matching IA', icon: IconMatching }]
-      : []),
-    ...(user?.role === 'expert'
-      ? [{ path: '/expert/requests', label: 'Mes demandes', icon: IconMatching }]
-      : []),
-    ...(user?.role === 'artisan' || user?.role === 'expert'
-      ? [{ path: '/mes-projets', label: 'Mes projets', icon: IconMesProjets }]
-      : []),
+    ...(user?.role !== 'client' ? [{ path: '/users', label: 'Utilisateurs', icon: IconUsers }] : []),
+    ...(user?.role === 'admin' ? [{ path: '/admin/marketplace', label: 'Marketplace', icon: IconMarketplace }] : []),
+    ...(user?.role === 'admin' || user?.role === 'expert' ? [{ path: '/admin/matching', label: 'Matching IA', icon: IconMatching }] : []),
+    ...(user?.role === 'expert' ? [{ path: '/expert/requests', label: 'Mes demandes', icon: IconMatching }] : []),
+    ...(user?.role === 'artisan' || user?.role === 'expert' ? [{ path: '/mes-projets', label: 'Mes projets', icon: IconMesProjets }] : []),
     { path: '/profile', label: 'Mon Profil', icon: IconProfile },
   ];
 
@@ -117,7 +117,6 @@ const Layout = ({ children }: LayoutProps) => {
 
   return (
     <div className="layout-fullscreen">
-      {/* Sidebar */}
       <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
         <div className="sidebar-header">
           <div className="sidebar-brand">
@@ -129,32 +128,20 @@ const Layout = ({ children }: LayoutProps) => {
               </div>
             )}
           </div>
-          <button 
-            className="sidebar-toggle"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            aria-label="Toggle sidebar"
-          >
+          <button className="sidebar-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <IconX /> : <IconMenu />}
           </button>
         </div>
 
         <nav className="sidebar-nav">
-          {/* → DESIGN : libellé de section (navigation) */}
-          {sidebarOpen && <div className="nav-section-label">Navigation</div>}
           <ul className="nav-list">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const active = isActive(item.path);
               return (
                 <li key={item.path}>
-                  <Link 
-                    to={item.path}
-                    className={`nav-item ${active ? 'active' : ''}`}
-                    title={sidebarOpen ? '' : item.label}
-                  >
-                    <span className="nav-icon">
-                      <Icon />
-                    </span>
+                  <Link to={item.path} className={`nav-item ${active ? 'active' : ''}`} title={sidebarOpen ? '' : item.label}>
+                    <span className="nav-icon"><Icon /></span>
                     {sidebarOpen && <span className="nav-label">{item.label}</span>}
                     {active && <span className="nav-indicator"></span>}
                   </Link>
@@ -166,29 +153,20 @@ const Layout = ({ children }: LayoutProps) => {
 
         {sidebarOpen && (
           <div className="sidebar-footer">
-            {/* → DESIGN : bloc utilisateur (pied de sidebar) */}
             <div className="sidebar-footer-content">
-              <div className="footer-icon">
-                {user?.nom?.charAt(0).toUpperCase() || 'U'}
-              </div>
+              <div className="footer-icon">B</div>
               <div className="footer-text">
-                <p className="footer-title">{user?.nom || 'Utilisateur'}</p>
-                <p className="footer-subtitle">{user?.role || 'Utilisateur'}</p>
+                <p className="footer-title">BMP.tn Platform</p>
+                <p className="footer-subtitle">Version 1.0.0</p>
               </div>
             </div>
-            <button 
-              className="sidebar-logout"
-              onClick={handleLogout}
-              title="Déconnexion"
-            >
-              <IconLogout />
-              <span>Déconnexion</span>
+            <button className="sidebar-logout" onClick={handleLogout}>
+              <IconLogout /><span>Déconnexion</span>
             </button>
           </div>
         )}
       </aside>
 
-      {/* Main Content */}
       <div className="main-wrapper">
         <header className="top-header">
           <div className="header-content">
@@ -198,6 +176,7 @@ const Layout = ({ children }: LayoutProps) => {
               {location.pathname === '/projects/add' && 'Nouveau Projet'}
               {location.pathname.startsWith('/projects/') && !location.pathname.includes('/add') && 'Détails du Projet'}
               {location.pathname === '/users' && 'Gestion des Utilisateurs'}
+              {location.pathname === '/admin/marketplace' && 'Administration Marketplace'}
               {location.pathname.startsWith('/admin/matching') && 'Matching IA'}
               {location.pathname.startsWith('/expert/requests') && 'Mes demandes'}
               {location.pathname.startsWith('/mes-projets') && 'Mes projets'}
@@ -206,33 +185,19 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="header-actions">
               <NotificationBell />
               <Link to="/profile" className="user-profile">
-                <div className="profile-avatar">
-                  {user?.nom?.charAt(0).toUpperCase() || 'U'}
-                </div>
+                <div className="profile-avatar">{user?.nom?.charAt(0).toUpperCase() || 'U'}</div>
                 <div className="profile-info">
                   <span className="profile-name">{user?.nom || 'Utilisateur'}</span>
                   <span className="profile-role">{user?.role || 'Utilisateur'}</span>
                 </div>
               </Link>
-              <button className="logout-button" onClick={handleLogout} title="Déconnexion">
-                <IconLogout />
-              </button>
+              <button className="logout-button" onClick={handleLogout}><IconLogout /></button>
             </div>
           </div>
         </header>
-
-        <main className="main-content-fullscreen">
-          {children}
-        </main>
+        <main className="main-content-fullscreen">{children}</main>
       </div>
-
-      {/* Overlay pour mobile */}
-      {sidebarOpen && (
-        <div 
-          className="sidebar-overlay"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
+      {sidebarOpen && <div className="sidebar-overlay" onClick={() => setSidebarOpen(false)} />}
     </div>
   );
 };

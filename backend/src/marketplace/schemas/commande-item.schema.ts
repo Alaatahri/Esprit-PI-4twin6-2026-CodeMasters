@@ -16,6 +16,14 @@ export class CommandeItem {
 
   @Prop({ required: true, min: 0 })
   prix: number;
+
+  // ⭐ NOUVEAU : Nom du produit au moment de la commande (pour historique)
+  @Prop()
+  produitNom: string;
+
+  // ⭐ NOUVEAU : Poids total de l'item (quantité × poids unitaire)
+  @Prop({ default: 0 })
+  poids_total_kg: number;
 }
 
 export const CommandeItemSchema = SchemaFactory.createForClass(CommandeItem);

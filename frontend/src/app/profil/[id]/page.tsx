@@ -48,7 +48,9 @@ type ProfilePayload = {
     projetTitre: string;
     note?: number;
     commentaire?: string;
-    kind: "client" | "artisan" | "expert";
+    kind: "client" | "artisan" | "expert" | "marketplace";
+    authorLabel?: string;
+    date_avis?: string;
   }>;
 };
 
@@ -62,7 +64,7 @@ function Stars({ value }: { value: number }) {
           className={
             i < v
               ? "w-4 h-4 text-amber-400 fill-amber-400"
-              : "w-4 h-4 text-foreground/15"
+              : "w-4 h-4 text-foreground/15 dark:text-white/15"
           }
         />
       ))}
@@ -113,10 +115,16 @@ export default function ProfilPublicPage() {
     };
   }, [id]);
 
+  const marketplaceReviews = useMemo(
+    () => (data?.reviews ?? []).filter((r) => r.kind === "marketplace"),
+    [data?.reviews],
+  );
+
   const reviewsByProject = useMemo(() => {
     if (!data?.reviews?.length) return new Map<string, ProfilePayload["reviews"]>();
     const m = new Map<string, ProfilePayload["reviews"]>();
     for (const r of data.reviews) {
+      if (r.kind === "marketplace") continue;
       const list = m.get(r.projetId) ?? [];
       list.push(r);
       m.set(r.projetId, list);
@@ -124,9 +132,14 @@ export default function ProfilPublicPage() {
     return m;
   }, [data?.reviews]);
 
+  const projectLinkedReviewsCount = useMemo(
+    () => (data?.reviews ?? []).filter((r) => r.kind !== "marketplace").length,
+    [data?.reviews],
+  );
+
   if (loading) {
     return (
-      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-muted-foreground">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3 text-muted-foreground dark:text-gray-400">
         <Loader2 className="h-10 w-10 animate-spin text-amber-400/80" />
         <p className="text-sm">Chargement du profil…</p>
       </div>
@@ -136,10 +149,10 @@ export default function ProfilPublicPage() {
   if (err || !data?.user) {
     return (
       <div className="max-w-lg mx-auto text-center space-y-4 py-16">
-        <p className="text-foreground font-medium">{err || "Profil introuvable."}</p>
+        <p className="text-foreground dark:text-white font-medium">{err || "Profil introuvable."}</p>
         <Link
           href="/espace"
-          className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-300 text-sm"
+          className="inline-flex items-center gap-2 text-amber-400 hover:text-amber-700 dark:text-amber-300 text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
           Retour à l&apos;accueil
@@ -161,21 +174,20 @@ export default function ProfilPublicPage() {
     <div className="mx-auto max-w-3xl space-y-12 pb-20">
       <Link
         href="/espace"
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-amber-300"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-400 transition-colors hover:text-amber-700 dark:text-amber-300"
       >
         <ArrowLeft className="h-4 w-4" />
         Retour à l&apos;accueil BMP.tn
       </Link>
 
       {/* En-tête profil */}
-      <header className="overflow-hidden rounded-3xl border border-border bg-gradient-to-b from-white/[0.07] to-transparent">
+      <header className="overflow-hidden rounded-3xl border border-border dark:border-white/10 bg-gradient-to-b from-white/[0.07] to-transparent">
         <div className="flex flex-col gap-8 p-6 sm:flex-row sm:items-start sm:gap-10 sm:p-10">
-          <div className="relative mx-auto h-44 w-44 shrink-0 overflow-hidden rounded-2xl border border-border bg-gray-900 shadow-xl sm:mx-0 sm:h-52 sm:w-52">
+          <div className="relative mx-auto h-44 w-44 shrink-0 overflow-hidden rounded-2xl border border-border dark:border-white/15 bg-card dark:bg-gray-900 shadow-xl sm:mx-0 sm:h-52 sm:w-52">
             <Image
               src={photo}
               alt={name}
               fill
-              unoptimized
               className="object-cover"
               sizes="208px"
               priority
@@ -187,7 +199,7 @@ export default function ProfilPublicPage() {
                 className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ${
                   u.role === "expert"
                     ? "bg-sky-500/20 text-sky-200"
-                    : "bg-amber-500/20 text-amber-200"
+                    : "bg-amber-500/20 text-amber-800 dark:text-amber-200"
                 }`}
               >
                 {u.role === "expert" ? (
@@ -198,12 +210,12 @@ export default function ProfilPublicPage() {
                 {roleLabel}
               </span>
               {u.isAvailable === false && (
-                <span className="text-xs text-muted-foreground">
+                <span className="text-xs text-foreground dark:text-gray-500">
                   Indisponible pour de nouveaux dossiers
                 </span>
               )}
             </div>
-            <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground dark:text-white sm:text-4xl">
               {name}
             </h1>
             {u.role === "artisan" && u.specialite && (
@@ -216,7 +228,7 @@ export default function ProfilPublicPage() {
                   {u.competences.map((c) => (
                     <li
                       key={c}
-                      className="rounded-lg border border-border bg-muted px-2.5 py-1 text-xs text-body-secondary"
+                      className="rounded-lg border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 px-2.5 py-1 text-xs text-foreground dark:text-gray-200"
                     >
                       {c}
                     </li>
@@ -224,20 +236,20 @@ export default function ProfilPublicPage() {
                 </ul>
               )}
             {u.bio && (
-              <div className="rounded-2xl border border-border bg-muted dark:bg-black/25 p-4 text-left">
-                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              <div className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/25 p-4 text-left">
+                <p className="text-xs font-semibold uppercase tracking-wider text-foreground dark:text-gray-500">
                   Présentation
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-body-secondary">
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground dark:text-gray-300">
                   {u.bio}
                 </p>
               </div>
             )}
-            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground sm:justify-start">
+            <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground dark:text-gray-400 sm:justify-start">
               {rating != null && (
                 <span className="inline-flex items-center gap-2">
                   <Stars value={rating} />
-                  <span className="tabular-nums font-medium text-foreground">
+                  <span className="tabular-nums font-medium text-foreground dark:text-white">
                     {rating.toFixed(1)} / 5
                   </span>
                   <span className="text-gray-600">(profil)</span>
@@ -245,19 +257,19 @@ export default function ProfilPublicPage() {
               )}
               {years != null && (
                 <span className="inline-flex items-center gap-1.5">
-                  <UserCircle className="h-4 w-4 text-muted-foreground" />
+                  <UserCircle className="h-4 w-4 text-foreground dark:text-gray-500" />
                   {years} ans d&apos;expérience
                 </span>
               )}
               {u.telephone && (
                 <span className="inline-flex items-center gap-1.5">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <Phone className="h-4 w-4 text-foreground dark:text-gray-500" />
                   {u.telephone}
                 </span>
               )}
             </div>
             {zones.length > 0 && u.role === "artisan" && (
-              <p className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-muted-foreground sm:justify-start">
+              <p className="flex flex-wrap items-center justify-center gap-1.5 text-xs text-foreground dark:text-gray-500 sm:justify-start">
                 <MapPin className="h-3.5 w-3.5 shrink-0 text-amber-500/70" />
                 {zones.join(" · ")}
               </p>
@@ -265,27 +277,27 @@ export default function ProfilPublicPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-px border-t border-border bg-muted">
-          <div className="bg-background/80 px-3 py-4 text-center sm:px-4">
+        <div className="grid grid-cols-3 gap-px border-t border-border dark:border-white/10 bg-black/5 dark:bg-white/5">
+          <div className="bg-gray-950/80 px-3 py-4 text-center sm:px-4">
             <Briefcase className="mx-auto mb-1 h-4 w-4 text-amber-400/90" />
-            <p className="text-2xl font-bold tabular-nums text-foreground">
+            <p className="text-2xl font-bold tabular-nums text-foreground dark:text-white">
               {data.stats.projectCount}
             </p>
-            <p className="text-[11px] text-muted-foreground">Projets liés</p>
+            <p className="text-[11px] text-foreground dark:text-gray-500">Projets liés</p>
           </div>
-          <div className="bg-background/80 px-3 py-4 text-center sm:px-4">
+          <div className="bg-gray-950/80 px-3 py-4 text-center sm:px-4">
             <CheckCircle2 className="mx-auto mb-1 h-4 w-4 text-emerald-400/90" />
             <p className="text-2xl font-bold tabular-nums text-emerald-300">
               {data.stats.completedCount}
             </p>
-            <p className="text-[11px] text-muted-foreground">Terminés</p>
+            <p className="text-[11px] text-foreground dark:text-gray-500">Terminés</p>
           </div>
-          <div className="bg-background/80 px-3 py-4 text-center sm:px-4">
+          <div className="bg-gray-950/80 px-3 py-4 text-center sm:px-4">
             <MessageSquare className="mx-auto mb-1 h-4 w-4 text-sky-400/90" />
-            <p className="text-2xl font-bold tabular-nums text-foreground">
+            <p className="text-2xl font-bold tabular-nums text-foreground dark:text-white">
               {data.reviews.length}
             </p>
-            <p className="text-[11px] text-muted-foreground">Retours & notes</p>
+            <p className="text-[11px] text-foreground dark:text-gray-500">Retours & notes</p>
           </div>
         </div>
       </header>
@@ -293,15 +305,15 @@ export default function ProfilPublicPage() {
       {/* Projets */}
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">
+          <h2 className="text-xl font-semibold text-foreground dark:text-white">
             Chantiers & dossiers
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-foreground dark:text-gray-500">
             Historique des projets auxquels ce membre est associé sur BMP.tn.
           </p>
         </div>
         {data.projects.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-border bg-muted/60 px-4 py-8 text-center text-sm text-muted-foreground">
+          <p className="rounded-2xl border border-dashed border-border dark:border-white/15 bg-white/[0.02] px-4 py-8 text-center text-sm text-foreground dark:text-gray-500">
             Aucun projet enregistré pour l&apos;instant.
           </p>
         ) : (
@@ -309,28 +321,28 @@ export default function ProfilPublicPage() {
             {data.projects.map((p) => (
               <li
                 key={String(p._id)}
-                className="rounded-2xl border border-border bg-card p-5 transition hover:border-border"
+                className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 transition hover:border-border dark:border-white/15"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
-                  <p className="font-semibold text-foreground">{p.titre}</p>
+                  <p className="font-semibold text-foreground dark:text-white">{p.titre}</p>
                   <span
                     className={`shrink-0 rounded-full px-3 py-1 text-xs font-medium ${
                       p.statut === "Terminé"
                         ? "bg-emerald-500/15 text-emerald-300"
                         : p.statut === "En cours"
                           ? "bg-sky-500/15 text-sky-300"
-                          : "bg-gray-600/30 text-body-secondary"
+                          : "bg-gray-600/30 text-muted-foreground dark:text-gray-300"
                     }`}
                   >
                     {p.statut}
                   </span>
                 </div>
                 {p.description && (
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground dark:text-gray-400">
                     {p.description}
                   </p>
                 )}
-                <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                <div className="mt-3 flex flex-wrap items-center gap-4 text-xs text-foreground dark:text-gray-500">
                   <span className="inline-flex items-center gap-1.5">
                     <Clock className="h-3.5 w-3.5" />
                     {p.date_debut
@@ -351,20 +363,68 @@ export default function ProfilPublicPage() {
         )}
       </section>
 
+      {/* Avis marketplace (boutique / livraison / professionnel) */}
+      <section className="space-y-4">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground dark:text-white">
+            Marketplace reviews
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground dark:text-gray-500">
+            Ratings left from BMP.tn marketplace (delivery driver or professional profile).
+          </p>
+        </div>
+        {marketplaceReviews.length === 0 ? (
+          <p className="rounded-2xl border border-dashed border-border dark:border-white/15 bg-white/[0.02] px-4 py-8 text-center text-sm text-muted-foreground dark:text-gray-500">
+            No marketplace reviews yet for this profile.
+          </p>
+        ) : (
+          <ul className="space-y-3">
+            {marketplaceReviews.map((r, idx) => (
+              <li
+                key={`mp-${idx}-${r.date_avis ?? idx}`}
+                className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/30 p-5"
+              >
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[11px] font-medium uppercase tracking-wide text-foreground dark:text-gray-500">
+                      Marketplace
+                    </span>
+                    {typeof r.note === "number" && <Stars value={r.note} />}
+                  </div>
+                  <span className="text-xs text-muted-foreground dark:text-gray-500">
+                    {r.authorLabel ? `${r.authorLabel} · ` : ""}
+                    {r.date_avis
+                      ? new Date(r.date_avis).toLocaleDateString("en-GB")
+                      : ""}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-relaxed text-muted-foreground dark:text-gray-300">
+                  {r.projetTitre}
+                </p>
+                {r.commentaire ? (
+                  <p className="mt-2 text-sm italic text-muted-foreground dark:text-gray-300">
+                    &ldquo;{r.commentaire}&rdquo;
+                  </p>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+
       {/* Avis regroupés par projet */}
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-semibold text-foreground">
-            Avis clients & notes projet
+          <h2 className="text-xl font-semibold text-foreground dark:text-white">
+            Project feedback & ratings
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Commentaires et notes enregistrés sur les projets (selon le rôle :
-            avis global, note expert ou note artisan).
+          <p className="mt-1 text-sm text-muted-foreground dark:text-gray-500">
+            Comments and ratings recorded on projects (client feedback, expert or artisan scores).
           </p>
         </div>
-        {data.reviews.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-border bg-muted/60 px-4 py-8 text-center text-sm text-muted-foreground">
-            Pas encore d&apos;avis publié sur ces projets.
+        {projectLinkedReviewsCount === 0 ? (
+          <p className="rounded-2xl border border-dashed border-border dark:border-white/15 bg-white/[0.02] px-4 py-8 text-center text-sm text-muted-foreground dark:text-gray-500">
+            No project-linked reviews yet.
           </p>
         ) : (
           <div className="space-y-6">
@@ -375,7 +435,7 @@ export default function ProfilPublicPage() {
               return (
                 <div
                   key={pid}
-                  className="rounded-2xl border border-border bg-muted dark:bg-black/30 p-5"
+                  className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/30 p-5"
                 >
                   <p className="text-sm font-semibold text-amber-200/95">
                     {p.titre}
@@ -384,22 +444,22 @@ export default function ProfilPublicPage() {
                     {revs.map((r, idx) => (
                       <li
                         key={`${r.kind}-${idx}`}
-                        className="border-t border-border pt-4 first:border-t-0 first:pt-0"
+                        className="border-t border-border dark:border-white/5 pt-4 first:border-t-0 first:pt-0"
                       >
                         <div className="flex flex-wrap items-center gap-2">
-                          <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                          <span className="text-[11px] font-medium uppercase tracking-wide text-foreground dark:text-gray-500">
                             {r.kind === "client"
-                              ? "Avis client"
+                              ? "Client review"
                               : r.kind === "expert"
-                                ? "Note sur l’expert (projet)"
-                                : "Note sur l’artisan (projet)"}
+                                ? "Expert score (project)"
+                                : "Contractor score (project)"}
                           </span>
                           {typeof r.note === "number" && (
                             <Stars value={r.note} />
                           )}
                         </div>
                         {r.commentaire && (
-                          <p className="mt-2 text-sm italic leading-relaxed text-body-secondary">
+                          <p className="mt-2 text-sm italic leading-relaxed text-muted-foreground dark:text-gray-300">
                             &ldquo;{r.commentaire}&rdquo;
                           </p>
                         )}

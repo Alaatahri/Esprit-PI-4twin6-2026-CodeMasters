@@ -12,13 +12,9 @@ type ScoredExpert = {
 };
 
 function norm(s: unknown): string {
-  const raw = String(s ?? '')
+  return String(s ?? '')
     .trim()
     .toLowerCase();
-  // Normalise accents/diacritiques pour faire matcher "électricité" et "electricite", etc.
-  return raw
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '');
 }
 
 export async function findBestExperts(
@@ -48,11 +44,7 @@ export async function findBestExperts(
 
       let matchedCount = 0;
       for (const req of required) {
-        // Match exact OU partiel (ex: "peinture" <-> "peinture interieur")
-        const ok = expertCompetences.some(
-          (c) => c === req || c.includes(req) || req.includes(c),
-        );
-        if (ok) matchedCount++;
+        if (expertCompetences.includes(req)) matchedCount++;
       }
 
       const competenceScore = (matchedCount / required.length) * 60;

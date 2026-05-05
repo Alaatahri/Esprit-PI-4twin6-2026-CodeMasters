@@ -3,12 +3,7 @@ import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
-export type WorkZoneScope =
-  | 'tn_all'
-  | 'tn_city'
-  | 'tn_region'
-  | 'country'
-  | 'world';
+export type WorkZoneScope = 'tn_all' | 'tn_city' | 'country' | 'world';
 export type WorkZone = {
   scope: WorkZoneScope;
   value?: string;
@@ -34,6 +29,21 @@ export class User {
   })
   role: string;
 
+  /**
+   * Workflow d'inscription Expert:
+   * - `pending` : en attente de validation admin
+   * - `approved`: validé (accès complet + visible dans la vitrine)
+   * - `rejected`: refusé
+   *
+   * Par défaut on met `approved` pour ne pas bloquer les anciens comptes.
+   */
+  @Prop({
+    type: String,
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'approved',
+  })
+  expertApprovalStatus?: 'pending' | 'approved' | 'rejected';
+
   @Prop({ type: [String], default: [] })
   competences?: string[];
 
@@ -52,7 +62,7 @@ export class User {
       {
         scope: {
           type: String,
-          enum: ['tn_all', 'tn_city', 'tn_region', 'country', 'world'],
+          enum: ['tn_all', 'tn_city', 'country', 'world'],
           required: true,
         },
         value: { type: String },
@@ -61,33 +71,6 @@ export class User {
     default: [],
   })
   zones_travail?: WorkZone[];
-
-  /** Livreur — vélo, moto, voiture, camionnette */
-  @Prop()
-  livreur_transport?: string;
-
-  @Prop({
-    type: [
-      {
-        scope: {
-          type: String,
-          enum: ['tn_all', 'tn_city', 'tn_region', 'country', 'world'],
-          required: true,
-        },
-        value: { type: String },
-      },
-    ],
-    default: [],
-  })
-  zones_livraison?: WorkZone[];
-
-  /** Livreur — CIN / permis (JPG, PNG, PDF) */
-  @Prop()
-  cin_permis_document_path?: string;
-
-  /** Livreur — ex. temps_plein, temps_partiel, weekend */
-  @Prop({ type: [String], default: [] })
-  livreur_disponibilite?: string[];
 
   @Prop({ type: Boolean, default: true })
   isAvailable?: boolean;
@@ -105,42 +88,6 @@ export class User {
   /** Présentation courte pour la vitrine */
   @Prop()
   bio?: string;
-
-  /** Expert — domaines couverts (ex. Finance, Droit) */
-  @Prop()
-  domaine_expertise?: string;
-
-  /** Expert — Bac+3, Bac+5, Doctorat, Autre (clé stockée : bac_plus_3, …) */
-  @Prop()
-  niveau_etudes?: string;
-
-  /** Expert — chemin relatif servi sous /uploads/... (PDF ou DOCX) */
-  @Prop()
-  cv_document_path?: string;
-
-  /** Expert — URL profil LinkedIn */
-  @Prop()
-  linkedin_url?: string;
-
-  /** Anciens comptes : true par défaut (schéma) ; nouvelles inscriptions mises à false jusqu’à vérification. */
-  @Prop({ type: Boolean, default: true })
-  isEmailVerified?: boolean;
-
-  @Prop({ type: String, default: null, select: false })
-  emailVerificationToken?: string | null;
-
-  @Prop({ type: Date, default: null, select: false })
-  emailVerificationExpires?: Date | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
-
-/** Unicité seulement quand le jeton est une chaîne (plusieurs comptes peuvent avoir le champ absent / null). */
-UserSchema.index(
-  { emailVerificationToken: 1 },
-  {
-    unique: true,
-    name: 'email_verification_token_unique_string',
-    partialFilterExpression: { emailVerificationToken: { $type: 'string' } },
-  },
-);

@@ -11,7 +11,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Project, ProjectDocument } from '../project/schemas/project.schema';
 import { User, UserDocument } from '../user/schemas/user.schema';
-import { InAppNotificationService } from '../alerts/in-app-notification.service';
 import {
   MatchingRequest,
   MatchingRequestDocument,
@@ -34,7 +33,6 @@ export class MatchingService {
     @InjectModel(Project.name) private projectModel: Model<ProjectDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     @InjectModel(Proposal.name) private proposalModel: Model<ProposalDocument>,
-    private readonly inAppNotificationService: InAppNotificationService,
   ) {}
 
   private isValidObjectId(id: string): boolean {
@@ -201,69 +199,6 @@ export class MatchingService {
       }
     }
 
-    // BUG 2: notifier les experts invités (in-app) avec options Accept / Reject.
-    // On récupère les MatchingRequest (insertées ou déjà existantes) pour construire un message avec requestId.
-    try {
-      const expertIds = matchedExperts
-        .map((e: any) => String(e?._id ?? '').trim())
-        .filter((id: string) => this.isValidObjectId(id));
-      if (expertIds.length) {
-        const reqs: any[] = await this.matchingRequestModel
-          .find({
-            projectId: new Types.ObjectId(projectId),
-            expertId: { $in: expertIds.map((id) => new Types.ObjectId(id)) },
-            status: 'pending',
-          })
-          .sort({ sentAt: -1 })
-          .lean()
-          .exec();
-
-        const byExpert = new Map<string, any>();
-        for (const r of reqs || []) {
-          const eid = String(r?.expertId ?? '');
-          if (eid && !byExpert.has(eid)) byExpert.set(eid, r);
-        }
-
-        const projectTitle = String(project?.titre ?? '').trim() || 'Nouveau projet';
-        const projectDesc = String(project?.description ?? '').trim();
-
-        const entries = Array.from(byExpert.entries()).map(([eid, r]) => ({
-          recipientId: eid,
-          recipientRole: 'expert',
-          projectId,
-          type: 'matching_invite',
-          message:
-            `Invitation projet : « ${projectTitle} ».\n` +
-            (projectDesc ? `Détails: ${projectDesc}\n` : '') +
-            `Options:\n` +
-            `- Accepter: PATCH /api/matching/respond/${String(r?._id ?? '')} avec { "response": "accepted" }\n` +
-            `- Refuser: PATCH /api/matching/respond/${String(r?._id ?? '')} avec { "response": "refused" }`,
-          metadata: {
-            requestId: String(r?._id ?? ''),
-            projectId: String(projectId),
-            projectTitle,
-            requiredCompetences: analysis.requiredCompetences,
-            accept: {
-              method: 'PATCH',
-              endpoint: `/api/matching/respond/${String(r?._id ?? '')}`,
-              body: { response: 'accepted' },
-            },
-            reject: {
-              method: 'PATCH',
-              endpoint: `/api/matching/respond/${String(r?._id ?? '')}`,
-              body: { response: 'refused' },
-            },
-          },
-        }));
-
-        if (entries.length) {
-          await this.inAppNotificationService.createMany(entries as any);
-        }
-      }
-    } catch (e) {
-      this.logger.warn(`triggerMatching notification experts: ${e}`);
-    }
-
     return {
       complexity: analysis.complexity,
       requiredCompetences: analysis.requiredCompetences,
@@ -388,48 +323,6 @@ export class MatchingService {
     reqDoc.respondedAt = new Date();
     await reqDoc.save();
 
-    // BUG 2: notifier le client du choix de l’expert (accepté/refusé)
-    try {
-      const project: any = await this.projectModel
-        .findById(reqDoc.projectId)
-        .select('titre description clientId')
-        .lean()
-        .exec();
-      const clientId = String(project?.clientId ?? '').trim();
-      if (clientId && this.isValidObjectId(clientId)) {
-        const expert: any = await this.userModel
-          .findById(expertId)
-          .select('prenom nom email role')
-          .lean()
-          .exec();
-        const expertName =
-          `${String(expert?.prenom ?? '').trim()} ${String(expert?.nom ?? '').trim()}`
-            .trim() || 'Un expert';
-        const projectTitle =
-          String(project?.titre ?? '').trim() || 'votre projet';
-        const decision = response === 'accepted' ? 'ACCEPTÉ' : 'REFUSÉ';
-        await this.inAppNotificationService.createMany([
-          {
-            recipientId: clientId,
-            recipientRole: 'client',
-            projectId: String(reqDoc.projectId),
-            type: 'matching_response',
-            message: `${expertName} a ${decision} le projet « ${projectTitle} ».`,
-            metadata: {
-              requestId: String(reqDoc?._id ?? ''),
-              projectId: String(reqDoc.projectId),
-              response,
-              expertId: String(expertId),
-              expertName,
-              projectTitle,
-            },
-          },
-        ] as any);
-      }
-    } catch (e) {
-      this.logger.warn(`respondToRequest notification client: ${e}`);
-    }
-
     if (response === 'accepted') {
       const projectSchema: any = (this.projectModel as any)?.schema;
       const hasExpertsArray = !!projectSchema?.path?.('experts');
@@ -480,30 +373,12 @@ export class MatchingService {
 
   async getExpertProjectCatalog(userId: string) {
     try {
-      const user: any = await this.assertExpertOrAdmin(userId);
-      const role = String(user?.role ?? '').trim().toLowerCase();
+      await this.assertExpertOrAdmin(userId);
 
-      // BUG 1: un expert ne doit voir que les projets pour lesquels il a une demande de matching.
-      // Admin garde la vue globale.
-      let projects: any[] = [];
-      let projectIdsFilter: Types.ObjectId[] | null = null;
-
-      if (role === 'expert') {
-        const reqs: any[] = await this.matchingRequestModel
-          .find({ expertId: new Types.ObjectId(userId) })
-          .select('projectId')
-          .lean()
-          .exec();
-        const pids = (reqs || [])
-          .map((r: any) => r?.projectId)
-          .filter(Boolean);
-        if (!pids.length) return [];
-        projectIdsFilter = pids.map((x: any) => new Types.ObjectId(x));
-      }
-
+      let projects: any[];
       try {
         projects = await this.projectModel
-          .find(projectIdsFilter ? { _id: { $in: projectIdsFilter } } : {})
+          .find()
           .sort({ createdAt: -1 })
           .limit(200)
           .populate('clientId', 'prenom nom email telephone role')
@@ -515,7 +390,7 @@ export class MatchingService {
           `Catalogue: populate projet échoué (${err instanceof Error ? err.message : String(err)}), repli sans jointure`,
         );
         projects = await this.projectModel
-          .find(projectIdsFilter ? { _id: { $in: projectIdsFilter } } : {})
+          .find()
           .sort({ createdAt: -1 })
           .limit(200)
           .lean()

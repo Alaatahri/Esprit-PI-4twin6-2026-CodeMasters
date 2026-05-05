@@ -15,25 +15,15 @@ import { ProposalsModule } from './proposals/proposals.module';
 import { ContractsModule } from './contracts/contracts.module';
 import { AuthModule } from './auth/auth.module';
 
-function getMongoUri(): string {
-  return process.env.MONGODB_URI?.trim() || 'mongodb://localhost:27017/bmp-tn';
-}
-
 @Module({
   imports: [
-    MongooseModule.forRoot(getMongoUri(), {
-      /**
-       * Vercel/Serverless: si MONGODB_URI n’est pas défini, tenter localhost fera
-       * échouer le boot (FUNCTION_INVOCATION_FAILED). On évite de bloquer le démarrage
-       * et on laisse les routes qui n’utilisent pas Mongo répondre.
-       *
-       * Important: en production il faut fournir un MONGODB_URI public (Atlas, etc.).
-       */
-      lazyConnection: Boolean(process.env.VERCEL) && !process.env.MONGODB_URI,
-      serverSelectionTimeoutMS: 8_000,
-    }),
+    MongooseModule.forRoot(
+      process.env.MONGODB_URI || 'mongodb://localhost:27017/bmp-tn',
+      {
+        // MongoDB connection options
+      },
+    ),
     UserModule,
-    AuthModule,
     ProjectModule,
     DashboardModule,
     SuiviProjectModule,
@@ -45,6 +35,7 @@ function getMongoUri(): string {
     MessagesModule,
     ProposalsModule,
     ContractsModule,
+    AuthModule,
   ],
   controllers: [AppController],
 })

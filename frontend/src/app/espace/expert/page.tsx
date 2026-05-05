@@ -176,12 +176,12 @@ export default function ExpertSpacePage() {
       try {
         const res = await fetch(`${API_URL}/users`);
         if (!res.ok) {
-          throw new Error("Impossible de charger les artisans.");
+          throw new Error("Unable to load contractors.");
         }
         const data = (await res.json()) as Artisan[];
         setArtisans(data.filter((u) => u.role === "artisan"));
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Erreur de chargement.");
+        setError(err instanceof Error ? err.message : "Loading error.");
       } finally {
         setLoadingArtisans(false);
       }
@@ -195,7 +195,7 @@ export default function ExpertSpacePage() {
           { cache: "no-store" },
         );
         if (!res.ok) {
-          setError("Impossible de charger vos projets.");
+          setError("Unable to load your projects.");
           return;
         }
         const data = (await res.json()) as ExpertProject[];
@@ -225,7 +225,7 @@ export default function ExpertSpacePage() {
   ) => {
     const u = getStoredUser();
     if (!u || u.role !== "expert") {
-      setActionError("Session expert requise.");
+      setActionError("Expert session required.");
       return;
     }
     setActionError(null);
@@ -248,7 +248,7 @@ export default function ExpertSpacePage() {
           ? raw.join(" ")
           : typeof raw === "string"
             ? raw
-            : "Impossible de mettre à jour la candidature.";
+            : "Unable to update the application.";
         throw new Error(msg);
       }
       setProjects((prev) =>
@@ -268,7 +268,7 @@ export default function ExpertSpacePage() {
       setActionError(
         err instanceof Error
           ? err.message
-          : "Erreur lors de la mise à jour de la candidature."
+          : "Error while updating the application."
       );
     } finally {
       setActionLoadingId(null);
@@ -317,21 +317,20 @@ export default function ExpertSpacePage() {
   if (!loadingUser && !user) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-14 text-center space-y-6">
-        <div className="mx-auto w-fit rounded-3xl border border-border bg-gradient-to-br from-amber-500/12 to-muted p-6 shadow-bmp-md dark:border-amber-500/20 dark:from-amber-950/40 dark:to-gray-950/80 dark:shadow-2xl dark:shadow-black/50">
-          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-amber-500/35 bg-amber-500/15">
-            <Users className="h-7 w-7 text-brand dark:text-amber-300" />
+        <div className="mx-auto w-fit rounded-3xl border border-border/60 bg-card p-6 shadow-bmp-md dark:border-amber-500/20 dark:bg-gradient-to-br dark:from-amber-950/40 dark:to-gray-950/80 dark:shadow-2xl dark:shadow-black/50">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-amber-500/15 border border-amber-500/35">
+            <Users className="h-7 w-7 text-amber-700 dark:text-amber-300" />
           </div>
-          <h1 className="text-2xl font-bold text-foreground">Espace expert</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Connectez-vous pour gérer les artisans, les candidatures et vos projets
-            clients.
+          <h1 className="text-2xl font-bold text-foreground dark:text-white">Expert workspace</h1>
+          <p className="mt-2 text-sm text-muted-foreground dark:text-gray-400">
+            Sign in to manage contractors, applications, and client projects.
           </p>
           <button
             type="button"
             onClick={() => router.push("/login")}
-            className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bmp-btn-primary px-6 py-3 text-sm font-semibold text-gray-900 transition"
+            className="mt-6 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 px-6 py-3 text-sm font-semibold text-gray-900 shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition"
           >
-            Aller à la connexion
+            Go to sign in
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>
@@ -342,70 +341,69 @@ export default function ExpertSpacePage() {
   if (!loadingUser && user && user.role !== "expert") {
     return (
       <div className="mx-auto max-w-2xl px-4 py-12 text-center space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">
-          Espace réservé aux experts
+        <h1 className="text-2xl font-bold text-foreground dark:text-white">
+          Experts only
         </h1>
-        <p className="text-muted-foreground text-sm">
-          Vous êtes connecté en tant que{" "}
-          <span className="font-semibold text-brand dark:text-amber-300">
+        <p className="text-muted-foreground dark:text-gray-400 text-sm">
+          You are signed in as{" "}
+          <span className="font-semibold text-amber-700 dark:text-amber-300">
             {user.role}
           </span>
-          . Cet écran est dédié aux experts.
+          . This page is for experts.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground dark:bg-gradient-to-b dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 dark:text-white">
       <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 py-8 sm:py-10 space-y-8">
         {/* Hero */}
-        <div className="relative overflow-hidden rounded-3xl border border-border bg-gradient-to-br from-amber-500/[0.08] via-muted to-background p-6 sm:p-8 dark:from-amber-950/30 dark:via-gray-950/70 dark:to-gray-950">
+        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-card shadow-bmp-md dark:border-white/10 dark:bg-gradient-to-br dark:from-amber-950/30 dark:via-gray-950/70 dark:to-gray-950 dark:shadow-none p-6 sm:p-8">
           <div className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-amber-500/10 blur-3xl" />
           <div className="absolute -bottom-20 -left-20 h-56 w-56 rounded-full bg-sky-500/10 blur-3xl" />
           <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-4">
               <div className="h-12 w-12 rounded-2xl bg-amber-500/15 border border-amber-500/35 flex items-center justify-center shrink-0">
-                <Users className="h-6 w-6 text-brand dark:text-amber-300" />
+                <Users className="h-6 w-6 text-amber-700 dark:text-amber-300" />
               </div>
               <div className="space-y-1">
-                <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-brand dark:text-amber-300/80">
+                <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-amber-800/90 dark:text-amber-300/80 inline-flex items-center gap-2">
                   <Sparkles className="h-3.5 w-3.5" />
-                  Espace expert
+                  Expert workspace
                 </p>
-                <h1 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight">
-                  Artisans, projets et candidatures
+                <h1 className="text-2xl sm:text-3xl font-bold text-foreground dark:text-white leading-tight">
+                  Contractors, projects & applications
                 </h1>
-                <p className="text-sm text-muted-foreground max-w-2xl">
-                  Affectez les bons profils aux chantiers, suivez les dossiers et
-                  coordonnez avec les clients.
+                <p className="text-sm text-muted-foreground dark:text-gray-400 max-w-2xl">
+                  Match the right profiles to jobs, track dossiers, and stay aligned with clients.
                 </p>
               </div>
             </div>
             <div className="flex flex-wrap gap-2 sm:gap-3">
               <Link
                 href="/expert/nouveaux-projets"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-2.5 text-sm font-medium text-amber-950 hover:bg-amber-500/20 dark:text-amber-100"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-4 py-2.5 text-sm font-medium text-amber-900 dark:text-amber-100 hover:bg-amber-500/20 transition"
               >
                 <Inbox className="h-4 w-4 shrink-0" />
                 Invitations
               </Link>
               <Link
                 href="/expert/tous-les-projets"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-muted dark:bg-black/30 px-4 py-2.5 text-sm font-medium text-body-secondary hover:bg-muted transition"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border/60 bg-muted/40 px-4 py-2.5 text-sm font-medium text-foreground hover:bg-muted/60 hover:border-brand/30 transition dark:border-white/15 dark:bg-black/30 dark:text-gray-200 dark:hover:bg-white/10"
               >
                 <LayoutGrid className="h-4 w-4 shrink-0" />
-                Tous les projets
+                All projects
               </Link>
               <Link
                 href="/expert/projets"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-muted px-4 py-2.5 text-sm font-medium text-foreground/90 hover:bg-muted transition"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border/60 bg-card px-4 py-2.5 text-sm font-medium text-foreground hover:border-brand/30 hover:bg-muted/30 transition dark:border-white/15 dark:bg-white/5 dark:text-white/90 dark:hover:bg-white/10"
               >
-                Mes projets
+                My projects
               </Link>
               <Link
                 href="/messages"
-                className="inline-flex items-center justify-center gap-2 rounded-2xl bmp-btn-primary px-4 py-2.5 text-sm font-semibold text-gray-900 hover:opacity-95 transition"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 px-4 py-2.5 text-sm font-semibold text-gray-900 shadow-lg shadow-amber-500/20 hover:opacity-95 transition"
               >
                 Messages
               </Link>
@@ -426,53 +424,52 @@ export default function ExpertSpacePage() {
 
         {/* Stats */}
         <div className="grid gap-3 sm:grid-cols-3">
-          <div className="rounded-2xl border border-amber-500/25 bg-amber-500/10 p-4 dark:border-amber-500/20 dark:bg-amber-950/20">
-            <p className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-amber-900 dark:text-amber-200/70">
+          <div className="rounded-2xl border border-amber-200/90 bg-amber-50 p-4 dark:border-amber-500/20 dark:bg-amber-950/20">
+            <p className="text-[11px] uppercase tracking-wider text-amber-900/80 dark:text-amber-200/70 flex items-center gap-2">
               <Users className="h-3.5 w-3.5" />
-              Artisans
+              Contractors
             </p>
-            <p className="mt-1 text-2xl font-bold text-foreground tabular-nums">
+            <p className="mt-1 text-2xl font-bold text-foreground dark:text-white tabular-nums">
               {loadingArtisans ? "…" : artisans.length}
             </p>
           </div>
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <p className="text-[11px] uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+          <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-bmp-sm dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none">
+            <p className="text-[11px] uppercase tracking-wider text-muted-foreground dark:text-gray-500 flex items-center gap-2">
               <ClipboardList className="h-3.5 w-3.5 text-brand dark:text-amber-400/80" />
-              Mes projets
+              My projects
             </p>
-            <p className="mt-1 text-2xl font-bold text-foreground tabular-nums">
+            <p className="mt-1 text-2xl font-bold text-foreground dark:text-white tabular-nums">
               {loadingProjects ? "…" : projects.length}
             </p>
           </div>
-          <div className="rounded-2xl border border-sky-500/25 bg-sky-500/10 p-4 dark:border-sky-500/20 dark:bg-sky-950/20">
-            <p className="flex items-center gap-2 text-[11px] uppercase tracking-wider text-sky-900 dark:text-sky-200/70">
+          <div className="rounded-2xl border border-sky-200/90 bg-sky-50 p-4 dark:border-sky-500/20 dark:bg-sky-950/20">
+            <p className="text-[11px] uppercase tracking-wider text-sky-900/80 dark:text-sky-200/70 flex items-center gap-2">
               <Clock className="h-3.5 w-3.5" />
-              Candidatures en attente
+              Pending applications
             </p>
-            <p className="mt-1 text-2xl font-bold text-foreground tabular-nums">
+            <p className="mt-1 text-2xl font-bold text-foreground dark:text-white tabular-nums">
               {loadingProjects ? "…" : pendingApplicationsCount}
             </p>
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground max-w-3xl">
-          Les artisans postulent depuis leur espace. Pour chaque projet dont vous êtes
-          l&apos;expert assigné, vous pouvez accepter ou refuser leurs candidatures ci-dessous
-          (identification sécurisée côté serveur).
+        <p className="text-xs text-muted-foreground dark:text-gray-500 max-w-3xl">
+          Contractors apply from their workspace. For each project where you are the assigned expert,
+          you can accept or decline applications below (validated securely on the server).
         </p>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         {/* Colonne artisans */}
-        <section className="rounded-3xl border border-border bg-card overflow-hidden flex flex-col min-h-[320px]">
-          <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
+        <section className="rounded-3xl border border-border/60 bg-card shadow-bmp-sm overflow-hidden flex flex-col min-h-[320px] dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none">
+          <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border/60 dark:border-white/10">
             <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-brand dark:text-amber-300" />
-              <h2 className="text-sm font-semibold text-foreground">
-                Artisans disponibles
+              <Users className="w-5 h-5 text-amber-700 dark:text-amber-300" />
+              <h2 className="text-sm font-semibold text-foreground dark:text-white">
+                Available contractors
               </h2>
             </div>
             {loadingArtisans && (
-              <Loader2 className="h-4 w-4 animate-spin text-brand dark:text-amber-400/80" />
+              <Loader2 className="w-4 h-4 animate-spin text-amber-400/80" />
             )}
           </div>
 
@@ -481,59 +478,59 @@ export default function ExpertSpacePage() {
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-24 rounded-2xl border border-border bg-muted dark:bg-black/20 animate-pulse"
+                  className="h-24 rounded-2xl border border-border/60 bg-muted/50 animate-pulse dark:border-white/10 dark:bg-black/20"
                 />
               ))}
             </div>
           ) : artisans.length === 0 ? (
-            <div className="p-6 text-sm text-muted-foreground flex-1">
-              Aucun artisan pour le moment. Les profils inscrits apparaîtront ici.
+            <div className="p-6 text-sm text-muted-foreground dark:text-gray-400 flex-1">
+              No contractors yet. Registered profiles will show up here.
             </div>
           ) : (
             <div className="space-y-3 max-h-[420px] overflow-y-auto p-5 pr-2 scrollbar-bmp">
               {artisans.map((artisan) => (
                 <div
                   key={artisan._id}
-                  className="rounded-2xl border border-border bg-muted dark:bg-black/20 px-4 py-4 text-sm space-y-2 hover:border-amber-500/25 transition"
+                  className="rounded-2xl border border-border/60 bg-muted/40 px-4 py-4 text-sm space-y-2 hover:border-brand/35 transition dark:border-white/10 dark:bg-black/20 dark:hover:border-amber-500/25"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-medium text-foreground line-clamp-1">
+                      <p className="font-medium text-foreground dark:text-white line-clamp-1">
                         {artisan.nom}
                       </p>
-                      <p className="text-[11px] uppercase tracking-[0.18em] text-brand dark:text-amber-300">
-                        Artisan
+                      <p className="text-[11px] text-amber-700 dark:text-amber-300 uppercase tracking-[0.18em]">
+                        Contractor
                       </p>
                     </div>
-                    <div className="flex items-center gap-1 text-[11px] text-body-secondary">
-                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-600 dark:fill-amber-300 dark:text-amber-300" />
+                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground dark:text-gray-300">
+                      <Star className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 fill-amber-300" />
                       <span>
                         {artisan.ratingMoyen?.toFixed(1) ?? "4.5"}
                       </span>
                       {typeof artisan.nbProjets === "number" && (
-                        <span className="text-muted-foreground">
+                        <span className="text-foreground dark:text-gray-500">
                           ({artisan.nbProjets})
                         </span>
                       )}
                     </div>
                   </div>
                   {artisan.competences && artisan.competences.length > 0 && (
-                    <p className="text-[11px] text-body-secondary">
-                      Compétences :{" "}
-                      <span className="text-body-secondary">
+                    <p className="text-[11px] text-muted-foreground dark:text-gray-300">
+                      Skills:{" "}
+                      <span className="text-foreground dark:text-gray-200">
                         {artisan.competences.join(", ")}
                       </span>
                     </p>
                   )}
                   {artisan.specialites && artisan.specialites.length > 0 && (
-                    <p className="text-[11px] text-body-secondary">
-                      Spécialités :{" "}
-                      <span className="text-body-secondary">
+                    <p className="text-[11px] text-muted-foreground dark:text-gray-300">
+                      Specialties:{" "}
+                      <span className="text-foreground dark:text-gray-200">
                         {artisan.specialites.join(", ")}
                       </span>
                     </p>
                   )}
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground dark:text-gray-400">
                     <span className="inline-flex items-center gap-1">
                       <Mail className="w-3.5 h-3.5" />
                       {artisan.email}
@@ -550,16 +547,16 @@ export default function ExpertSpacePage() {
         </section>
 
         {/* Colonne projets & candidatures */}
-        <section className="rounded-3xl border border-border bg-card overflow-hidden flex flex-col min-h-[360px]">
-          <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border">
+        <section className="rounded-3xl border border-border/60 bg-card shadow-bmp-sm overflow-hidden flex flex-col min-h-[360px] dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none">
+          <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border/60 dark:border-white/10">
             <div className="flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-brand dark:text-amber-300" />
-              <h2 className="text-sm font-semibold text-foreground">
-                Projets & candidatures
+              <ClipboardList className="w-5 h-5 text-amber-700 dark:text-amber-300" />
+              <h2 className="text-sm font-semibold text-foreground dark:text-white">
+                Projects & applications
               </h2>
             </div>
             {loadingProjects && (
-              <Loader2 className="h-4 w-4 animate-spin text-brand dark:text-amber-400/80" />
+              <Loader2 className="w-4 h-4 animate-spin text-amber-400/80" />
             )}
           </div>
 
@@ -568,47 +565,46 @@ export default function ExpertSpacePage() {
               {Array.from({ length: 3 }).map((_, i) => (
                 <div
                   key={i}
-                  className="h-32 rounded-2xl border border-border bg-muted dark:bg-black/20 animate-pulse"
+                  className="h-32 rounded-2xl border border-border/60 bg-muted/50 animate-pulse dark:border-white/10 dark:bg-black/20"
                 />
               ))}
             </div>
           ) : projects.length === 0 ? (
-            <div className="p-6 text-sm text-muted-foreground">
-              Aucun projet chargé pour le moment. Les dossiers auxquels vous êtes
-              associé apparaîtront ici avec les candidatures artisans.
+            <div className="p-6 text-sm text-muted-foreground dark:text-gray-400">
+              No projects loaded yet. Assignments you are linked to will appear here with contractor applications.
             </div>
           ) : (
             <div className="space-y-4 max-h-[560px] overflow-y-auto p-5 pr-2 scrollbar-bmp">
               {projects.map((project) => (
                 <div
                   key={project._id}
-                  className="rounded-2xl border border-border bg-muted dark:bg-black/20 px-4 py-4 text-sm space-y-3 hover:border-amber-500/20 transition"
+                  className="rounded-2xl border border-border/60 bg-muted/40 px-4 py-4 text-sm space-y-3 hover:border-brand/30 transition dark:border-white/10 dark:bg-black/20 dark:hover:border-amber-500/20"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="font-medium text-foreground line-clamp-1">
+                      <p className="font-medium text-foreground dark:text-white line-clamp-1">
                         {project.titre}
                       </p>
-                      <p className="text-[11px] text-muted-foreground line-clamp-1">
+                      <p className="text-[11px] text-muted-foreground dark:text-gray-400 line-clamp-1">
                         {project.clientNom
-                          ? `Client : ${project.clientNom}`
-                          : "Projet client"}
+                          ? `Client: ${project.clientNom}`
+                          : "Client project"}
                       </p>
                     </div>
                     <span
                       className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-[11px] font-medium ${
                         project.statut === "Ouvert"
-                          ? "bg-blue-500/15 text-blue-800 dark:text-blue-300"
+                          ? "bg-blue-100 text-blue-800 dark:bg-blue-500/15 dark:text-blue-300"
                           : project.statut === "En cours"
-                          ? "bg-amber-500/15 text-amber-900 dark:text-amber-300"
-                          : "bg-gray-500/15 text-body-secondary"
+                          ? "bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-300"
+                          : "bg-muted text-muted-foreground dark:bg-gray-500/15 dark:text-gray-300"
                       }`}
                     >
                       {project.statut}
                     </span>
                   </div>
 
-                  <p className="text-xs text-muted-foreground line-clamp-2">
+                  <p className="text-xs text-muted-foreground dark:text-gray-400 line-clamp-2">
                     {project.description}
                   </p>
 
@@ -617,26 +613,26 @@ export default function ExpertSpacePage() {
                       href={`/expert/projects/${encodeURIComponent(project._id)}?from=projets`}
                       className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-amber-500/90 to-yellow-500/80 px-3 py-2 text-xs font-semibold text-gray-950 hover:opacity-95 transition"
                     >
-                      Dossier projet
+                      Project dossier
                     </Link>
                     <Link
                       href={`/expert/projects/${encodeURIComponent(project._id)}/photos?from=projets`}
-                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-900 hover:bg-emerald-500/20 dark:text-emerald-200"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-3 py-2 text-xs font-medium text-emerald-800 hover:bg-emerald-500/15 transition dark:text-emerald-200 dark:hover:bg-emerald-500/20"
                     >
-                      Galerie avant / après
+                      Before / after gallery
                     </Link>
                     <Link
                       href={`/expert/projects/${encodeURIComponent(project._id)}/suivi-photo?from=projets`}
-                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-950 hover:bg-amber-500/20 dark:text-amber-200"
+                      className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-800 dark:text-amber-200 hover:bg-amber-500/20 transition"
                     >
-                      Suivi photo chantier
+                      Site photo log
                     </Link>
                   </div>
 
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+                  <div className="flex items-center justify-between text-[11px] text-muted-foreground dark:text-gray-400">
                     <span>
-                      Budget estimé :{" "}
-                      <span className="text-body-secondary">
+                      Estimated budget:{" "}
+                      <span className="text-foreground dark:text-gray-200">
                         {project.budget_estime.toLocaleString("fr-FR", {
                           minimumFractionDigits: 0,
                           maximumFractionDigits: 0,
@@ -660,20 +656,22 @@ export default function ExpertSpacePage() {
 
                   <SuiviTimeline projectId={project._id} apiBaseUrl={API_URL} />
 
-                  <div className="pt-2 border-t border-border space-y-2">
+                  <div className="pt-2 border-t border-border/60 dark:border-white/5 space-y-2">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-[11px] font-semibold text-body-secondary">
-                        Candidatures des artisans
+                      <p className="text-[11px] font-semibold text-foreground dark:text-gray-200">
+                        Contractor applications
                       </p>
-                      <p className="text-[11px] text-muted-foreground">
-                        {(project.applications ?? []).length} candidature
-                        {(project.applications ?? []).length > 1 ? "s" : ""}
+                      <p className="text-[11px] text-muted-foreground dark:text-gray-500">
+                        {(project.applications ?? []).length}{" "}
+                        {(project.applications ?? []).length === 1
+                          ? "application"
+                          : "applications"}
                       </p>
                     </div>
 
                     {(project.applications ?? []).length === 0 ? (
-                      <p className="text-[11px] text-muted-foreground">
-                        Aucun artisan n&apos;a encore postulé sur ce projet.
+                      <p className="text-[11px] text-muted-foreground dark:text-gray-500">
+                        No contractor has applied to this project yet.
                       </p>
                     ) : (
                       <div className="space-y-2">
@@ -681,7 +679,7 @@ export default function ExpertSpacePage() {
                           const resolvedArtisan =
                             resolveArtisanForApplication(app);
                           const artisanName =
-                            resolvedArtisan?.nom || "Artisan inconnu";
+                            resolvedArtisan?.nom || "Unknown contractor";
                           const artisanRating =
                             typeof resolvedArtisan?.ratingMoyen === "number"
                               ? resolvedArtisan.ratingMoyen
@@ -698,17 +696,17 @@ export default function ExpertSpacePage() {
                           return (
                             <div
                               key={app._id}
-                              className="rounded-xl border border-border bg-muted dark:bg-black/30 px-3 py-3 text-[11px] space-y-2"
+                              className="rounded-xl border border-border/60 bg-card px-3 py-3 text-[11px] space-y-2 dark:border-white/10 dark:bg-black/30"
                             >
                               <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                                 <div className="space-y-0.5 min-w-0">
-                                  <p className="font-medium text-foreground">
+                                  <p className="font-medium text-foreground dark:text-white">
                                     {artisanName}
                                   </p>
-                                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-muted-foreground">
+                                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-muted-foreground dark:text-gray-400">
                                     {typeof artisanRating === "number" ? (
                                       <span className="inline-flex items-center gap-1">
-                                        <Star className="h-3 w-3 fill-amber-400 text-amber-600 dark:fill-amber-300 dark:text-amber-300" />
+                                        <Star className="w-3 h-3 text-amber-700 dark:text-amber-300 fill-amber-300" />
                                         {artisanRating.toFixed(1)}
                                       </span>
                                     ) : null}
@@ -722,17 +720,17 @@ export default function ExpertSpacePage() {
                                 <span
                                   className={`shrink-0 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[10px] font-medium w-fit ${
                                     app.statut === "acceptee"
-                                      ? "bg-emerald-500/15 text-emerald-800 dark:text-emerald-300"
+                                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-500/15 dark:text-emerald-300"
                                       : app.statut === "refusee"
-                                        ? "bg-red-500/15 text-red-800 dark:text-red-300"
-                                        : "bg-amber-500/15 text-amber-900 dark:text-amber-300"
+                                        ? "bg-red-100 text-red-800 dark:bg-red-500/15 dark:text-red-300"
+                                        : "bg-amber-100 text-amber-900 dark:bg-amber-500/15 dark:text-amber-300"
                                   }`}
                                 >
                                   {app.statut === "en_attente"
-                                    ? "En attente"
+                                    ? "Pending"
                                     : app.statut === "acceptee"
-                                      ? "Acceptée"
-                                      : "Refusée"}
+                                      ? "Accepted"
+                                      : "Declined"}
                                 </span>
                               </div>
 
@@ -740,10 +738,10 @@ export default function ExpertSpacePage() {
                                 {profileId ? (
                                   <Link
                                     href={`/profil/${encodeURIComponent(profileId)}`}
-                                    className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/35 bg-sky-500/10 px-3 py-1.5 text-[11px] font-medium text-sky-900 hover:bg-sky-500/20 dark:text-sky-100"
+                                    className="inline-flex items-center gap-1.5 rounded-xl border border-sky-500/35 bg-sky-500/10 px-3 py-1.5 text-[11px] font-medium text-sky-900 hover:bg-sky-500/15 transition dark:text-sky-100 dark:hover:bg-sky-500/20"
                                   >
                                     <UserCircle className="w-3.5 h-3.5" />
-                                    Voir le profil
+                                    View profile
                                   </Link>
                                 ) : null}
                                 {app.statut === "en_attente" &&
@@ -765,7 +763,7 @@ export default function ExpertSpacePage() {
                                       ) : (
                                         <CheckCircle2 className="w-3.5 h-3.5" />
                                       )}
-                                      Accepter l&apos;artisan
+                                      Accept contractor
                                     </button>
                                     <button
                                       type="button"
@@ -776,10 +774,10 @@ export default function ExpertSpacePage() {
                                           "decline"
                                         )
                                       }
-                                      className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-[11px] font-medium text-red-800 hover:bg-red-500/20 disabled:opacity-60 dark:text-red-200"
+                                      className="inline-flex items-center gap-1.5 rounded-xl border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-[11px] font-medium text-red-800 hover:bg-red-500/15 disabled:opacity-60 dark:text-red-200 dark:hover:bg-red-500/20"
                                     >
                                       <XCircle className="w-3.5 h-3.5" />
-                                      Refuser
+                                      Decline
                                     </button>
                                   </>
                                 )}

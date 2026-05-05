@@ -1,10 +1,9 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Camera, Loader2, Send, ImagePlus } from "lucide-react";
 import { getApiBaseUrl } from "@/lib/api-base";
 import { FieldError, fieldTextareaClass } from "@/lib/form-ui";
-import { fileToBase64 } from "@/lib/imageUtils";
 import { validateImageFile, validatePhotoComment } from "@/lib/validators";
 
 const DEFAULT_API = getApiBaseUrl();
@@ -15,16 +14,12 @@ type UploadResult =
       percent: number;
       previousMax: number;
       reason?: string;
-      hasDelay?: boolean;
-      delayReason?: string | null;
     }
   | {
       kind: "no_advancement";
       percent: number;
       previousMax: number;
       reason?: string;
-      hasDelay?: boolean;
-      delayReason?: string | null;
     };
 
 type Props = {
@@ -65,6 +60,19 @@ export function WorkerSitePhotoUpload({
     setResult(null);
   };
 
+  const readBase64 = useCallback((f: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const dataUrl = String(reader.result ?? "");
+        const raw = dataUrl.includes(",") ? dataUrl.split(",")[1] : dataUrl;
+        resolve(raw);
+      };
+      reader.onerror = () => reject(new Error("Lecture du fichier impossible"));
+      reader.readAsDataURL(f);
+    });
+  }, []);
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFileError(null);
@@ -83,7 +91,7 @@ export function WorkerSitePhotoUpload({
     const base = apiBaseUrl.replace(/\/$/, "");
 
     try {
-      const photoBase64 = await fileToBase64(file);
+      const photoBase64 = await readBase64(file);
       const photoUrl = `inline-upload-${Date.now()}`;
 
       const res = await fetch(`${base}/suivi/photo`, {
@@ -100,13 +108,7 @@ export function WorkerSitePhotoUpload({
 
       const data = (await res.json().catch(() => null)) as
         | {
-            ai?: {
-              percent?: number;
-              reason?: string;
-              hasProgression?: boolean;
-              hasDelay?: boolean;
-              delayReason?: string | null;
-            };
+            ai?: { percent?: number; reason?: string };
             currentMaxBefore?: number;
             suivi?: { progressPercent?: number; pourcentage_avancement?: number };
             message?: string;
@@ -124,34 +126,24 @@ export function WorkerSitePhotoUpload({
       }
 
       const previous = Number(data?.currentMaxBefore ?? 0);
+      const proposed = Number(data?.ai?.percent ?? 0);
       const finalPct = Number(
-        data?.suivi?.progressPercent ??
-          data?.suivi?.pourcentage_avancement ??
-          data?.ai?.percent ??
-          previous,
+        data?.suivi?.progressPercent ?? data?.suivi?.pourcentage_avancement ?? proposed,
       );
-      const safeFinal = Number.isFinite(finalPct) ? finalPct : previous;
-      const hasDelay = data?.ai?.hasDelay === true;
-      const delayReason =
-        typeof data?.ai?.delayReason === "string" ? data.ai.delayReason : null;
 
-      if (safeFinal > previous) {
+      if (proposed > previous) {
         setResult({
           kind: "advancement",
-          percent: safeFinal,
+          percent: Number.isFinite(finalPct) ? finalPct : proposed,
           previousMax: previous,
           reason: data?.ai?.reason,
-          hasDelay,
-          delayReason,
         });
       } else {
         setResult({
           kind: "no_advancement",
-          percent: safeFinal,
+          percent: Number.isFinite(finalPct) ? finalPct : previous,
           previousMax: previous,
           reason: data?.ai?.reason,
-          hasDelay,
-          delayReason,
         });
       }
 
@@ -171,16 +163,15 @@ export function WorkerSitePhotoUpload({
     <form
       noValidate
       onSubmit={submit}
-      className="rounded-2xl border border-white/10 bg-muted dark:bg-black/30 p-4 space-y-4"
+      className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/30 p-4 space-y-4"
     >
-      <div className="flex items-center gap-2 text-sm font-semibold text-white">
-        <Camera className="w-4 h-4 text-amber-300" />
+      <div className="flex items-center gap-2 text-sm font-semibold text-foreground dark:text-white">
+        <Camera className="w-4 h-4 text-amber-700 dark:text-amber-300" />
         Envoyer une photo du chantier
       </div>
-      <p className="text-xs text-gray-400">
-        L&apos;image est envoyée en JPEG redimensionné (max 1024px) pour l&apos;analyse.
-        Avec clé API Anthropic côté serveur : analyse visuelle ; sinon l&apos;avancement
-        actuel est conservé sans hausse artificielle. Formats : JPG, PNG, WebP.
+      <p className="text-xs text-muted-foreground dark:text-gray-400">
+        L&apos;image est analysée automatiquement (gratuit : sans clé API, le serveur
+        utilise une estimation locale). Formats courants : JPG, PNG, WebP.
       </p>
 
       <input
@@ -196,17 +187,17 @@ export function WorkerSitePhotoUpload({
           type="button"
           onClick={pickFile}
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-sm font-medium text-amber-200 hover:bg-amber-500/20 transition disabled:opacity-50"
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-500/10 px-4 py-2.5 text-sm font-medium text-amber-800 dark:text-amber-200 hover:bg-amber-500/20 transition disabled:opacity-50"
         >
           <ImagePlus className="w-4 h-4" />
           Choisir une image
         </button>
         {file ? (
-          <span className="text-xs text-gray-300 self-center truncate max-w-[220px]">
+          <span className="text-xs text-muted-foreground dark:text-gray-300 self-center truncate max-w-[220px]">
             {file.name}
           </span>
         ) : (
-          <span className="text-xs text-gray-500 self-center">
+          <span className="text-xs text-foreground dark:text-gray-500 self-center">
             Aucun fichier sélectionné
           </span>
         )}
@@ -214,7 +205,7 @@ export function WorkerSitePhotoUpload({
       <FieldError id="err-ws-file" message={fileError ?? undefined} />
 
       <div>
-        <label htmlFor="ws-comment" className="block text-[11px] text-gray-400 mb-1">
+        <label htmlFor="ws-comment" className="block text-[11px] text-muted-foreground dark:text-gray-400 mb-1">
           Commentaire (optionnel)
         </label>
         <textarea
@@ -238,7 +229,7 @@ export function WorkerSitePhotoUpload({
       <button
         type="submit"
         disabled={loading || !file}
-        className="inline-flex items-center justify-center gap-2 rounded-xl bmp-btn-primary font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
+        className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-4 py-2.5 text-sm hover:opacity-95 transition disabled:opacity-40 disabled:cursor-not-allowed w-full sm:w-auto"
       >
         {loading ? (
           <>
@@ -260,71 +251,25 @@ export function WorkerSitePhotoUpload({
       ) : null}
 
       {result?.kind === "advancement" ? (
-        <div
-          className={`rounded-xl px-3 py-3 text-sm space-y-1 ${
-            result.hasDelay
-              ? "border border-red-400/40 bg-red-950/40 text-red-100"
-              : "border border-emerald-500/35 bg-emerald-500/10 text-emerald-100"
-          }`}
-        >
-          {result.hasDelay ? (
-            <p className="font-semibold">⚠️ Retard ou perturbation détecté</p>
-          ) : null}
+        <div className="rounded-xl border border-emerald-500/35 bg-emerald-500/10 px-3 py-3 text-sm text-emerald-100 space-y-1">
           <p className="font-semibold">
-            ✅ Avancement : {Math.round(result.percent)}% atteint sur le projet.
+            ✅ Avancement détecté : {Math.round(result.percent)}% d&apos;avancement
+            atteint.
           </p>
           {result.reason ? (
-            <p
-              className={`text-xs ${
-                result.hasDelay ? "text-red-200/90" : "text-emerald-200/80"
-              }`}
-            >
-              {result.reason}
-            </p>
-          ) : null}
-          {result.hasDelay && result.delayReason ? (
-            <p className="text-xs text-red-200/90 mt-1">{result.delayReason}</p>
-          ) : null}
-          {result.hasDelay ? (
-            <p className="text-xs text-red-300/80 mt-1">
-              Le client et l&apos;admin ont été notifiés automatiquement.
-            </p>
+            <p className="text-xs text-emerald-200/80">{result.reason}</p>
           ) : null}
         </div>
       ) : null}
 
       {result?.kind === "no_advancement" ? (
-        <div
-          className={`rounded-xl px-3 py-3 text-sm space-y-1 ${
-            result.hasDelay
-              ? "border border-red-400/40 bg-red-950/40 text-red-100"
-              : "border border-amber-500/35 bg-amber-500/10 text-amber-100"
-          }`}
-        >
-          {result.hasDelay ? (
-            <p className="font-semibold">⚠️ Retard ou perturbation détecté</p>
-          ) : (
-            <p className="font-semibold">Analyse IA</p>
-          )}
+        <div className="rounded-xl border border-amber-500/35 bg-amber-500/10 px-3 py-3 text-sm text-amber-900 dark:text-amber-100 space-y-1">
           <p className="font-semibold">
-            Avancement inchangé : {Math.round(result.percent)}%.
+            ⚠️ Aucune progression détectée (avancement actuel :{" "}
+            {Math.round(result.percent)}%).
           </p>
           {result.reason ? (
-            <p
-              className={`text-xs ${
-                result.hasDelay ? "text-red-200/90" : "text-amber-200/80"
-              }`}
-            >
-              {result.reason}
-            </p>
-          ) : null}
-          {result.hasDelay && result.delayReason ? (
-            <p className="text-xs text-red-200/90 mt-1">{result.delayReason}</p>
-          ) : null}
-          {result.hasDelay ? (
-            <p className="text-xs text-red-300/80 mt-1">
-              Le client et l&apos;admin ont été notifiés automatiquement.
-            </p>
+            <p className="text-xs text-amber-200/80">{result.reason}</p>
           ) : null}
         </div>
       ) : null}

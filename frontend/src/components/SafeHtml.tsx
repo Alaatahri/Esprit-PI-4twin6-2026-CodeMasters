@@ -17,7 +17,7 @@ export function SafeHtml({ html, className }: Props) {
     <div
       className={
         className ??
-        "prose prose-invert prose-sm max-w-none prose-p:my-2 prose-headings:my-3 prose-ul:my-2 [&_a]:text-amber-300"
+        "prose prose-invert prose-sm max-w-none prose-p:my-2 prose-headings:my-3 prose-ul:my-2 [&_a]:text-amber-700 dark:text-amber-300"
       }
       dangerouslySetInnerHTML={{ __html: clean }}
     />

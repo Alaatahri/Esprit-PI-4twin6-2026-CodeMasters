@@ -15,7 +15,7 @@ import { MatchingModule } from '../matching/matching.module';
       { name: User.name, schema: UserSchema },
     ]),
     forwardRef(() => SuiviProjectModule),
-    forwardRef(() => MatchingModule),
+    MatchingModule,
   ],
   controllers: [ProjectController, ApplicationsController],
   providers: [ProjectService],

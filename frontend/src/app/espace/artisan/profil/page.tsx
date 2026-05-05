@@ -38,6 +38,14 @@ type CompletedProject = {
   updatedAt?: string;
 };
 
+type MarketplaceReviewRow = {
+  projetTitre: string;
+  note?: number;
+  commentaire?: string;
+  authorLabel?: string;
+  date_avis?: string;
+};
+
 function Stars({ value }: { value: number }) {
   const rounded = Math.round(value * 2) / 2;
   return (
@@ -77,6 +85,9 @@ export default function ArtisanProfilPage() {
   const [completed, setCompleted] = useState<CompletedProject[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [marketplaceReviews, setMarketplaceReviews] = useState<
+    MarketplaceReviewRow[]
+  >([]);
 
   useEffect(() => {
     const stored = getStoredUser();
@@ -123,6 +134,30 @@ export default function ArtisanProfilPage() {
     fetchAll();
   }, [user]);
 
+  useEffect(() => {
+    if (!user || user.role !== "artisan") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch(
+          `${API_URL}/users/public/${encodeURIComponent(user._id)}/profile`,
+          { cache: "no-store" },
+        );
+        if (!res.ok) return;
+        const j = (await res.json()) as {
+          reviews?: Array<{ kind?: string } & MarketplaceReviewRow>;
+        };
+        const mp = (j.reviews || []).filter((r) => r.kind === "marketplace");
+        if (!cancelled) setMarketplaceReviews(mp);
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
   const zones = useMemo(() => {
     const z = (details?.zones_travail || []) as WorkZone[];
     return z.map(formatZone);
@@ -153,14 +188,14 @@ export default function ArtisanProfilPage() {
   if (!loadingUser && !user) {
     return (
       <div className="max-w-2xl mx-auto text-center space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Profil artisan</h1>
-        <p className="text-muted-foreground text-sm">
+        <h1 className="text-2xl font-bold text-foreground dark:text-white">Profil artisan</h1>
+        <p className="text-muted-foreground dark:text-gray-400 text-sm">
           Connectez-vous en tant qu&apos;artisan pour accéder à votre profil,
           vos notes et votre historique.
         </p>
         <button
           onClick={() => router.push("/login")}
-          className="px-6 py-3 rounded-xl bmp-btn-primary font-semibold"
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold shadow-lg shadow-amber-500/30"
         >
           Aller à la connexion
         </button>
@@ -171,12 +206,12 @@ export default function ArtisanProfilPage() {
   if (!loadingUser && user && user.role !== "artisan") {
     return (
       <div className="max-w-2xl mx-auto text-center space-y-4">
-        <h1 className="text-2xl font-bold text-foreground">
+        <h1 className="text-2xl font-bold text-foreground dark:text-white">
           Espace réservé aux artisans
         </h1>
-        <p className="text-muted-foreground text-sm">
+        <p className="text-muted-foreground dark:text-gray-400 text-sm">
           Vous êtes connecté en tant que{" "}
-          <span className="font-semibold text-brand dark:text-amber-300">{user.role}</span>.
+          <span className="font-semibold text-amber-700 dark:text-amber-300">{user.role}</span>.
         </p>
       </div>
     );
@@ -198,15 +233,15 @@ export default function ArtisanProfilPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/espace/artisan"
-            className="inline-flex items-center gap-2 rounded-xl bg-muted border border-border px-4 py-2 text-sm text-body-secondary hover:text-foreground hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
+            className="inline-flex items-center gap-2 rounded-xl bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 px-4 py-2 text-sm text-muted-foreground dark:text-gray-300 hover:text-foreground dark:text-white hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
             title="Retour"
           >
             <ArrowLeft className="w-4 h-4" />
             Retour
           </Link>
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Mon profil artisan</h1>
-            <p className="text-xs text-muted-foreground">
+            <h1 className="text-xl font-semibold text-foreground dark:text-white">Mon profil artisan</h1>
+            <p className="text-xs text-muted-foreground dark:text-gray-400">
               Détails, notes et feedbacks des clients.
             </p>
           </div>
@@ -214,7 +249,7 @@ export default function ArtisanProfilPage() {
       </div>
 
       {error && (
-        <div className="rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+        <div className="rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-200">
           {error}
         </div>
       )}
@@ -222,59 +257,59 @@ export default function ArtisanProfilPage() {
       <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
         {/* Profil */}
         <section className="space-y-6">
-          <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
+          <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-6 sm:p-7">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-                <span className="text-xl font-bold text-brand dark:text-amber-300">
+                <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
                   {d.nom?.charAt(0).toUpperCase() || "A"}
                 </span>
               </div>
               <div>
-                <h2 className="text-xl font-semibold text-foreground">{d.nom}</h2>
-                <p className="text-xs uppercase tracking-[0.2em] text-brand dark:text-amber-300/80">
+                <h2 className="text-xl font-semibold text-foreground dark:text-white">{d.nom}</h2>
+                <p className="text-xs text-amber-300/80 uppercase tracking-[0.2em]">
                   artisan
                 </p>
               </div>
             </div>
 
             <div className="mt-5 space-y-2 text-sm">
-              <div className="flex items-center gap-2 text-body-secondary">
-                <Mail className="h-4 w-4 text-brand dark:text-amber-300" />
-                <span className="text-muted-foreground">Email:</span>
-                <span className="text-body-secondary">{d.email}</span>
+              <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300">
+                <Mail className="w-4 h-4 text-amber-700 dark:text-amber-300" />
+                <span className="text-muted-foreground dark:text-gray-400">Email:</span>
+                <span className="text-foreground dark:text-gray-200">{d.email}</span>
               </div>
               {d.telephone && (
-                <div className="flex items-center gap-2 text-body-secondary">
-                  <Phone className="h-4 w-4 text-brand dark:text-amber-300" />
-                  <span className="text-muted-foreground">Téléphone:</span>
-                  <span className="text-body-secondary">{d.telephone}</span>
+                <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300">
+                  <Phone className="w-4 h-4 text-amber-700 dark:text-amber-300" />
+                  <span className="text-muted-foreground dark:text-gray-400">Téléphone:</span>
+                  <span className="text-foreground dark:text-gray-200">{d.telephone}</span>
                 </div>
               )}
               {d.specialite && (
-                <div className="flex items-center gap-2 text-body-secondary">
-                  <Briefcase className="h-4 w-4 text-emerald-800 dark:text-emerald-300" />
-                  <span className="text-muted-foreground">Spécialité:</span>
-                  <span className="text-body-secondary">{d.specialite}</span>
+                <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300">
+                  <Briefcase className="w-4 h-4 text-emerald-300" />
+                  <span className="text-muted-foreground dark:text-gray-400">Spécialité:</span>
+                  <span className="text-foreground dark:text-gray-200">{d.specialite}</span>
                 </div>
               )}
               {typeof d.experience_annees === "number" && (
-                <div className="flex items-center gap-2 text-body-secondary">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-800 dark:text-emerald-300" />
-                  <span className="text-muted-foreground">Expérience:</span>
-                  <span className="text-body-secondary">
+                <div className="flex items-center gap-2 text-muted-foreground dark:text-gray-300">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-300" />
+                  <span className="text-muted-foreground dark:text-gray-400">Expérience:</span>
+                  <span className="text-foreground dark:text-gray-200">
                     {d.experience_annees} an{d.experience_annees > 1 ? "s" : ""}
                   </span>
                 </div>
               )}
             </div>
 
-            <div className="mt-6 rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-2">
-              <div className="flex items-center gap-2 text-brand dark:text-amber-300">
+            <div className="mt-6 rounded-2xl bg-black/5 dark:bg-black/30 border border-border dark:border-white/10 p-4 space-y-2">
+              <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
                 <MapPin className="w-4 h-4" />
                 <p className="font-medium text-sm">Zones de travail</p>
               </div>
               {zones.length === 0 ? (
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-muted-foreground dark:text-gray-400">
                   Aucune zone renseignée.
                 </p>
               ) : (
@@ -282,7 +317,7 @@ export default function ArtisanProfilPage() {
                   {zones.map((label, idx) => (
                     <span
                       key={`${label}-${idx}`}
-                      className="inline-flex items-center rounded-full bg-muted border border-border px-3 py-1 text-[11px] text-body-secondary"
+                      className="inline-flex items-center rounded-full bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 px-3 py-1 text-[11px] text-foreground dark:text-gray-200"
                     >
                       {label}
                     </span>
@@ -293,36 +328,41 @@ export default function ArtisanProfilPage() {
           </div>
 
           <div className="grid grid-cols-3 gap-4">
-            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
-              <p className="text-xs text-muted-foreground">Projets terminés</p>
-              <p className="text-2xl font-semibold text-foreground">{completed.length}</p>
+            <div className="rounded-2xl bg-black/5 dark:bg-black/30 border border-border dark:border-white/10 p-4 space-y-1">
+              <p className="text-xs text-foreground dark:text-gray-500">Projets terminés</p>
+              <p className="text-2xl font-semibold text-foreground dark:text-white">{completed.length}</p>
             </div>
-            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
-              <p className="text-xs text-muted-foreground">Note moyenne</p>
+            <div className="rounded-2xl bg-black/5 dark:bg-black/30 border border-border dark:border-white/10 p-4 space-y-1">
+              <p className="text-xs text-foreground dark:text-gray-500">Note moyenne</p>
               {avgRating === null ? (
-                <p className="text-sm text-muted-foreground">—</p>
+                <p className="text-sm text-muted-foreground dark:text-gray-400">—</p>
               ) : (
                 <div className="space-y-1">
-                  <p className="text-2xl font-semibold text-foreground">
+                  <p className="text-2xl font-semibold text-foreground dark:text-white">
                     {avgRating.toFixed(1)}
                   </p>
                   <Stars value={avgRating} />
                 </div>
               )}
             </div>
-            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
-              <p className="text-xs text-muted-foreground">Feedbacks</p>
-              <p className="text-2xl font-semibold text-foreground">{feedbacks.length}</p>
+            <div className="rounded-2xl bg-black/5 dark:bg-black/30 border border-border dark:border-white/10 p-4 space-y-1">
+              <p className="text-xs text-foreground dark:text-gray-500">Feedbacks</p>
+              <p className="text-2xl font-semibold text-foreground dark:text-white">
+                {feedbacks.length + marketplaceReviews.length}
+              </p>
+              <p className="text-[10px] text-muted-foreground dark:text-gray-500">
+                Projets + marketplace
+              </p>
             </div>
           </div>
         </section>
 
         {/* Historique + feedbacks */}
         <section className="space-y-6">
-          <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
-            <div className="mb-4 flex items-center gap-2 text-brand dark:text-amber-300">
+          <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-6 sm:p-7">
+            <div className="flex items-center gap-2 mb-4 text-amber-700 dark:text-amber-300">
               <MessageCircle className="w-5 h-5" />
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-lg font-semibold text-foreground dark:text-white">
                 Avis & feedbacks des clients
               </h2>
             </div>
@@ -331,53 +371,85 @@ export default function ArtisanProfilPage() {
               <div className="flex items-center justify-center py-10">
                 <div className="w-8 h-8 rounded-full border-2 border-amber-500/40 border-t-amber-400 animate-spin" />
               </div>
-            ) : feedbacks.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
-                Aucun feedback pour le moment. Quand un client note un projet
-                terminé, il apparaîtra ici.
+            ) : feedbacks.length === 0 && marketplaceReviews.length === 0 ? (
+              <p className="text-sm text-muted-foreground dark:text-gray-400">
+                Aucun feedback pour le moment. Les commentaires des projets terminés
+                et les avis marketplace apparaîtront ici.
               </p>
             ) : (
               <div className="space-y-3 max-h-[420px] overflow-auto pr-1">
                 {feedbacks.map((f) => (
                   <div
                     key={f.projectId}
-                    className="rounded-2xl border border-border bg-muted dark:bg-black/30 px-4 py-4 space-y-2"
+                    className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/30 px-4 py-4 space-y-2"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-medium text-foreground line-clamp-1">
+                      <p className="font-medium text-foreground dark:text-white line-clamp-1">
                         {f.titre}
                       </p>
                       {typeof f.artisanRating === "number" ? (
                         <div className="flex items-center gap-2">
                           <Stars value={f.artisanRating} />
-                          <span className="text-[11px] text-muted-foreground">
+                          <span className="text-[11px] text-muted-foreground dark:text-gray-400">
                             {f.artisanRating}/5
                           </span>
                         </div>
                       ) : (
-                        <span className="text-[11px] text-muted-foreground">
+                        <span className="text-[11px] text-foreground dark:text-gray-500">
                           Pas de note
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-body-secondary whitespace-pre-line">
+                    <p className="text-sm text-muted-foreground dark:text-gray-300 whitespace-pre-line">
                       {f.clientComment}
                     </p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-[11px] text-foreground dark:text-gray-500">
                       {f.updatedAt
                         ? `Mis à jour: ${new Date(f.updatedAt).toLocaleDateString()}`
                         : ""}
                     </p>
                   </div>
                 ))}
+                {marketplaceReviews.map((m, i) => (
+                  <div
+                    key={`mp-${i}-${m.date_avis ?? i}`}
+                    className="rounded-2xl border border-amber-500/25 bg-amber-500/5 px-4 py-4 space-y-2"
+                  >
+                    <div className="flex items-center justify-between gap-3 flex-wrap">
+                      <p className="font-medium text-foreground dark:text-white">
+                        Avis marketplace
+                      </p>
+                      {typeof m.note === "number" ? (
+                        <div className="flex items-center gap-2">
+                          <Stars value={m.note} />
+                          <span className="text-[11px] text-muted-foreground dark:text-gray-400">
+                            {m.note}/5
+                          </span>
+                        </div>
+                      ) : null}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground dark:text-gray-500">
+                      {m.projetTitre}
+                      {m.authorLabel ? ` · ${m.authorLabel}` : ""}
+                      {m.date_avis
+                        ? ` · ${new Date(m.date_avis).toLocaleDateString()}`
+                        : ""}
+                    </p>
+                    {m.commentaire ? (
+                      <p className="text-sm text-muted-foreground dark:text-gray-300 whitespace-pre-line">
+                        {m.commentaire}
+                      </p>
+                    ) : null}
+                  </div>
+                ))}
               </div>
             )}
           </div>
 
-          <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
-            <div className="mb-4 flex items-center gap-2 text-emerald-800 dark:text-emerald-300">
+          <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-6 sm:p-7">
+            <div className="flex items-center gap-2 mb-4 text-emerald-300">
               <CheckCircle2 className="w-5 h-5" />
-              <h2 className="text-lg font-semibold text-foreground">
+              <h2 className="text-lg font-semibold text-foreground dark:text-white">
                 Projets terminés (historique)
               </h2>
             </div>
@@ -387,7 +459,7 @@ export default function ArtisanProfilPage() {
                 <div className="w-8 h-8 rounded-full border-2 border-emerald-500/40 border-t-emerald-300 animate-spin" />
               </div>
             ) : completed.length === 0 ? (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground dark:text-gray-400">
                 Aucun projet terminé associé à votre compte pour l’instant.
               </p>
             ) : (
@@ -398,26 +470,26 @@ export default function ArtisanProfilPage() {
                     className="rounded-2xl border border-emerald-500/25 bg-emerald-500/5 px-4 py-4 space-y-2"
                   >
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-medium text-foreground line-clamp-1">
+                      <p className="font-medium text-foreground dark:text-white line-clamp-1">
                         {p.titre}
                       </p>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-medium text-emerald-300">
                         Terminé
                       </span>
                     </div>
-                    <p className="text-xs text-body-secondary line-clamp-2">
+                    <p className="text-xs text-muted-foreground dark:text-gray-300 line-clamp-2">
                       {p.description}
                     </p>
                     {typeof p.budget_estime === "number" && (
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-[11px] text-muted-foreground dark:text-gray-400">
                         Budget:{" "}
-                        <span className="text-body-secondary">
+                        <span className="text-foreground dark:text-gray-200">
                           {p.budget_estime.toLocaleString("fr-FR")} TND
                         </span>
                       </p>
                     )}
                     {typeof p.artisanRating === "number" && (
-                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                      <div className="flex items-center gap-2 text-[11px] text-muted-foreground dark:text-gray-400">
                         <Stars value={p.artisanRating} />
                         <span>Note artisan</span>
                       </div>

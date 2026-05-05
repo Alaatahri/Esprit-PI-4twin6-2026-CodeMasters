@@ -64,36 +64,36 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
   return (
     <div className={className ?? "space-y-5"}>
       {!omitTitle && p.titre ? (
-        <h2 className="text-xl font-bold text-white leading-tight">{p.titre}</h2>
+        <h2 className="text-xl font-bold text-foreground dark:text-white leading-tight">{p.titre}</h2>
       ) : null}
 
       {hasMeta ? (
-        <div className="rounded-2xl border border-white/10 bg-card p-5 space-y-3">
-          <p className="text-[11px] uppercase tracking-wide text-gray-500">Fiche projet</p>
+        <div className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+          <p className="text-[11px] uppercase tracking-wide text-foreground dark:text-gray-500">Fiche projet</p>
           <div className="flex flex-wrap gap-2 text-xs">
             {p.categorie ? (
-              <span className="rounded-full border border-white/10 px-2.5 py-1 text-body-secondary">
+              <span className="rounded-full border border-border dark:border-white/10 px-2.5 py-1 text-foreground dark:text-gray-200">
                 {p.categorie}
               </span>
             ) : null}
             {p.ville ? (
-              <span className="inline-flex items-center gap-1 rounded-full border border-white/10 px-2.5 py-1 text-gray-300">
+              <span className="inline-flex items-center gap-1 rounded-full border border-border dark:border-white/10 px-2.5 py-1 text-muted-foreground dark:text-gray-300">
                 <MapPin className="w-3 h-3 text-amber-400/80" />
                 {p.ville}
                 {p.adresse ? ` · ${p.adresse}` : ""}
               </span>
             ) : p.adresse ? (
-              <span className="rounded-full border border-white/10 px-2.5 py-1 text-gray-300">
+              <span className="rounded-full border border-border dark:border-white/10 px-2.5 py-1 text-muted-foreground dark:text-gray-300">
                 {p.adresse}
               </span>
             ) : null}
             {typeof p.surface_m2 === "number" ? (
-              <span className="rounded-full border border-white/10 px-2.5 py-1 text-gray-300">
+              <span className="rounded-full border border-border dark:border-white/10 px-2.5 py-1 text-muted-foreground dark:text-gray-300">
                 {p.surface_m2} m²
               </span>
             ) : null}
             {p.type_batiment ? (
-              <span className="rounded-full border border-white/10 px-2.5 py-1 text-gray-300">
+              <span className="rounded-full border border-border dark:border-white/10 px-2.5 py-1 text-muted-foreground dark:text-gray-300">
                 {p.type_batiment}
               </span>
             ) : null}
@@ -109,7 +109,7 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
             ) : null}
             {(typeof p.budget_min === "number" || typeof p.budget_max === "number") &&
             (fmtMoney(p.budget_min) || fmtMoney(p.budget_max)) ? (
-              <span className="rounded-full border border-white/10 px-2.5 py-1 text-gray-300">
+              <span className="rounded-full border border-border dark:border-white/10 px-2.5 py-1 text-muted-foreground dark:text-gray-300">
                 Fourchette{" "}
                 {fmtMoney(p.budget_min) && fmtMoney(p.budget_max)
                   ? `${fmtMoney(p.budget_min)} – ${fmtMoney(p.budget_max)}`
@@ -117,40 +117,40 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
               </span>
             ) : null}
             {fmtDate(p.date_debut) ? (
-              <span className="text-gray-500">Début {fmtDate(p.date_debut)}</span>
+              <span className="text-foreground dark:text-gray-500">Début {fmtDate(p.date_debut)}</span>
             ) : null}
             {fmtDate(p.date_fin_prevue) ? (
-              <span className="text-gray-500">Fin prévue {fmtDate(p.date_fin_prevue)}</span>
+              <span className="text-foreground dark:text-gray-500">Fin prévue {fmtDate(p.date_fin_prevue)}</span>
             ) : null}
           </div>
         </div>
       ) : null}
 
       {p.description ? (
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
-          <p className="text-[11px] uppercase text-gray-500 mb-2">Description</p>
-          <p className="text-sm text-body-secondary whitespace-pre-wrap leading-relaxed">{p.description}</p>
+        <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5">
+          <p className="text-[11px] uppercase text-foreground dark:text-gray-500 mb-2">Description</p>
+          <p className="text-sm text-foreground dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{p.description}</p>
         </section>
       ) : null}
 
       {p.preferences_materiaux ? (
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
-          <p className="text-[11px] uppercase text-gray-500 mb-2">Préférences matériaux</p>
-          <p className="text-sm text-gray-300 whitespace-pre-wrap">{p.preferences_materiaux}</p>
+        <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5">
+          <p className="text-[11px] uppercase text-foreground dark:text-gray-500 mb-2">Préférences matériaux</p>
+          <p className="text-sm text-muted-foreground dark:text-gray-300 whitespace-pre-wrap">{p.preferences_materiaux}</p>
         </section>
       ) : null}
 
       {p.exigences_techniques ? (
-        <section className="rounded-2xl border border-white/10 bg-card p-5">
-          <p className="text-[11px] uppercase text-gray-500 mb-2">Exigences techniques</p>
-          <p className="text-sm text-gray-300 whitespace-pre-wrap">{p.exigences_techniques}</p>
+        <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5">
+          <p className="text-[11px] uppercase text-foreground dark:text-gray-500 mb-2">Exigences techniques</p>
+          <p className="text-sm text-muted-foreground dark:text-gray-300 whitespace-pre-wrap">{p.exigences_techniques}</p>
         </section>
       ) : null}
 
       {(p.pieces_jointes?.length ?? 0) > 0 ? (
-        <section className="rounded-2xl border border-white/10 bg-card p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
-            <Paperclip className="w-4 h-4 text-amber-300" />
+        <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
+            <Paperclip className="w-4 h-4 text-amber-700 dark:text-amber-300" />
             Pièces jointes
           </h3>
           <ul className="space-y-2 text-sm break-all">
@@ -160,7 +160,7 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
                   href={url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-amber-300 hover:underline"
+                  className="text-amber-700 dark:text-amber-300 hover:underline"
                 >
                   {url}
                 </a>
@@ -171,8 +171,8 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
       ) : null}
 
       {(p.photos_site?.length ?? 0) > 0 ? (
-        <section className="rounded-2xl border border-white/10 bg-card p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+        <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
             <ImageIcon className="w-4 h-4 text-emerald-300" />
             Photos du site (client)
           </h3>
@@ -183,7 +183,7 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden border border-white/10 bg-muted dark:bg-black/40"
+                className="aspect-square rounded-lg overflow-hidden border border-border dark:border-white/10 bg-black/5 dark:bg-black/40"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="h-full w-full object-cover" />
@@ -194,8 +194,8 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
       ) : null}
 
       {(p.photosAvant?.length ?? 0) > 0 ? (
-        <section className="rounded-2xl border border-white/10 bg-card p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+        <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
             <ImageIcon className="w-4 h-4 text-sky-300" />
             Photos avant travaux
           </h3>
@@ -206,7 +206,7 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden border border-white/10 bg-muted dark:bg-black/40"
+                className="aspect-square rounded-lg overflow-hidden border border-border dark:border-white/10 bg-black/5 dark:bg-black/40"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="h-full w-full object-cover" />
@@ -217,8 +217,8 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
       ) : null}
 
       {(p.photosApres?.length ?? 0) > 0 ? (
-        <section className="rounded-2xl border border-white/10 bg-card p-5 space-y-3">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+        <section className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] p-5 space-y-3">
+          <h3 className="text-sm font-semibold text-foreground dark:text-white flex items-center gap-2">
             <ImageIcon className="w-4 h-4 text-violet-300" />
             Photos après travaux
           </h3>
@@ -229,7 +229,7 @@ export function ExpertProjectDossier({ project: p, omitTitle, className }: Props
                 href={url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="aspect-square rounded-lg overflow-hidden border border-white/10 bg-muted dark:bg-black/40"
+                className="aspect-square rounded-lg overflow-hidden border border-border dark:border-white/10 bg-black/5 dark:bg-black/40"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt="" className="h-full w-full object-cover" />

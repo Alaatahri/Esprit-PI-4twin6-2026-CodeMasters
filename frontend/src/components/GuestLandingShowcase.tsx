@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   Star,
@@ -15,16 +16,12 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { SafeImageFill } from "@/components/SafeImageFill";
 import {
   fetchPublicWorkers,
   fetchShowcaseProjects,
   profileImageUrl,
   workerDisplayName,
   showcaseCoverImage,
-  FALLBACK_SHOWCASE_IMAGE,
-  avatarUrlForWorker,
-  filterWorkingImageUrls,
   type PublicWorker,
   type ShowcaseProjectApi,
 } from "@/lib/public-workers";
@@ -39,7 +36,7 @@ function Stars({ value }: { value: number }) {
           className={
             i < v
               ? "w-3.5 h-3.5 text-amber-400 fill-amber-400"
-              : "w-3.5 h-3.5 text-muted-foreground/35"
+              : "w-3.5 h-3.5 text-foreground/20 dark:text-white/20"
           }
         />
       ))}
@@ -59,9 +56,7 @@ function zoneLabel(z: { scope: string; value?: string }): string {
 const PREVIEW_COUNT = 6;
 
 function showcasePhotoCount(p: ShowcaseProjectApi): number {
-  const av = filterWorkingImageUrls(p.photosAvant?.filter(Boolean));
-  const ap = filterWorkingImageUrls(p.photosApres?.filter(Boolean));
-  return av.length + ap.length;
+  return (p.photosAvant?.length ?? 0) + (p.photosApres?.length ?? 0);
 }
 
 /** Intervalle de rafraîchissement automatique (ms) */
@@ -141,7 +136,7 @@ export function GuestLandingShowcase() {
 
   if (dataState === "loading") {
     return (
-      <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
+      <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground dark:text-gray-400">
         <Loader2 className="h-10 w-10 animate-spin text-amber-400/80" />
         <p className="text-sm">Chargement des profils et projets…</p>
       </div>
@@ -150,61 +145,43 @@ export function GuestLandingShowcase() {
 
   if (dataState === "error") {
     return (
-      <div className="mx-auto max-w-lg space-y-4 rounded-2xl border border-brand/35 bg-brand/10 px-6 py-10 text-center">
-        <p className="font-medium text-foreground dark:text-amber-100">
+      <div className="mx-auto max-w-lg rounded-2xl border border-amber-500/30 bg-amber-950/25 px-6 py-10 text-center space-y-4">
+        <p className="text-amber-900 dark:text-amber-100 font-medium">
           Impossible de joindre l&apos;API BMP.tn
         </p>
         {errorDetail && (
-          <p className="break-words rounded-lg bg-muted p-3 text-left font-mono text-xs leading-relaxed text-body-secondary">
+          <p className="text-left text-xs text-muted-foreground dark:text-gray-400 leading-relaxed break-words rounded-lg bg-black/5 dark:bg-black/30 p-3 font-mono">
             {errorDetail}
           </p>
         )}
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          {errorDetail?.includes("Vercel") ||
-          errorDetail?.includes("vercel") ||
-          errorDetail?.includes("SSO") ? (
-            <>
-              Déploiement sur <strong>Vercel</strong> : la protection SSO bloque
-              l’appel interne vers l’API. Dans le projet Vercel →{" "}
-              <strong>Deployment Protection</strong> → activez{" "}
-              <strong>Protection Bypass for Automation</strong>, puis redéployez
-              (variable <code className="rounded bg-muted px-1 font-mono">VERCEL_AUTOMATION_BYPASS_SECRET</code>
-              ). Vous pouvez aussi copier le secret dans une variable{" "}
-              <code className="rounded bg-muted px-1 font-mono">VERCEL_PROTECTION_BYPASS</code>{" "}
-              sur le service <strong>frontend</strong>. Sinon : API sur Railway +{" "}
-              <code className="rounded bg-muted px-1 font-mono">BACKEND_ORIGIN</code>.
-            </>
-          ) : (
-            <>
-              1) Terminal 1 — backend :{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-brand dark:text-amber-200/90">
-                cd backend
-              </code>{" "}
-              puis{" "}
-              <code className="rounded bg-muted px-1.5 py-0.5 font-mono text-brand dark:text-amber-200/90">
-                npm run start:dev
-              </code>
-              <br />
-              2) MongoDB doit tourner (variable{" "}
-              <code className="rounded bg-muted px-1 font-mono">MONGODB_URI</code> dans{" "}
-              <code className="rounded bg-muted px-1 font-mono">backend/.env</code> si
-              besoin).
-              <br />
-              3) Si le backend est sur une autre adresse, créez{" "}
-              <code className="rounded bg-muted px-1 font-mono">
-                frontend/.env.local
-              </code>{" "}
-              avec :{" "}
-              <code className="mt-2 block break-all rounded bg-muted px-2 py-1.5 text-left font-mono text-brand dark:text-amber-200/90">
-                BACKEND_ORIGIN=http://localhost:3001
-              </code>
-            </>
-          )}
+        <p className="text-sm text-muted-foreground dark:text-gray-400 leading-relaxed">
+          1) Terminal 1 — backend :{" "}
+          <code className="rounded bg-black/5 dark:bg-black/40 px-1.5 py-0.5 text-amber-200/90">
+            cd backend
+          </code>{" "}
+          puis{" "}
+          <code className="rounded bg-black/5 dark:bg-black/40 px-1.5 py-0.5 text-amber-200/90">
+            npm run start:dev
+          </code>
+          <br />
+          2) MongoDB doit tourner (variable{" "}
+          <code className="rounded bg-black/5 dark:bg-black/40 px-1">MONGODB_URI</code> dans{" "}
+          <code className="rounded bg-black/5 dark:bg-black/40 px-1">backend/.env</code> si
+          besoin).
+          <br />
+          3) Si le backend est sur une autre adresse, créez{" "}
+          <code className="rounded bg-black/5 dark:bg-black/40 px-1">
+            frontend/.env.local
+          </code>{" "}
+          avec :{" "}
+          <code className="block mt-2 text-left break-all rounded bg-black/5 dark:bg-black/40 px-2 py-1.5 text-amber-200/90">
+            BACKEND_ORIGIN=http://localhost:3001
+          </code>
         </p>
         <button
           type="button"
           onClick={() => setRetryCount((n) => n + 1)}
-          className="inline-flex items-center justify-center rounded-xl bmp-btn-primary px-6 py-2.5 text-sm font-semibold text-gray-900"
+          className="inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 px-6 py-2.5 text-sm font-semibold text-gray-900"
         >
           Réessayer
         </button>
@@ -220,16 +197,16 @@ export function GuestLandingShowcase() {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400/90">
             Réalisations
           </p>
-          <h2 className="text-xl font-bold leading-tight text-foreground sm:text-2xl md:text-3xl">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground dark:text-white leading-tight">
             Projets terminés sur BMP.tn
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground dark:text-gray-400">
             Extraits de la base — avis clients lorsqu&apos;ils sont renseignés.
           </p>
         </div>
 
         {projects.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-foreground dark:text-gray-500">
             Aucun projet terminé à afficher pour le moment.
           </p>
         ) : (
@@ -242,49 +219,48 @@ export function GuestLandingShowcase() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-40px" }}
                 transition={{ delay: i * 0.05, duration: 0.4 }}
-                className="group overflow-hidden rounded-2xl border border-border bg-card shadow-bmp-sm backdrop-blur-sm transition-colors hover:border-brand/35 hover:shadow-bmp-md"
+                className="group rounded-2xl overflow-hidden border border-border dark:border-white/10 bg-white/[0.04] backdrop-blur-xl hover:border-amber-500/25 transition-colors"
               >
                 <Link
                   href={`/realisations/${p._id}`}
-                  className="block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
+                  className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-400/80 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950 rounded-2xl"
                 >
                 <div className="relative aspect-[16/11] overflow-hidden">
-                  <SafeImageFill
+                  <Image
                     src={showcaseCoverImage(p, i)}
-                    fallbackSrc={FALLBACK_SHOWCASE_IMAGE}
                     alt=""
                     fill
                     sizes="(max-width: 640px) 100vw, (max-width: 1280px) 50vw, 33vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/55 via-transparent to-transparent dark:from-background/80" />
-                  <span className="absolute left-3 top-3 inline-flex items-center rounded-full border border-border bg-background/90 px-2.5 py-0.5 text-[10px] font-medium text-brand backdrop-blur-md dark:border-white/15 dark:bg-foreground/55 dark:text-amber-200">
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/20 to-transparent" />
+                  <span className="absolute top-3 left-3 inline-flex items-center rounded-full bg-black/5 dark:bg-black/50 backdrop-blur-md px-2.5 py-0.5 text-[10px] font-medium text-amber-800 dark:text-amber-200 border border-border dark:border-white/10">
                     {p.statut || "Terminé"}
                   </span>
                   {showcasePhotoCount(p) > 0 && (
-                    <span className="absolute bottom-3 right-3 inline-flex items-center rounded-full border border-border bg-background/90 px-2.5 py-1 text-[10px] font-medium text-foreground backdrop-blur-md dark:border-white/15 dark:bg-foreground/55 dark:text-white/95">
+                    <span className="absolute bottom-3 right-3 inline-flex items-center rounded-full bg-black/5 dark:bg-black/55 backdrop-blur-md px-2.5 py-1 text-[10px] font-medium text-foreground/95 dark:text-white/95 border border-border dark:border-white/15">
                       {showcasePhotoCount(p)} photos · avant / après
                     </span>
                   )}
                 </div>
                 <div className="p-4 space-y-2">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
+                    <h3 className="font-semibold text-foreground dark:text-white text-sm leading-snug line-clamp-2">
                       {p.titre}
                     </h3>
                     {typeof p.clientRating === "number" && (
                       <Stars value={p.clientRating} />
                     )}
                   </div>
-                  <p className="text-xs text-muted-foreground line-clamp-2">
+                  <p className="text-xs text-muted-foreground dark:text-gray-400 line-clamp-2">
                     {p.description || "—"}
                   </p>
                   {p.clientComment && (
-                    <p className="line-clamp-3 border-t border-border pt-2 text-[11px] italic text-body-secondary">
+                    <p className="text-[11px] text-muted-foreground dark:text-gray-300 italic line-clamp-3 border-t border-border dark:border-white/5 pt-2">
                       &ldquo;{p.clientComment}&rdquo;
                     </p>
                   )}
-                  <div className="flex items-center justify-between border-t border-border pt-1 text-[10px] text-muted-foreground">
+                  <div className="flex items-center justify-between text-[10px] text-foreground dark:text-gray-500 pt-1 border-t border-border dark:border-white/5">
                     <span className="inline-flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {p.updatedAt
@@ -308,7 +284,7 @@ export function GuestLandingShowcase() {
               <button
                 type="button"
                 onClick={() => setShowAllProjects((v) => !v)}
-                className="inline-flex min-h-[44px] w-full max-w-md items-center justify-center gap-2 rounded-2xl border border-brand/40 bg-brand/10 px-6 py-2.5 text-sm font-medium text-brand transition hover:bg-brand/18 dark:text-amber-100 dark:hover:bg-amber-500/20 sm:w-auto"
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-6 py-2.5 text-sm font-medium text-amber-900 dark:text-amber-100 transition hover:bg-amber-500/20 w-full max-w-md sm:w-auto"
               >
                 {showAllProjects ? (
                   <>
@@ -330,25 +306,25 @@ export function GuestLandingShowcase() {
       </section>
 
       {/* Artisans */}
-      <section className="relative min-w-0 overflow-hidden rounded-2xl border border-border bg-muted/70 shadow-bmp-sm dark:border-amber-500/25 dark:bg-gradient-to-br dark:from-amber-950/40 dark:via-gray-950/80 dark:to-gray-950 sm:rounded-3xl">
-        <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 -translate-y-1/2 translate-x-1/2 rounded-full bg-brand/10 blur-3xl dark:bg-amber-500/10" />
+      <section className="relative rounded-2xl sm:rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-950/40 via-gray-950/80 to-gray-950 overflow-hidden min-w-0">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
         <div className="relative px-4 py-8 sm:px-8 sm:py-12 lg:px-12 space-y-6 sm:space-y-8">
           <div className="space-y-2">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-400/90 flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 shrink-0" />
               Artisans
             </p>
-            <h2 className="text-xl font-bold leading-tight text-foreground sm:text-2xl md:text-3xl">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground dark:text-white leading-tight">
               Équipes sur la plateforme
             </h2>
-            <p className="text-sm text-muted-foreground max-w-xl">
+            <p className="text-sm text-muted-foreground dark:text-gray-400 max-w-xl">
               Profils réels — cliquez pour voir l&apos;historique et les avis
               liés aux projets.
             </p>
           </div>
 
           {artisansAll.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Aucun artisan inscrit pour le moment.</p>
+            <p className="text-sm text-foreground dark:text-gray-500">Aucun artisan inscrit pour le moment.</p>
           ) : (
             <>
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
@@ -373,13 +349,12 @@ export function GuestLandingShowcase() {
                   >
                     <Link
                       href={href}
-                      className="flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-bmp-xs transition hover:border-brand/35 hover:shadow-bmp-sm dark:border-white/10 dark:bg-muted dark:bg-black/30 dark:hover:bg-muted dark:bg-black/40"
+                      className="flex h-full flex-col gap-3 rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/30 p-4 transition hover:border-amber-500/35 hover:bg-black/5 dark:bg-black/40"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bmp-media-frame ring-2 ring-brand/25">
-                          <SafeImageFill
+                        <div className="relative h-16 w-16 rounded-xl overflow-hidden ring-2 ring-amber-500/30 shrink-0">
+                          <Image
                             src={profileImageUrl(a)}
-                            fallbackSrc={avatarUrlForWorker(a)}
                             alt=""
                             fill
                             className="object-cover"
@@ -387,19 +362,19 @@ export function GuestLandingShowcase() {
                           />
                         </div>
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-foreground">
+                          <p className="font-semibold text-foreground dark:text-white text-sm truncate">
                             {workerDisplayName(a)}
                           </p>
-                          <p className="truncate text-[11px] text-brand dark:text-amber-200/80">
+                          <p className="text-[11px] text-amber-200/80 truncate">
                             {a.specialite || "Artisan"}
                           </p>
                           {a.bio && (
-                            <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 leading-snug">
+                            <p className="text-[10px] text-foreground dark:text-gray-500 line-clamp-2 mt-1 leading-snug">
                               {a.bio}
                             </p>
                           )}
                           {zones && (
-                            <p className="text-[10px] text-muted-foreground flex items-center gap-1 truncate">
+                            <p className="text-[10px] text-foreground dark:text-gray-500 flex items-center gap-1 truncate">
                               <MapPin className="w-3 h-3 shrink-0" />
                               {zones}
                             </p>
@@ -410,13 +385,13 @@ export function GuestLandingShowcase() {
                         {r != null ? (
                           <Stars value={Math.round(r)} />
                         ) : (
-                          <span className="text-muted-foreground">Note —</span>
+                          <span className="text-gray-600">Note —</span>
                         )}
                         <span className="text-amber-400/90 text-[10px] font-medium">
                           Voir le profil →
                         </span>
                       </div>
-                      <span className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-300 border border-amber-500/25">
+                      <span className="inline-flex w-fit items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300 border border-amber-500/25">
                         <Award className="w-3 h-3" />
                         Membre vérifié
                       </span>
@@ -430,7 +405,7 @@ export function GuestLandingShowcase() {
                 <button
                   type="button"
                   onClick={() => setShowAllArtisans((v) => !v)}
-                  className="inline-flex min-h-[44px] w-full max-w-md items-center justify-center gap-2 rounded-2xl border border-border bg-muted px-6 py-2.5 text-sm font-medium text-brand transition hover:bg-accent dark:border-amber-500/40 dark:bg-muted dark:bg-black/20 dark:text-amber-200 dark:hover:bg-muted dark:bg-black/35 sm:w-auto"
+                  className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-black/5 dark:bg-black/20 px-6 py-2.5 text-sm font-medium text-amber-800 dark:text-amber-200 transition hover:bg-black/5 dark:bg-black/35 w-full max-w-md sm:w-auto"
                 >
                   {showAllArtisans ? (
                     <>
@@ -459,17 +434,17 @@ export function GuestLandingShowcase() {
             <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
             Experts
           </p>
-          <h2 className="text-xl font-bold leading-tight text-foreground sm:text-2xl md:text-3xl">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground dark:text-white leading-tight">
             Experts inscrits
           </h2>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground dark:text-gray-400">
             Compétences et notes issues du profil — détail des projets sur la
             fiche.
           </p>
         </div>
 
         {expertsAll.length === 0 ? (
-          <p className="text-center text-sm text-muted-foreground">
+          <p className="text-center text-sm text-foreground dark:text-gray-500">
             Aucun expert inscrit pour le moment.
           </p>
         ) : (
@@ -492,13 +467,12 @@ export function GuestLandingShowcase() {
                 >
                   <Link
                     href={href}
-                    className="flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-bmp-sm transition hover:border-sky-500/40 hover:shadow-bmp-md sm:gap-6 sm:p-6 dark:border-sky-500/20 dark:bg-gradient-to-b dark:from-sky-950/30 dark:to-white/[0.03]"
+                    className="flex h-full flex-col rounded-2xl border border-sky-500/20 bg-gradient-to-b from-sky-950/30 to-white/[0.03] p-4 sm:p-6 gap-3 sm:gap-4 transition hover:border-sky-500/40"
                   >
                     <div className="flex items-center gap-4">
                       <div className="relative h-[4.5rem] w-[4.5rem] rounded-2xl overflow-hidden ring-2 ring-sky-500/30 shrink-0">
-                        <SafeImageFill
+                        <Image
                           src={profileImageUrl(ex)}
-                          fallbackSrc={avatarUrlForWorker(ex)}
                           alt=""
                           fill
                           className="object-cover"
@@ -506,14 +480,14 @@ export function GuestLandingShowcase() {
                         />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-semibold text-foreground">
+                        <p className="font-semibold text-foreground dark:text-white">
                           {workerDisplayName(ex)}
                         </p>
                         <p className="text-xs text-sky-300/90">
                           Expert BMP.tn
                         </p>
                         {ex.bio && (
-                          <p className="text-[10px] text-muted-foreground line-clamp-2 mt-1 leading-snug">
+                          <p className="text-[10px] text-foreground dark:text-gray-500 line-clamp-2 mt-1 leading-snug">
                             {ex.bio}
                           </p>
                         )}
@@ -521,7 +495,7 @@ export function GuestLandingShowcase() {
                           {r != null ? (
                             <Stars value={Math.round(r)} />
                           ) : (
-                            <span className="text-[11px] text-muted-foreground">
+                            <span className="text-[11px] text-gray-600">
                               Note —
                             </span>
                           )}
@@ -532,13 +506,13 @@ export function GuestLandingShowcase() {
                       {comps.map((c) => (
                         <li
                           key={c}
-                          className="rounded-md border border-border bg-muted px-2 py-0.5 text-[10px] text-body-secondary dark:border-white/10 dark:bg-white/5"
+                          className="text-[10px] px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 border border-border dark:border-white/10 text-muted-foreground dark:text-gray-300"
                         >
                           {c}
                         </li>
                       ))}
                     </ul>
-                    <p className="mt-auto flex items-start gap-2 border-t border-border pt-2 text-xs text-sky-700 dark:text-sky-300/90">
+                    <p className="text-xs text-sky-300/90 flex gap-2 items-start mt-auto pt-2 border-t border-border dark:border-white/10">
                       <Quote className="w-4 h-4 text-sky-500/50 shrink-0" />
                       Cliquez pour l&apos;historique des dossiers et les avis
                       projet.
@@ -553,7 +527,7 @@ export function GuestLandingShowcase() {
               <button
                 type="button"
                 onClick={() => setShowAllExperts((v) => !v)}
-                className="inline-flex min-h-[44px] w-full max-w-md items-center justify-center gap-2 rounded-2xl border border-sky-500/35 bg-sky-500/10 px-6 py-2.5 text-sm font-medium text-sky-800 transition hover:bg-sky-500/18 dark:bg-sky-950/30 dark:text-sky-200 dark:hover:bg-sky-950/50 sm:w-auto"
+                className="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-2xl border border-sky-500/35 bg-sky-950/30 px-6 py-2.5 text-sm font-medium text-sky-200 transition hover:bg-sky-950/50 w-full max-w-md sm:w-auto"
               >
                 {showAllExperts ? (
                   <>
@@ -576,13 +550,13 @@ export function GuestLandingShowcase() {
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 sm:gap-4 pt-2 sm:pt-4 max-w-lg mx-auto sm:max-w-none">
           <Link
             href="/inscription"
-            className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bmp-btn-primary font-semibold px-8 py-3 text-sm transition-shadow w-full sm:w-auto"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-8 py-3 text-sm shadow-lg shadow-amber-500/25 hover:shadow-amber-500/40 transition-shadow w-full sm:w-auto"
           >
             Créer un compte
           </Link>
           <Link
             href="/login"
-            className="inline-flex min-h-[44px] w-full items-center justify-center rounded-2xl border border-border bg-muted px-8 py-3 text-sm font-medium text-foreground transition-colors hover:bg-accent sm:w-auto dark:border-white/20 dark:bg-white/5 dark:text-white dark:hover:bg-white/10"
+            className="inline-flex min-h-[44px] items-center justify-center rounded-2xl border border-border dark:border-white/20 bg-black/5 dark:bg-white/5 text-foreground dark:text-white font-medium px-8 py-3 text-sm hover:bg-black/5 dark:bg-white/10 transition-colors w-full sm:w-auto"
           >
             J&apos;ai déjà un compte
           </Link>

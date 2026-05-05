@@ -80,11 +80,11 @@ export function SuiviTimeline({
   };
 
   return (
-    <div className={`rounded-xl border border-white/10 bg-muted dark:bg-black/25 ${className}`}>
+    <div className={`rounded-xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/25 ${className}`}>
       <button
         type="button"
         onClick={toggle}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left text-xs text-amber-200/90 hover:bg-white/5 rounded-xl transition"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left text-xs text-amber-200/90 hover:bg-black/5 dark:bg-white/5 rounded-xl transition"
       >
         <span className="inline-flex items-center gap-2 font-medium">
           {open ? (
@@ -98,12 +98,12 @@ export function SuiviTimeline({
       </button>
 
       {open && (
-        <div className="px-3 pb-3 pt-0 space-y-2 border-t border-white/10">
+        <div className="px-3 pb-3 pt-0 space-y-2 border-t border-border dark:border-white/10">
           {error && (
             <p className="text-[11px] text-red-300/90 px-1">{error}</p>
           )}
           {!loading && !error && entries && entries.length === 0 && (
-            <p className="text-[11px] text-gray-500 px-1">Aucune entrée pour l’instant.</p>
+            <p className="text-[11px] text-foreground dark:text-gray-500 px-1">Aucune entrée pour l’instant.</p>
           )}
           {entries && entries.length > 0 && (
             <ul className="space-y-2 max-h-56 overflow-y-auto pr-1">
@@ -116,28 +116,28 @@ export function SuiviTimeline({
                 return (
                   <li
                     key={s._id}
-                    className="rounded-lg border border-white/10 bg-muted dark:bg-black/35 px-2.5 py-2 text-[11px] space-y-1"
+                    className="rounded-lg border border-border dark:border-white/10 bg-black/5 dark:bg-black/35 px-2.5 py-2 text-[11px] space-y-1"
                   >
-                    <div className="flex items-center justify-between gap-2 text-gray-300">
+                    <div className="flex items-center justify-between gap-2 text-muted-foreground dark:text-gray-300">
                       <span>
                         {s.date_suivi
                           ? new Date(s.date_suivi).toLocaleString("fr-FR")
                           : "—"}
                       </span>
-                      <span className="text-amber-200 font-semibold">
+                      <span className="text-amber-800 dark:text-amber-200 font-semibold">
                         {pct ?? "—"}%
                         {typeof s.progressIndex === "number" && (
-                          <span className="text-gray-500 font-normal">
+                          <span className="text-foreground dark:text-gray-500 font-normal">
                             {" "}
                             · #{s.progressIndex}
                           </span>
                         )}
                       </span>
                     </div>
-                    <p className="text-gray-400 leading-snug line-clamp-3">
+                    <p className="text-muted-foreground dark:text-gray-400 leading-snug line-clamp-3">
                       {s.description_progression}
                     </p>
-                    <div className="flex items-center justify-between text-[10px] text-gray-500">
+                    <div className="flex items-center justify-between text-[10px] text-foreground dark:text-gray-500">
                       <span>
                         Coût:{" "}
                         {typeof s.cout_actuel === "number"

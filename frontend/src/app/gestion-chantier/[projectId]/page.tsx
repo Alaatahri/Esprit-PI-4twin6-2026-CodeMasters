@@ -123,7 +123,7 @@ export default function GestionChantierProjectPage() {
 
   if (!user && loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-gray-950 flex items-center justify-center">
         <Loader2 className="w-10 h-10 animate-spin text-amber-400" />
       </div>
     );
@@ -131,9 +131,9 @@ export default function GestionChantierProjectPage() {
 
   if (user && !canAccessChantier(user.role)) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center px-4">
+      <div className="min-h-screen bg-gradient-to-b from-gray-950 to-gray-900 text-foreground dark:text-white flex items-center justify-center px-4">
         <div className="text-center space-y-3 max-w-md">
-          <p className="text-body-secondary">Accès non autorisé.</p>
+          <p className="text-muted-foreground dark:text-gray-300">Accès non autorisé.</p>
           <Link href="/gestion-chantier" className="text-amber-400 hover:underline">
             Retour gestion chantier
           </Link>
@@ -143,25 +143,26 @@ export default function GestionChantierProjectPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-foreground dark:text-white">
+      <div className="fixed inset-0 z-0 bg-gradient-to-br from-gray-950/95 via-blue-950/30 to-gray-950/95" />
       <div className="relative z-10 container mx-auto px-4 py-10 sm:py-12 max-w-3xl">
         <Link
           href="/gestion-chantier"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-amber-300 mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-muted-foreground dark:text-gray-400 hover:text-amber-700 dark:text-amber-300 mb-8 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Retour à la liste
         </Link>
 
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-2xl bmp-icon-gradient flex items-center justify-center">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-300 flex items-center justify-center">
             <Briefcase className="w-6 h-6 text-gray-900" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-foreground">
+            <h1 className="text-xl sm:text-2xl font-bold text-foreground dark:text-white">
               Détail du chantier
             </h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground dark:text-gray-400">
               Photo de suivi et journal pour votre équipe.
             </p>
           </div>
@@ -177,14 +178,14 @@ export default function GestionChantierProjectPage() {
           </div>
         ) : project && allowed ? (
           <div className="space-y-8">
-            <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-5 sm:p-6 space-y-4">
-              <h2 className="text-lg font-semibold text-foreground line-clamp-2">
+            <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-5 sm:p-6 space-y-4">
+              <h2 className="text-lg font-semibold text-foreground dark:text-white line-clamp-2">
                 {project.titre}
               </h2>
-              <p className="text-sm text-muted-foreground line-clamp-4">
+              <p className="text-sm text-muted-foreground dark:text-gray-400 line-clamp-4">
                 {project.description}
               </p>
-              <div className="flex flex-wrap items-center gap-4 text-[11px] text-body-secondary">
+              <div className="flex flex-wrap items-center gap-4 text-[11px] text-muted-foreground dark:text-gray-300">
                 <span className="inline-flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {project.date_debut
@@ -200,9 +201,9 @@ export default function GestionChantierProjectPage() {
                   {clampPct(project.avancement_global)}% avancement
                 </span>
               </div>
-              <div className="h-2 rounded-full bg-muted overflow-hidden">
+              <div className="h-2 rounded-full bg-black/5 dark:bg-white/10 overflow-hidden">
                 <div
-                  className="h-full bmp-progress-accent"
+                  className="h-full bg-gradient-to-r from-amber-500 to-yellow-400"
                   style={{ width: `${clampPct(project.avancement_global)}%` }}
                 />
               </div>
@@ -217,7 +218,7 @@ export default function GestionChantierProjectPage() {
             ) : null}
 
             <div>
-              <h3 className="text-sm font-semibold text-foreground mb-2">
+              <h3 className="text-sm font-semibold text-foreground dark:text-white mb-2">
                 Journal de suivi
               </h3>
               <SuiviTimeline projectId={project._id} apiBaseUrl={API_URL} />

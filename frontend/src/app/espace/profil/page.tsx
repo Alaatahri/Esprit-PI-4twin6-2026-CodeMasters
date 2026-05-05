@@ -178,14 +178,14 @@ export default function ProfilPage() {
   if (!loading && !user) {
     return (
       <div className="max-w-2xl mx-auto text-center space-y-6">
-        <h1 className="text-2xl font-bold text-foreground">Espace réservé</h1>
-        <p className="text-muted-foreground">
+        <h1 className="text-2xl font-bold text-foreground dark:text-white">Espace réservé</h1>
+        <p className="text-muted-foreground dark:text-gray-400">
           Connectez-vous pour accéder à votre profil, votre historique de
           projets et laisser une note à vos artisans et experts.
         </p>
         <button
           onClick={() => router.push("/login")}
-          className="px-6 py-3 rounded-xl bmp-btn-primary font-semibold"
+          className="px-6 py-3 rounded-xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold shadow-lg shadow-amber-500/30"
         >
           Aller à la connexion
         </button>
@@ -197,34 +197,34 @@ export default function ProfilPage() {
     <div className="grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-8 lg:gap-10">
       {/* Colonne profil + résumé */}
       <section className="space-y-6">
-        <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
+        <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-6 sm:p-7">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-              <span className="text-xl font-bold text-brand dark:text-amber-300">
+              <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
                 {user?.nom?.charAt(0).toUpperCase() || "U"}
               </span>
             </div>
             <div>
-              <h1 className="text-xl font-semibold text-foreground">
+              <h1 className="text-xl font-semibold text-foreground dark:text-white">
                 {user?.nom || "Mon profil"}
               </h1>
-              <p className="text-xs uppercase tracking-[0.2em] text-brand dark:text-amber-300/80">
+              <p className="text-xs text-amber-300/80 uppercase tracking-[0.2em]">
                 {user?.role || "client"}
               </p>
             </div>
           </div>
 
           <div className="mt-6 grid grid-cols-2 gap-4 text-sm">
-            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
-              <p className="text-xs text-muted-foreground">Projets terminés</p>
-              <p className="text-2xl font-semibold text-foreground">
+            <div className="rounded-2xl bg-black/5 dark:bg-black/30 border border-border dark:border-white/10 p-4 space-y-1">
+              <p className="text-xs text-foreground dark:text-gray-500">Projets terminés</p>
+              <p className="text-2xl font-semibold text-foreground dark:text-white">
                 {projects.length}
               </p>
             </div>
-            <div className="rounded-2xl bg-muted dark:bg-black/30 border border-border p-4 space-y-1">
-              <p className="text-xs text-muted-foreground">Dernière activité</p>
-              <p className="flex items-center gap-2 text-sm text-body-secondary">
-                <Clock className="h-4 w-4 text-brand dark:text-amber-300" />
+            <div className="rounded-2xl bg-black/5 dark:bg-black/30 border border-border dark:border-white/10 p-4 space-y-1">
+              <p className="text-xs text-foreground dark:text-gray-500">Dernière activité</p>
+              <p className="flex items-center gap-2 text-sm text-muted-foreground dark:text-gray-300">
+                <Clock className="w-4 h-4 text-amber-700 dark:text-amber-300" />
                 {projects[0]?.updatedAt
                   ? new Date(projects[0].updatedAt).toLocaleDateString()
                   : "-"}
@@ -232,7 +232,7 @@ export default function ProfilPage() {
             </div>
           </div>
 
-          <p className="mt-5 text-xs text-muted-foreground flex items-start gap-2">
+          <p className="mt-5 text-xs text-foreground dark:text-gray-500 flex items-start gap-2">
             <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5" />
             <span>
               Vos avis aident à mieux valoriser les artisans et experts qui ont
@@ -241,12 +241,12 @@ export default function ProfilPage() {
           </p>
         </div>
 
-        <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-5 space-y-3 text-sm">
-          <div className="flex items-center gap-2 text-brand dark:text-amber-300">
+        <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-5 space-y-3 text-sm">
+          <div className="flex items-center gap-2 text-amber-700 dark:text-amber-300">
             <MessageCircle className="w-4 h-4" />
             <p className="font-medium">Comment fonctionne la notation ?</p>
           </div>
-          <ul className="list-disc list-inside text-muted-foreground space-y-1">
+          <ul className="list-disc list-inside text-muted-foreground dark:text-gray-400 space-y-1">
             <li>
               Vous ne pouvez noter que vos projets marqués comme « Terminé ».
             </li>
@@ -258,9 +258,9 @@ export default function ProfilPage() {
 
       {/* Colonne historique & formulaire de rating */}
       <section className="space-y-6">
-        <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
+        <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-6 sm:p-7">
           <div className="flex items-center justify-between gap-3 mb-4">
-            <h2 className="text-lg font-semibold text-foreground">
+            <h2 className="text-lg font-semibold text-foreground dark:text-white">
               Projets terminés
             </h2>
           </div>
@@ -270,7 +270,7 @@ export default function ProfilPage() {
               <div className="w-8 h-8 rounded-full border-2 border-amber-500/40 border-t-amber-400 animate-spin" />
             </div>
           ) : projects.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground dark:text-gray-400">
               Aucun projet terminé pour le moment. Une fois vos projets
               clôturés, vous pourrez laisser une note ici.
             </p>
@@ -286,28 +286,28 @@ export default function ProfilPage() {
                     className={`w-full text-left rounded-2xl border px-4 py-3 text-sm transition-all ${
                       isSelected
                         ? "border-amber-400/60 bg-amber-500/15 shadow-inner shadow-amber-500/20"
-                        : "border-border bg-muted dark:bg-black/30 hover:border-amber-500/40 hover:bg-amber-500/10"
+                        : "border-border dark:border-white/10 bg-black/5 dark:bg-black/30 hover:border-amber-500/40 hover:bg-amber-500/10"
                     }`}
                   >
                     <div className="flex items-center justify-between gap-3 mb-1">
-                      <p className="font-medium text-foreground line-clamp-1">
+                      <p className="font-medium text-foreground dark:text-white line-clamp-1">
                         {project.titre}
                       </p>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-medium text-emerald-800 dark:text-emerald-300">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] font-medium text-emerald-300">
                         Terminé
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-2 mb-2">
+                    <p className="text-xs text-muted-foreground dark:text-gray-400 line-clamp-2 mb-2">
                       {project.description}
                     </p>
-                    <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
+                    <div className="flex items-center gap-3 text-[11px] text-muted-foreground dark:text-gray-400">
                       {typeof project.clientRating === "number" ? (
                         <>
                           <Stars value={project.clientRating} />
                           <span>Votre note actuelle</span>
                         </>
                       ) : (
-                        <span className="text-brand dark:text-amber-300">
+                        <span className="text-amber-700 dark:text-amber-300">
                           Cliquez pour donner une note
                         </span>
                       )}
@@ -319,21 +319,21 @@ export default function ProfilPage() {
           )}
         </div>
 
-        <div className="rounded-3xl border border-border bg-muted backdrop-blur-xl p-6 sm:p-7">
-          <h2 className="text-lg font-semibold text-foreground mb-4">
+        <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-6 sm:p-7">
+          <h2 className="text-lg font-semibold text-foreground dark:text-white mb-4">
             {selectedProjectId
               ? "Donner ou modifier votre avis"
               : "Sélectionnez un projet pour noter"}
           </h2>
 
           {error && (
-            <div className="mb-4 rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+            <div className="mb-4 rounded-xl border border-red-500/40 bg-red-500/15 px-4 py-3 text-sm text-red-200">
               {error}
             </div>
           )}
 
           {success && (
-            <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-900 dark:text-emerald-200">
+            <div className="mb-4 rounded-xl border border-emerald-500/40 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-200">
               {success}
             </div>
           )}
@@ -341,7 +341,7 @@ export default function ProfilPage() {
           {selectedProjectId ? (
             <form noValidate onSubmit={handleSubmit} className="space-y-5">
               <div className="space-y-2">
-                <label className="text-sm font-medium text-body-secondary">
+                <label className="text-sm font-medium text-muted-foreground dark:text-gray-300">
                   Note globale du projet
                 </label>
                 <div className="flex items-center gap-2">
@@ -354,7 +354,7 @@ export default function ProfilPage() {
                         clientRating: Number(e.target.value) || 1,
                       }))
                     }
-                    className="bg-muted dark:bg-black/40 border border-border rounded-xl px-3 py-2 text-xs text-body-secondary focus:outline-none focus:border-amber-400/60"
+                    className="bg-black/5 dark:bg-black/40 border border-border dark:border-white/15 rounded-xl px-3 py-2 text-xs text-foreground dark:text-gray-200 focus:outline-none focus:border-amber-400/60"
                   >
                     {[1, 2, 3, 4, 5].map((n) => (
                       <option key={n} value={n}>
@@ -366,7 +366,7 @@ export default function ProfilPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-body-secondary">
+                <label className="text-sm font-medium text-muted-foreground dark:text-gray-300">
                   Commentaire (optionnel)
                 </label>
                 <textarea
@@ -392,13 +392,13 @@ export default function ProfilPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3.5 rounded-2xl bmp-btn-primary font-semibold transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold shadow-lg shadow-amber-500/40 hover:shadow-amber-500/60 transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm"
               >
                 {submitting ? "Enregistrement..." : "Enregistrer mon avis"}
               </button>
             </form>
           ) : (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground dark:text-gray-400">
               Choisissez d&apos;abord un projet terminé dans la liste ci-dessus pour
               laisser une note et un commentaire.
             </p>

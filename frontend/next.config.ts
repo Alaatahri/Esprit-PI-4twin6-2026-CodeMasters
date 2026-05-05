@@ -1,19 +1,8 @@
 import type { NextConfig } from "next";
 import path from "path";
-import { resolveBackendOriginAtBuildTime } from "./src/lib/server-backend-origin";
 
 const nextConfig: NextConfig = {
   outputFileTracingRoot: path.join(__dirname),
-  /** Proxy API NestJS (port 3001) quand le front utilise une URL relative `/api`. */
-  async rewrites() {
-    const origin = resolveBackendOriginAtBuildTime();
-    return [
-      {
-        source: "/api/:path*",
-        destination: `${origin}/api/:path*`,
-      },
-    ];
-  },
   images: {
     remotePatterns: [
       {
@@ -26,10 +15,36 @@ const nextConfig: NextConfig = {
         hostname: "ui-avatars.com",
         pathname: "/api/**",
       },
+      // Démo / seed
       {
         protocol: "https",
         hostname: "picsum.photos",
         pathname: "/**",
+      },
+      // Fichiers servis par le backend Nest en local (uploads)
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "3001",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3001",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "3002",
+        pathname: "/uploads/**",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+        port: "3002",
+        pathname: "/uploads/**",
       },
     ],
   },

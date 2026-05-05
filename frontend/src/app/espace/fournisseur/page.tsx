@@ -3,8 +3,8 @@
 export default function FournisseurSpacePage() {
   return (
     <div className="max-w-2xl mx-auto space-y-4">
-      <h1 className="text-2xl font-bold text-foreground">Espace fabricant / fournisseur</h1>
-      <p className="text-sm text-muted-foreground">
+      <h1 className="text-2xl font-bold text-foreground dark:text-white">Espace fabricant / fournisseur</h1>
+      <p className="text-sm text-muted-foreground dark:text-gray-400">
         Cet écran sera dédié aux fabricants et fournisseurs pour gérer leur offre
         sur la marketplace BMP.tn.
       </p>

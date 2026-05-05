@@ -107,12 +107,12 @@ export default function ExpertNouveauxProjetsPage() {
   }, [rows]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-foreground dark:text-white">
       <div className="container mx-auto px-4 py-10 max-w-3xl space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3">
             <div className="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
-              <ClipboardList className="w-6 h-6 text-amber-300" />
+              <ClipboardList className="w-6 h-6 text-amber-700 dark:text-amber-300" />
             </div>
             <div>
               <h1 className="text-2xl font-bold">Invitations</h1>
@@ -120,15 +120,15 @@ export default function ExpertNouveauxProjetsPage() {
           </div>
           <Link
             href="/expert/projets"
-            className="hidden sm:inline-flex rounded-2xl border border-border bg-muted px-4 py-2 text-sm text-foreground/90 hover:bg-muted"
+            className="hidden sm:inline-flex rounded-2xl border border-border dark:border-white/15 bg-black/5 dark:bg-white/5 px-4 py-2 text-sm text-foreground/90 dark:text-white/90 hover:bg-black/5 dark:bg-white/10"
           >
             Mes projets
           </Link>
         </div>
 
         {me ? (
-          <div className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-            <span className="text-body-secondary font-medium">{me.nom || "Expert"}</span>
+          <div className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-muted-foreground dark:text-gray-400">
+            <span className="text-foreground dark:text-gray-200 font-medium">{me.nom || "Expert"}</span>
             {" · "}
             {rows.length} invitation{rows.length > 1 ? "s" : ""}
             {pending.length > 0 ? (
@@ -149,11 +149,11 @@ export default function ExpertNouveauxProjetsPage() {
             {err}
           </div>
         ) : rows.length === 0 ? (
-          <div className="rounded-2xl border border-border bg-muted p-6 text-sm text-muted-foreground space-y-4">
+          <div className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 p-6 text-sm text-muted-foreground dark:text-gray-400 space-y-4">
             <p>Aucune invitation pour l’instant.</p>
             <Link
               href="/expert/tous-les-projets"
-              className="inline-flex rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-2 text-sm text-amber-100 hover:bg-amber-500/20"
+              className="inline-flex rounded-xl border border-amber-500/35 bg-amber-500/10 px-4 py-2 text-sm text-amber-900 dark:text-amber-100 hover:bg-amber-500/20"
             >
               Tous les projets
             </Link>
@@ -177,14 +177,14 @@ export default function ExpertNouveauxProjetsPage() {
                   : r.status === "refused"
                     ? "bg-red-500/10 text-red-200 border-red-500/25"
                     : r.isExpired
-                      ? "bg-muted text-body-secondary border-border"
-                      : "bg-amber-500/15 text-amber-200 border-amber-500/30";
+                      ? "bg-black/5 dark:bg-white/10 text-muted-foreground dark:text-gray-300 border-border dark:border-white/15"
+                      : "bg-amber-500/15 text-amber-800 dark:text-amber-200 border-amber-500/30";
 
               if (!pid) {
                 return (
                   <li
                     key={r._id}
-                    className="rounded-2xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground"
+                    className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-foreground dark:text-gray-500"
                   >
                     Projet indisponible
                   </li>
@@ -195,7 +195,7 @@ export default function ExpertNouveauxProjetsPage() {
                 <li key={r._id}>
                   <Link
                     href={`/expert/projects/${encodeURIComponent(pid)}?from=nouveaux`}
-                    className="group flex items-start gap-4 rounded-2xl border border-border bg-card px-4 py-4 transition hover:border-amber-500/30 hover:bg-white/[0.06]"
+                    className="group flex items-start gap-4 rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] px-4 py-4 transition hover:border-amber-500/30 hover:bg-white/[0.06]"
                   >
                     <div className="min-w-0 flex-1 space-y-2">
                       <div className="flex flex-wrap items-center gap-2">
@@ -205,19 +205,19 @@ export default function ExpertNouveauxProjetsPage() {
                           {statusLabel}
                         </span>
                         {p?.ville ? (
-                          <span className="text-[11px] text-muted-foreground">{p.ville}</span>
+                          <span className="text-[11px] text-foreground dark:text-gray-500">{p.ville}</span>
                         ) : null}
                       </div>
-                      <h2 className="text-base font-semibold text-foreground group-hover:text-amber-100 transition line-clamp-2">
+                      <h2 className="text-base font-semibold text-foreground dark:text-white group-hover:text-amber-900 dark:text-amber-100 transition line-clamp-2">
                         {p?.titre ?? "Projet"}
                       </h2>
                       {p?.description ? (
-                        <p className="text-sm text-muted-foreground line-clamp-2">{p.description}</p>
+                        <p className="text-sm text-foreground dark:text-gray-500 line-clamp-2">{p.description}</p>
                       ) : null}
                       {r.status === "accepted" || r.status === "refused" ? (
                         <p className="text-[11px] text-gray-600">
                           {r.status === "accepted" ? "Acceptée" : "Refusée"} par{" "}
-                          <span className="text-muted-foreground">{expertLabel(r.expertId)}</span>
+                          <span className="text-muted-foreground dark:text-gray-400">{expertLabel(r.expertId)}</span>
                         </p>
                       ) : null}
                     </div>

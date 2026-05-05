@@ -128,7 +128,7 @@ export default function ExpertProjetsPage() {
 
   if (!user || normalizeRole(user.role) !== "expert") {
     return (
-      <div className="max-w-lg mx-auto text-center py-16 text-muted-foreground">
+      <div className="max-w-lg mx-auto text-center py-16 text-muted-foreground dark:text-gray-400">
         Accès réservé aux experts.
       </div>
     );
@@ -139,18 +139,18 @@ export default function ExpertProjetsPage() {
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div className="flex items-start gap-3">
           <div className="rounded-2xl bg-amber-500/15 border border-amber-500/35 p-3">
-            <FolderKanban className="w-8 h-8 text-amber-300" />
+            <FolderKanban className="w-8 h-8 text-amber-700 dark:text-amber-300" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Mes projets</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <h1 className="text-2xl font-bold text-foreground dark:text-white">Mes projets</h1>
+            <p className="text-sm text-foreground dark:text-gray-500 mt-1">
               Ouvrez un dossier pour proposition, photos et suivi.
             </p>
           </div>
         </div>
         <Link
           href="/espace/expert"
-          className="text-sm text-amber-400/90 hover:text-amber-300"
+          className="text-sm text-amber-400/90 hover:text-amber-700 dark:text-amber-300"
         >
           ← Espace expert
         </Link>
@@ -167,7 +167,7 @@ export default function ExpertProjetsPage() {
           <Loader2 className="w-12 h-12 animate-spin text-amber-400/80" />
         </div>
       ) : projects.length === 0 ? (
-        <p className="text-center text-muted-foreground py-16">
+        <p className="text-center text-foreground dark:text-gray-500 py-16">
           Aucun projet ne vous est encore assigné en tant qu&apos;expert.
         </p>
       ) : (
@@ -184,18 +184,18 @@ export default function ExpertProjetsPage() {
             return (
               <li
                 key={p._id}
-                className="rounded-2xl border border-border bg-card overflow-hidden"
+                className="rounded-2xl border border-border dark:border-white/10 bg-white/[0.04] overflow-hidden"
               >
                 <div className="p-5 sm:p-6 space-y-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <Link
                         href={`/expert/projects/${encodeURIComponent(p._id)}?from=projets`}
-                        className="text-lg font-semibold text-foreground hover:text-amber-200 transition"
+                        className="text-lg font-semibold text-foreground dark:text-white hover:text-amber-800 dark:text-amber-200 transition"
                       >
                         {p.titre}
                       </Link>
-                      <p className="text-xs text-muted-foreground mt-0.5">
+                      <p className="text-xs text-foreground dark:text-gray-500 mt-0.5">
                         {p.statut ?? "—"} · Avancement{" "}
                         {p.avancement_global ?? 0}%
                       </p>
@@ -208,7 +208,7 @@ export default function ExpertProjetsPage() {
                     </div>
                   </div>
                   {p.description && (
-                    <p className="text-sm text-muted-foreground line-clamp-3">
+                    <p className="text-sm text-muted-foreground dark:text-gray-400 line-clamp-3">
                       {p.description}
                     </p>
                   )}
@@ -234,8 +234,8 @@ export default function ExpertProjetsPage() {
                     )}
                   </div>
 
-                  <div className="rounded-xl border border-border bg-muted dark:bg-black/25 p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
+                  <div className="rounded-xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/25 p-4 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground dark:text-gray-400">
                       <ClipboardList className="w-4 h-4" />
                       Feedback / note de suivi (visible côté données projet)
                     </div>
@@ -249,7 +249,7 @@ export default function ExpertProjetsPage() {
                       }
                       rows={3}
                       placeholder="Synthèse, points d’attention, recommandations…"
-                      className="w-full rounded-lg border border-border bg-muted dark:bg-black/40 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+                      className="w-full rounded-lg border border-border dark:border-white/10 bg-black/5 dark:bg-black/40 px-3 py-2 text-sm text-foreground dark:text-white placeholder:text-gray-600 focus:outline-none focus:ring-2 focus:ring-amber-500/30"
                     />
                     <div className="flex items-center gap-3">
                       <button
@@ -259,7 +259,7 @@ export default function ExpertProjetsPage() {
                           savingId === p._id ||
                           !(feedbackByProject[p._id] ?? "").trim()
                         }
-                        className="inline-flex items-center gap-2 rounded-lg bg-amber-500/20 border border-amber-500/40 px-4 py-2 text-xs font-medium text-amber-100 hover:bg-amber-500/30 disabled:opacity-40"
+                        className="inline-flex items-center gap-2 rounded-lg bg-amber-500/20 border border-amber-500/40 px-4 py-2 text-xs font-medium text-amber-900 dark:text-amber-100 hover:bg-amber-500/30 disabled:opacity-40"
                       >
                         {savingId === p._id ? (
                           <Loader2 className="w-4 h-4 animate-spin" />

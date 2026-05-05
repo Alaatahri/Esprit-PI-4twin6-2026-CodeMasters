@@ -292,11 +292,11 @@ export default function AcceptationProjetPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-background text-foreground dark:bg-gradient-to-b dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 dark:text-white">
       <div className="container mx-auto px-4 py-10 max-w-3xl space-y-6">
         <Link
           href={`/espace/client/suivi/${encodeURIComponent(projectId)}`}
-          className="inline-flex items-center gap-2 text-sm text-brand hover:text-brand-muted dark:text-amber-400/90 dark:hover:text-amber-300"
+          className="inline-flex items-center gap-2 text-sm text-amber-400/90 hover:text-amber-700 dark:text-amber-300"
         >
           <ArrowLeft className="w-4 h-4" />
           Retour au projet
@@ -304,11 +304,11 @@ export default function AcceptationProjetPage() {
 
         <div className="flex items-start gap-3">
           <div className="w-11 h-11 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center">
-            <FileText className="h-6 w-6 text-brand dark:text-amber-300" />
+            <FileText className="w-6 h-6 text-amber-700 dark:text-amber-300" />
           </div>
           <div>
             <h1 className="text-2xl font-bold">Acceptation & négociation</h1>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground dark:text-gray-400">
               Acceptez une proposition, proposez une contre-offre, ou annulez le projet.
             </p>
           </div>
@@ -319,51 +319,51 @@ export default function AcceptationProjetPage() {
             <Loader2 className="w-10 h-10 animate-spin text-amber-400" />
           </div>
         ) : !project && err ? (
-          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+          <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
             {err}
           </div>
         ) : project ? (
           <>
             {err ? (
-              <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-800 dark:text-red-200">
+              <div className="rounded-2xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
                 {err}
               </div>
             ) : null}
             <div className="flex flex-wrap gap-3 justify-between items-start">
-              <div className="rounded-3xl border border-border bg-card p-5 sm:p-6 flex-1 min-w-[240px]">
-                <p className="text-lg font-semibold text-foreground">{project.titre}</p>
+              <div className="rounded-3xl border border-border dark:border-white/10 bg-white/[0.04] p-5 sm:p-6 flex-1 min-w-[240px]">
+                <p className="text-lg font-semibold text-foreground dark:text-white">{project.titre}</p>
                 {project.description ? (
-                  <p className="mt-2 text-sm text-muted-foreground">{project.description}</p>
+                  <p className="mt-2 text-sm text-muted-foreground dark:text-gray-400">{project.description}</p>
                 ) : null}
               </div>
               <button
                 type="button"
                 disabled={cancelling}
                 onClick={() => void cancelProject()}
-                className="rounded-2xl border border-red-500/35 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-800 hover:bg-red-500/20 disabled:opacity-50 dark:text-red-200"
+                className="rounded-2xl border border-red-500/35 bg-red-500/10 px-4 py-2.5 text-sm font-semibold text-red-200 hover:bg-red-500/20 disabled:opacity-50"
               >
                 {cancelling ? "…" : "Annuler le projet"}
               </button>
             </div>
 
             {contract ? (
-              <section className="space-y-4 rounded-3xl border border-emerald-500/25 bg-emerald-500/[0.06] p-5 sm:p-6 dark:border-emerald-500/20 dark:bg-emerald-950/15">
+              <section className="rounded-3xl border border-emerald-500/20 bg-emerald-950/15 p-5 sm:p-6 space-y-4">
                 <div className="flex items-center justify-between gap-3">
-                  <h2 className="text-sm font-semibold text-foreground inline-flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-800 dark:text-emerald-300" />
+                  <h2 className="text-sm font-semibold text-foreground dark:text-white inline-flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-300" />
                     Contrat généré
                   </h2>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground dark:text-gray-400">
                     Client signé: {contract.clientSignedAt ? "oui" : "non"} · Expert signé:{" "}
                     {contract.expertSignedAt ? "oui" : "non"}
                   </p>
                 </div>
 
-                <pre className="whitespace-pre-wrap text-[11px] text-body-secondary/90 rounded-2xl border border-border bg-muted dark:bg-black/30 p-4 max-h-80 overflow-auto scrollbar-bmp">
+                <pre className="whitespace-pre-wrap text-[11px] text-foreground/90 dark:text-gray-200/90 rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/30 p-4 max-h-80 overflow-auto scrollbar-bmp">
 {contract.contractText}
                 </pre>
 
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs text-foreground dark:text-gray-500 leading-relaxed">
                   1) Téléchargez le PDF officiel. 2) Signez-le (signature manuscrite ou cachet). 3) Envoyez le PDF
                   signé ici — cela enregistre votre côté. 4) Vous pouvez aussi confirmer par signature électronique
                   sur la plateforme.
@@ -374,12 +374,12 @@ export default function AcceptationProjetPage() {
                     type="button"
                     disabled={pdfBusy}
                     onClick={() => void handleDownloadPdf()}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border bg-muted px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-muted disabled:opacity-40"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border dark:border-white/20 bg-black/5 dark:bg-white/5 px-4 py-2.5 text-sm font-semibold text-foreground dark:text-white hover:bg-black/5 dark:bg-white/10 disabled:opacity-40"
                   >
                     {pdfBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />}
                     Télécharger le PDF
                   </button>
-                  <label className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-emerald-500/35 bg-emerald-500/10 px-4 py-2.5 text-sm font-semibold text-emerald-950 hover:bg-emerald-500/20 disabled:opacity-40 dark:text-emerald-100">
+                  <label className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-500/35 bg-emerald-500/10 px-4 py-2.5 text-sm font-semibold text-emerald-100 hover:bg-emerald-500/20 cursor-pointer disabled:opacity-40">
                     <input
                       type="file"
                       accept="application/pdf,.pdf,application/octet-stream"
@@ -397,26 +397,26 @@ export default function AcceptationProjetPage() {
                     type="button"
                     disabled={!pendingClientPdf || uploadBusy}
                     onClick={() => void confirmClientUploadPdf()}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600/90 px-4 py-2.5 text-sm font-semibold text-foreground hover:bg-emerald-600 disabled:opacity-40"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-emerald-600/90 px-4 py-2.5 text-sm font-semibold text-foreground dark:text-white hover:bg-emerald-600 disabled:opacity-40"
                   >
                     {uploadBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                     Valider l&apos;envoi
                   </button>
                 </div>
                 {pendingClientPdf ? (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-foreground dark:text-gray-500">
                     Fichier sélectionné : {pendingClientPdf.name}
                   </p>
                 ) : null}
 
                 {clientPdfHref ? (
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground dark:text-gray-400">
                     Votre PDF signé est enregistré :{" "}
                     <a
                       href={clientPdfHref}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-brand hover:underline dark:text-amber-300"
+                      className="text-amber-700 dark:text-amber-300 hover:underline"
                     >
                       ouvrir / télécharger
                     </a>
@@ -427,7 +427,7 @@ export default function AcceptationProjetPage() {
                   type="button"
                   disabled={!canSign || signing}
                   onClick={() => void signContract()}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bmp-btn-primary px-5 py-3 text-sm font-semibold text-gray-900 hover:opacity-95 disabled:opacity-40"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 px-5 py-3 text-sm font-semibold text-gray-900 hover:opacity-95 disabled:opacity-40"
                 >
                   {signing ? (
                     <>
@@ -440,20 +440,20 @@ export default function AcceptationProjetPage() {
                 </button>
               </section>
             ) : (
-              <section className="rounded-3xl border border-border bg-card p-5 sm:p-6 space-y-4">
-                <h2 className="text-sm font-semibold text-foreground">Propositions reçues</h2>
+              <section className="rounded-3xl border border-border dark:border-white/10 bg-white/[0.04] p-5 sm:p-6 space-y-4">
+                <h2 className="text-sm font-semibold text-foreground dark:text-white">Propositions reçues</h2>
                 {proposals.length === 0 ? (
-                  <p className="text-sm text-muted-foreground">Aucune proposition pour le moment.</p>
+                  <p className="text-sm text-foreground dark:text-gray-500">Aucune proposition pour le moment.</p>
                 ) : (
                   <div className="space-y-4">
                     {proposals.map((p) => (
                       <div
                         key={p._id}
-                        className="rounded-2xl border border-border bg-muted dark:bg-black/25 p-4 space-y-3"
+                        className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/25 p-4 space-y-3"
                       >
-                        <p className="text-[11px] uppercase text-muted-foreground">
+                        <p className="text-[11px] uppercase text-foreground dark:text-gray-500">
                           Statut :{" "}
-                          <span className="text-body-secondary">
+                          <span className="text-muted-foreground dark:text-gray-300">
                             {p.status === "sent"
                               ? "En attente de votre réponse"
                               : p.status === "countered"
@@ -465,17 +465,17 @@ export default function AcceptationProjetPage() {
                                     : p.status}
                           </span>
                         </p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground dark:text-gray-400">
                           Prix:{" "}
-                          <span className="font-semibold text-brand dark:text-amber-200">
+                          <span className="text-amber-800 dark:text-amber-200 font-semibold">
                             {Math.round(p.proposedPrice).toLocaleString("fr-FR")} TND
                           </span>{" "}
                           · Durée:{" "}
-                          <span className="text-body-secondary font-semibold">
+                          <span className="text-foreground dark:text-gray-200 font-semibold">
                             {p.estimatedDurationDays} j
                           </span>
                         </p>
-                        <div className="text-sm text-body-secondary rounded-xl border border-border bg-muted dark:bg-black/20 p-3">
+                        <div className="text-sm text-muted-foreground dark:text-gray-300 rounded-xl border border-border dark:border-white/5 bg-black/5 dark:bg-black/20 p-3">
                           {isProbablyHtml(p.technicalNotes) ? (
                             <SafeHtml html={p.technicalNotes} />
                           ) : (
@@ -483,12 +483,12 @@ export default function AcceptationProjetPage() {
                           )}
                         </div>
                         {p.materialSuggestions ? (
-                          <div className="text-xs text-muted-foreground">
-                            <span className="text-muted-foreground">Matériaux : </span>
+                          <div className="text-xs text-muted-foreground dark:text-gray-400">
+                            <span className="text-foreground dark:text-gray-500">Matériaux : </span>
                             {isProbablyHtml(p.materialSuggestions) ? (
                               <SafeHtml
                                 html={p.materialSuggestions}
-                                className="prose prose-invert prose-sm max-w-none inline text-body-secondary"
+                                className="prose prose-invert prose-sm max-w-none inline text-muted-foreground dark:text-gray-300"
                               />
                             ) : (
                               p.materialSuggestions
@@ -502,7 +502,7 @@ export default function AcceptationProjetPage() {
                               type="button"
                               disabled={acceptingId === p._id}
                               onClick={() => acceptProposal(p._id)}
-                              className="inline-flex items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-950 hover:bg-emerald-500/20 disabled:opacity-50 dark:text-emerald-100"
+                              className="inline-flex items-center justify-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-2.5 text-sm font-semibold text-emerald-100 hover:bg-emerald-500/20 disabled:opacity-50"
                             >
                               {acceptingId === p._id ? "Acceptation…" : "Accepter et générer le contrat"}
                             </button>
@@ -510,8 +510,8 @@ export default function AcceptationProjetPage() {
                         ) : null}
 
                         {p.status === "sent" ? (
-                          <div className="rounded-xl border border-border bg-muted dark:bg-black/20 p-3 space-y-2">
-                            <p className="text-xs font-medium text-body-secondary">Contre-proposition</p>
+                          <div className="rounded-xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/20 p-3 space-y-2">
+                            <p className="text-xs font-medium text-muted-foreground dark:text-gray-300">Contre-proposition</p>
                             <div className="grid sm:grid-cols-2 gap-2">
                               <input
                                 type="text"
@@ -519,7 +519,7 @@ export default function AcceptationProjetPage() {
                                 placeholder="Votre prix (TND)"
                                 value={counterPrice}
                                 onChange={(e) => setCounterPrice(e.target.value)}
-                                className="rounded-lg border border-border bg-muted dark:bg-black/40 px-3 py-2 text-sm"
+                                className="rounded-lg border border-border dark:border-white/15 bg-black/5 dark:bg-black/40 px-3 py-2 text-sm"
                               />
                               <input
                                 type="text"
@@ -527,7 +527,7 @@ export default function AcceptationProjetPage() {
                                 placeholder="Durée souhaitée (jours)"
                                 value={counterDays}
                                 onChange={(e) => setCounterDays(e.target.value.replace(/\D/g, ""))}
-                                className="rounded-lg border border-border bg-muted dark:bg-black/40 px-3 py-2 text-sm"
+                                className="rounded-lg border border-border dark:border-white/15 bg-black/5 dark:bg-black/40 px-3 py-2 text-sm"
                               />
                             </div>
                             <textarea
@@ -535,13 +535,13 @@ export default function AcceptationProjetPage() {
                               onChange={(e) => setCounterMsg(e.target.value)}
                               placeholder="Message (motifs, contraintes…)"
                               rows={3}
-                              className="w-full rounded-lg border border-border bg-muted dark:bg-black/40 px-3 py-2 text-sm"
+                              className="w-full rounded-lg border border-border dark:border-white/15 bg-black/5 dark:bg-black/40 px-3 py-2 text-sm"
                             />
                             <button
                               type="button"
                               disabled={counteringId === p._id}
                               onClick={() => counterProposal(p._id)}
-                              className="rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-900 disabled:opacity-50 dark:text-sky-100"
+                              className="rounded-xl border border-sky-500/35 bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-100 disabled:opacity-50"
                             >
                               {counteringId === p._id ? "Envoi…" : "Envoyer la contre-proposition"}
                             </button>
@@ -549,7 +549,7 @@ export default function AcceptationProjetPage() {
                         ) : null}
 
                         {p.status === "countered" ? (
-                          <p className="text-xs text-amber-900/90 dark:text-amber-200/90">
+                          <p className="text-xs text-amber-200/90">
                             Votre contre-proposition a été transmise. Dès que l&apos;expert aura révisé
                             son offre, vous pourrez accepter ou renégocier à nouveau.
                           </p>
