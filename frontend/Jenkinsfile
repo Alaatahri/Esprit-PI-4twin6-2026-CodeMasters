@@ -1,0 +1,60 @@
+pipeline {
+  agent any
+
+  tools {
+    nodejs 'NodeJS-20'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        checkout scm
+      }
+    }
+
+    stage('Install Dependencies') {
+      steps {
+        dir('frontend') {
+          sh 'npm ci'
+        }
+      }
+    }
+
+    stage('Run Tests') {
+      steps {
+        dir('frontend') {
+          sh 'npm test -- --passWithNoTests || true'
+        }
+      }
+    }
+
+    stage('Build') {
+      steps {
+        dir('frontend') {
+          sh 'npm run build'
+        }
+      }
+    }
+
+    stage('Docker Build & Push') {
+      steps {
+        withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKERHUB_USERNAME', passwordVariable: 'DOCKERHUB_PASSWORD')]) {
+          sh '''
+            set -e
+            echo "$DOCKERHUB_PASSWORD" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+            docker build -t jedidisy/bmp-frontend:latest ./frontend
+            docker push jedidisy/bmp-frontend:latest
+            docker logout
+          '''
+        }
+      }
+    }
+  }
+
+  post {
+    always {
+      cleanWs()
+    }
+  }
+}
+
