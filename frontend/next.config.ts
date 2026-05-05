@@ -2,6 +2,12 @@ import type { NextConfig } from "next";
 import path from "path";
 
 const nextConfig: NextConfig = {
+  /** Prisma 7 : une URL non vide doit être présente au build (Mongo réel ou placeholder). */
+  env: {
+    DATABASE_URL:
+      (process.env.DATABASE_URL && process.env.DATABASE_URL.trim()) ||
+      "mongodb://127.0.0.1:27017/bmp_build_placeholder",
+  },
   outputFileTracingRoot: path.join(__dirname),
   images: {
     remotePatterns: [

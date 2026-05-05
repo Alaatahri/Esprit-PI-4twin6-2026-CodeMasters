@@ -264,3 +264,39 @@ body::-webkit-scrollbar-thumb:hover {
 .animate-pulse {
   animation: pulse 1s ease-in-out infinite;
 }
+
+/* Profils d’accessibilité (classes sur html via AccessibilityProvider) */
+html.access-malvoyant {
+  font-size: 112.5% !important;
+  font-weight: 500 !important;
+}
+
+html.access-daltonien {
+  filter: grayscale(100%) contrast(120%) brightness(110%) !important;
+}
+
+html.access-dyslexique {
+  font-family: "Comic Sans MS", "Arial", sans-serif !important;
+  letter-spacing: 0.1em !important;
+}
+
+html.access-dyslexique * {
+  font-family: "Comic Sans MS", "Arial", sans-serif !important;
+}
+
+html.access-senior {
+  font-size: 108% !important;
+  filter: contrast(110%);
+}
+
+html.access-concentration *,
+html.access-mobilite * {
+  animation: none !important;
+  transition: none !important;
+}
+
+html.access-mobilite button,
+html.access-mobilite a,
+html.access-mobilite input {
+  cursor: pointer !important;
+}

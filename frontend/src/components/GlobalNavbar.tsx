@@ -23,6 +23,7 @@ import {
   BarChart3, // ⭐ AJOUTÉ pour les statistiques
   Sun,
   Moon,
+  Eye,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -35,6 +36,8 @@ import {
 } from "@/lib/auth";
 import { fetchUnreadCount } from "@/lib/messages-api";
 import { BMP_THEME_STORAGE_KEY, type BMPThemeMode } from "@/lib/theme-storage";
+import { LanguageSwitcher } from "@/components/LanguageProvider";
+import { AccessibilityMenu } from "@/components/AccessibilityProvider";
 
 const baseNavItems = [
   { key: "home", href: "/espace", label: "Dashboard", icon: Home },
@@ -51,6 +54,7 @@ export default function GlobalNavbar() {
   const [user, setUser] = useState<BMPUser | null>(null);
   const [mounted, setMounted] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [accessPanelOpen, setAccessPanelOpen] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
   const [colorMode, setColorMode] = useState<BMPThemeMode>("dark");
 
@@ -390,6 +394,18 @@ export default function GlobalNavbar() {
             >
               {colorMode === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
+            <div className="hidden sm:flex items-center gap-2 shrink-0">
+              <LanguageSwitcher />
+              <button
+                type="button"
+                onClick={() => setAccessPanelOpen(true)}
+                className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-card/50 border border-border/60 text-muted-foreground hover:text-foreground hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"
+                title="Accessibilité"
+                aria-label="Ouvrir les options d’accessibilité"
+              >
+                <Eye className="w-5 h-5" />
+              </button>
+            </div>
             {user ? (
               <>
                 <div className="hidden sm:flex items-center gap-3 pl-2 border-l border-border/60">
@@ -605,6 +621,21 @@ export default function GlobalNavbar() {
               </div>
             )}
 
+            <div className="mt-2 pt-2 border-t border-border dark:border-white/5 px-2 flex flex-wrap items-center gap-3">
+              <LanguageSwitcher />
+              <button
+                type="button"
+                onClick={() => {
+                  setMobileOpen(false);
+                  setAccessPanelOpen(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/60 bg-card/50 text-sm font-medium text-foreground hover:bg-amber-500/10"
+              >
+                <Eye className="w-4 h-4" />
+                Accessibilité
+              </button>
+            </div>
+
             <div className="mt-2 pt-3 border-t border-border dark:border-white/5">
               {user ? (
                 <button
@@ -627,6 +658,28 @@ export default function GlobalNavbar() {
           </nav>
         </aside>
       </div>
+
+      {accessPanelOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="accessibility-dialog-title"
+        >
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            aria-label="Fermer les options d’accessibilité"
+            onClick={() => setAccessPanelOpen(false)}
+          />
+          <div className="relative z-[101] max-h-[90vh] overflow-y-auto">
+            <span id="accessibility-dialog-title" className="sr-only">
+              Options d’accessibilité
+            </span>
+            <AccessibilityMenu onClose={() => setAccessPanelOpen(false)} />
+          </div>
+        </div>
+      )}
     </header>
   );
 }

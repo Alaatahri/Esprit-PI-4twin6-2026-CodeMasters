@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function StockDashboard() {
   const products = await prisma.product.findMany({
     include: {
@@ -27,7 +29,7 @@ export default async function StockDashboard() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => {
+            {products.map((product: (typeof products)[number]) => {
               const isLowStock = product.currentStock <= product.minimumStock;
               const prediction = product.predictions[0];
               
