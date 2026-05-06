@@ -691,9 +691,9 @@ async function seed() {
     if (existingDevis.length === 0 && projects.length > 0) {
       const project1 = projects[0];
       const devis1 = await devisService.create({
-        projectId: new Types.ObjectId(project1._id),
-        clientId: new Types.ObjectId(client._id),
-        expertId: new Types.ObjectId(expert._id),
+        projectId: String(project1._id),
+        clientId: String(client._id),
+        expertId: String(expert._id),
         montant_total: 0,
         statut: 'En attente',
         date_creation: new Date('2024-01-10'),

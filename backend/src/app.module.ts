@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
+import { Facture, FactureSchema } from './devis/schemas/facture.schema';
+import { FacturesService } from './factures/factures.service';
 import { UserModule } from './user/user.module';
 import { ProjectModule } from './project/project.module';
 import { DashboardModule } from './dashboard/dashboard.module';
@@ -23,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
         // MongoDB connection options
       },
     ),
+    MongooseModule.forFeature([{ name: Facture.name, schema: FactureSchema }]),
     UserModule,
     ProjectModule,
     DashboardModule,
@@ -38,5 +41,6 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
+  providers: [FacturesService],
 })
 export class AppModule {}

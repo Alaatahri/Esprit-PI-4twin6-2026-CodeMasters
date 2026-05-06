@@ -40,6 +40,7 @@ export class SuiviService {
     photoUrl: string;
     photoBase64?: string;
     uploadedAt?: string | Date;
+    progressPercent?: number;
   }) {
     const projectId = String(input?.projectId || '').trim();
     const workerId = String(input?.workerId || '').trim();
@@ -71,9 +72,17 @@ export class SuiviService {
         .countDocuments({ projectId: new Types.ObjectId(projectId) })
         .exec()) + 1;
 
+    const manualPct =
+      input.progressPercent !== undefined &&
+      input.progressPercent !== null &&
+      Number.isFinite(Number(input.progressPercent))
+        ? Number(input.progressPercent)
+        : undefined;
+
     const ai = await this.analyzePhotoWithClaudeOrFallback({
       photoBase64,
       currentMax,
+      manualPercent: manualPct,
     });
 
     const proposed = this.clampPercent(ai.percent);
@@ -180,34 +189,50 @@ export class SuiviService {
   }
 
   /**
-   * Analyse une photo via Claude (Anthropic) si `ANTHROPIC_API_KEY` existe.
-   * Sinon fallback: currentMax + 5 (cap 100).
-   *
-   * @param args photoBase64 et currentMax
-   * @returns percent/reason + raw
+   * Analyse une photo via Claude si possible ; sinon `manualPercent` ou maintien de l’avancement actuel (pas de +5 artificiel).
    */
   private async analyzePhotoWithClaudeOrFallback(args: {
     photoBase64?: string;
     currentMax: number;
+    manualPercent?: number;
   }): Promise<ClaudeResult> {
+    const fromManual = (): ClaudeResult | null => {
+      if (
+        args.manualPercent !== undefined &&
+        Number.isFinite(args.manualPercent)
+      ) {
+        const percent = this.clampPercent(args.manualPercent);
+        return {
+          percent,
+          reason: 'Pourcentage indiqué sur le formulaire (progressPercent)',
+          raw: JSON.stringify({ percent, source: 'manual' }),
+        };
+      }
+      return null;
+    };
+
     const apiKey = process.env.ANTHROPIC_API_KEY;
     if (!apiKey) {
-      const percent = Math.min(this.clampPercent(args.currentMax + 5), 100);
+      const m = fromManual();
+      if (m) return m;
       return {
-        percent,
-        reason: 'manual fallback',
-        raw: JSON.stringify({ percent, reason: 'manual fallback' }),
+        percent: args.currentMax,
+        reason:
+          'Analyse IA indisponible : ajoutez progressPercent dans la requête ou configurez ANTHROPIC_API_KEY.',
+        raw: JSON.stringify({ percent: args.currentMax, source: 'no_ai_key' }),
       };
     }
 
     if (!args.photoBase64) {
-      const percent = Math.min(this.clampPercent(args.currentMax + 5), 100);
+      const m = fromManual();
+      if (m) return m;
       return {
-        percent,
-        reason: 'manual fallback (no photoBase64 provided)',
+        percent: args.currentMax,
+        reason:
+          'Envoi sans image analysable : précisez progressPercent ou joignez une photo (base64).',
         raw: JSON.stringify({
-          percent,
-          reason: 'manual fallback (no photoBase64 provided)',
+          percent: args.currentMax,
+          source: 'no_photo',
         }),
       };
     }
@@ -249,10 +274,11 @@ export class SuiviService {
 
     if (!res.ok) {
       const text = await res.text().catch(() => '');
-      const percent = Math.min(this.clampPercent(args.currentMax + 5), 100);
+      const m = fromManual();
+      if (m) return m;
       return {
-        percent,
-        reason: `manual fallback (Anthropic ${res.status})`,
+        percent: args.currentMax,
+        reason: `Échec API Anthropic (${res.status}).`,
         raw: text || res.statusText,
       };
     }
@@ -270,11 +296,21 @@ export class SuiviService {
       const reason =
         typeof parsed?.reason === 'string' ? parsed.reason : 'AI analysis';
       return { percent, reason, raw: String(text) };
-    } catch (e: any) {
-      const percent = Math.min(this.clampPercent(args.currentMax + 5), 100);
+    } catch {
+      const mPct = cleaned.match(/"percent"\s*:\s*(-?\d+\.?\d*)/);
+      if (mPct) {
+        const percent = this.clampPercent(Number(mPct[1]));
+        const reasonMatch = cleaned.match(
+          /"reason"\s*:\s*"([^"]*)"/,
+        );
+        const reason = reasonMatch?.[1]?.trim() || 'Analyse IA (JSON partiel)';
+        return { percent, reason, raw: String(text) };
+      }
+      const m = fromManual();
+      if (m) return m;
       return {
-        percent,
-        reason: 'manual fallback (invalid AI JSON)',
+        percent: args.currentMax,
+        reason: 'Réponse IA non interprétable ; avancement inchangé.',
         raw: String(text),
       };
     }

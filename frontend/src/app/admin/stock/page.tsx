@@ -27,7 +27,7 @@ export default async function StockDashboard() {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => {
+            {products.map((product: (typeof products)[number]) => {
               const isLowStock = product.currentStock <= product.minimumStock;
               const prediction = product.predictions[0];
               

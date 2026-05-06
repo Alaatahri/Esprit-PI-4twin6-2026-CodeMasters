@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Mic } from "lucide-react";
 import { useLanguage } from "./LanguageProvider";
+import { speechRecognitionLang } from "@/lib/voice-intent";
 
 interface DictationButtonProps {
   onResult: (text: string) => void;
@@ -57,7 +58,7 @@ export function DictationButton({ onResult, className = "" }: DictationButtonPro
 
     try {
       const recognition = new SpeechRecognitionCtorFn();
-      recognition.lang = lang;
+      recognition.lang = speechRecognitionLang(lang);
       recognition.interimResults = false;
       recognition.continuous = false;
 
@@ -73,8 +74,17 @@ export function DictationButton({ onResult, className = "" }: DictationButtonPro
       };
 
       recognition.onerror = (event: { error: string }) => {
-        console.error("Erreur dictée:", event.error);
+        console.warn("Dictée:", event.error);
         setIsListening(false);
+        if (event.error === "not-allowed") {
+          alert(
+            lang === "fr-FR"
+              ? "Autorisez le microphone dans la barre d’adresse du navigateur (icône cadenas)."
+              : lang === "ar-SA"
+                ? "اسمح بالميكروفون من إعدادات المتصفح."
+                : "Allow the microphone in your browser settings.",
+          );
+        }
       };
 
       recognition.onend = () => {

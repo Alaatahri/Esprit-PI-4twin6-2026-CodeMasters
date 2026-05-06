@@ -115,12 +115,101 @@ export class ProjectService {
     if (!this.isValidObjectId(expertId)) {
       throw new BadRequestException('ID expert invalide.');
     }
-    return this.projectModel
+    const rows = await this.projectModel
       .find({ expertId: new Types.ObjectId(expertId) })
       .sort({ updatedAt: -1 })
       .limit(limit)
+      .populate('clientId', 'nom prenom email telephone role')
+      .populate(
+        'applications.artisanId',
+        'nom email role telephone competences ratingMoyen',
+      )
       .lean()
       .exec();
+
+    return rows.map((doc: Record<string, unknown>) => {
+      const c = doc.clientId as unknown;
+      let clientKeyForExpertUi = '';
+      if (c != null && typeof c === 'object' && '_id' in (c as object)) {
+        clientKeyForExpertUi = String((c as { _id: unknown })._id ?? '');
+      } else if (c != null) {
+        clientKeyForExpertUi = String(c);
+      }
+      return { ...doc, clientKeyForExpertUi };
+    }) as unknown as Project[];
+  }
+
+  /**
+   * Liste pour création de devis : expert → projets où il est assigné (`expertId`) ;
+   * artisan / ouvrier → projets avec candidature acceptée ; admin → tous (avec enrichissement).
+   */
+  async findProjectsForQuoteUi(
+    userId: string,
+    role: string,
+    limit = 200,
+  ): Promise<Project[]> {
+    if (!this.isValidObjectId(userId)) {
+      throw new BadRequestException('Identifiant utilisateur invalide.');
+    }
+    const r = (role || '').toLowerCase().trim();
+    const oid = new Types.ObjectId(userId);
+
+    let filter: Record<string, unknown> = {};
+    if (r === 'expert') {
+      filter = { expertId: oid };
+    } else if (r === 'artisan' || r === 'ouvrier') {
+      filter = {
+        applications: {
+          $elemMatch: { artisanId: oid, statut: 'acceptee' },
+        },
+      };
+    } else if (r === 'admin') {
+      filter = {};
+    } else {
+      return [];
+    }
+
+    return this.projectModel
+      .find(filter)
+      .sort({ updatedAt: -1 })
+      .limit(limit)
+      .populate('clientId', 'nom email telephone role')
+      .populate('applications.artisanId', 'nom email role telephone')
+      .lean()
+      .exec();
+  }
+
+  /**
+   * IDs clients présents sur les dossiers où l’utilisateur peut rédiger un devis
+   * (même périmètre que {@link findProjectsForQuoteUi}).
+   */
+  async findClientIdsForQuoteUi(
+    userId: string,
+    role: string,
+  ): Promise<string[]> {
+    if (!this.isValidObjectId(userId)) {
+      throw new BadRequestException('Identifiant utilisateur invalide.');
+    }
+    const r = (role || '').toLowerCase().trim();
+    const oid = new Types.ObjectId(userId);
+
+    let filter: Record<string, unknown>;
+    if (r === 'expert') {
+      filter = { expertId: oid };
+    } else if (r === 'artisan' || r === 'ouvrier') {
+      filter = {
+        applications: {
+          $elemMatch: { artisanId: oid, statut: 'acceptee' },
+        },
+      };
+    } else if (r === 'admin') {
+      filter = {};
+    } else {
+      return [];
+    }
+
+    const raw = await this.projectModel.distinct('clientId', filter).exec();
+    return raw.map((id) => String(id));
   }
 
   /** Projets terminés pour la vitrine publique (sans données sensibles côté contrôleur). */

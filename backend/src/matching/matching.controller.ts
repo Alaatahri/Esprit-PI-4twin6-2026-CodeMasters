@@ -34,7 +34,7 @@ export class MatchingController {
     return this.matchingService.listAllRequests();
   }
 
-  /** Liste tous les projets (invitations matching, expert assigné) — expert ou admin. */
+  /** Catalogue : admin = tous les projets ; expert = projets où il est assigné (`expertId`). */
   @Get('matching/expert/catalog')
   async expertCatalog(@Headers('x-user-id') userId?: string) {
     return this.matchingService.getExpertProjectCatalog(String(userId || ''));

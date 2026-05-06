@@ -14,13 +14,7 @@ import { getStoredUser, type BMPUser } from "@/lib/auth";
 import { fetchAPI, fetchAPISafe } from "@/lib/fetchHelper";
 import { DictationButton } from "@/components/DictationButton";
 import { useLanguage } from "@/components/LanguageProvider";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
-import StripeContainer from "@/components/StripeContainer";
-import SuccessNotification from "@/components/SuccessNotification";
 import { getApiBaseUrl } from "@/lib/api-base";
-
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder");
 
 const API = getApiBaseUrl();
 
@@ -187,13 +181,16 @@ function DocumentModal({
   data, 
   user, 
   onClose, 
-  onAction 
+  onAction,
+  onRefresh,
 }: { 
   type: 'devis' | 'facture', 
   data: any, 
   user: BMPUser | null,
   onClose: () => void,
-  onAction: (a: string) => void 
+  onAction: (a: string) => void;
+  /** Après enregistrement d’un paiement (facture) */
+  onRefresh?: () => void;
 }) {
   const { lang } = useLanguage();
   const T = LOCALE[lang] || LOCALE["fr-FR"];
@@ -206,14 +203,12 @@ function DocumentModal({
   const [payerNom, setPayerNom] = useState('');
   const [payerPrenom, setPayerPrenom] = useState('');
   const [payerTelephone, setPayerTelephone] = useState('');
-  const [cardNumber, setCardNumber] = useState('');
-  const [cardExpiry, setCardExpiry] = useState('');
-  const [cardCvc, setCardCvc] = useState('');
+  const [carteRef, setCarteRef] = useState('');
   const [paymentError, setPaymentError] = useState('');
   const [paymentSuccess, setPaymentSuccess] = useState('');
   const [paying, setPaying] = useState(false);
   const [showPaymentPanel, setShowPaymentPanel] = useState(type === 'facture');
-  const [payMethod, setPayMethod] = useState<'carte'|'virement'|'paypal'|'flouci'>('carte');
+  const [payMethod, setPayMethod] = useState<'carte'|'virement'|'paypal'|'flouci'>('virement');
   const [virementRef, setVirementRef] = useState('');
   const [paypalEmail, setPaypalEmail] = useState('');
   const [flouciPhone, setFlouciPhone] = useState('');
@@ -230,7 +225,7 @@ function DocumentModal({
   const dateStr = fmtDate(isDevis ? data.date_creation : data.date_facture);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/90 backdrop-blur-md overflow-y-auto no-scrollbar">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md overflow-y-auto no-scrollbar dark:bg-slate-950/90">
       <div className="relative w-full max-w-7xl animate-in fade-in zoom-in duration-300 my-auto py-12">
         
         {/* Actions Bar (Top) */}
@@ -439,8 +434,8 @@ function DocumentModal({
             }}>
               
               <div style={{ marginBottom: '20px' }}>
-                <h2 style={{ fontSize: '13px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#c4b5fd', margin: '0 0 4px' }}>Paiement Sécurisé</h2>
-                <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>Réglez votre facture instantanément</p>
+                <h2 style={{ fontSize: '13px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.15em', color: '#c4b5fd', margin: '0 0 4px' }}>Enregistrement du paiement</h2>
+                <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>Le règlement est sauvegardé sur votre facture (aucune carte saisie ici).</p>
               </div>
 
               {/* Alerts */}
@@ -449,7 +444,7 @@ function DocumentModal({
 
               {/* Method Selector */}
               <div style={{ display: 'flex', gap: '4px', marginBottom: '20px', background: 'rgba(255,255,255,0.03)', padding: '4px', borderRadius: '12px' }}>
-                {(['carte','virement','paypal','flouci'] as const).map(m => (
+                {(['virement','carte','paypal','flouci'] as const).map(m => (
                   <button key={m} onClick={() => setPayMethod(m)} style={{
                     flex: 1, padding: '10px 0', border: 'none', borderRadius: '10px',
                     background: payMethod === m ? '#8b5cf6' : 'transparent',
@@ -461,25 +456,22 @@ function DocumentModal({
                 ))}
               </div>
 
-              {/* Fields Grid */}
+              {/* Coordonnées + détail du mode (enregistrement en base, sans passerelle Stripe) */}
               <div style={{ display: 'grid', gap: '10px' }}>
-                {payMethod !== 'carte' && (
-                  <>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                      <input value={payerNom} onChange={e=>setPayerNom(e.target.value)} placeholder="Nom" style={inputStyle} />
-                      <input value={payerPrenom} onChange={e=>setPayerPrenom(e.target.value)} placeholder="Prénom" style={inputStyle} />
-                    </div>
-                    <input value={payerTelephone} onChange={e=>setPayerTelephone(e.target.value)} placeholder="Téléphone" style={inputStyle} />
-                    <input value={data.temp_client_email||''} disabled style={{...inputStyle, opacity: 0.5}} />
-                    <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '10px 0' }} />
-                  </>
-                )}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <input value={payerNom} onChange={e=>setPayerNom(e.target.value)} placeholder="Nom" style={inputStyle} />
+                  <input value={payerPrenom} onChange={e=>setPayerPrenom(e.target.value)} placeholder="Prénom" style={inputStyle} />
+                </div>
+                <input value={payerTelephone} onChange={e=>setPayerTelephone(e.target.value)} placeholder="Téléphone" style={inputStyle} />
+                <input value={data.temp_client_email||''} disabled style={{...inputStyle, opacity: 0.5}} />
+                <div style={{ height: '1px', background: 'rgba(255,255,255,0.08)', margin: '10px 0' }} />
 
                 {payMethod === 'carte' && (
-                  <StripeContainer 
-                    amount={data.solde_du ?? derivedTotalTTC}
-                    factureId={data._id}
-                  />
+                  <div style={{ background: 'rgba(16,185,129,0.06)', borderRadius: '12px', padding: '12px', border: '1px solid rgba(16,185,129,0.25)', fontSize: '11px', color: '#86efac' }}>
+                    <p style={{ margin: '0 0 8px', fontWeight: 800 }}>Carte (hors ligne)</p>
+                    <p style={{ margin: 0, opacity: 0.85 }}>Après paiement au terminal ou en ligne, confirmez ici : le montant est enregistré sur la facture.</p>
+                    <input value={carteRef} onChange={e=>setCarteRef(e.target.value)} placeholder="Réf. transaction (optionnel)" style={{...inputStyle, marginTop: '10px'}} />
+                  </div>
                 )}
 
                 {payMethod === 'virement' && (
@@ -494,30 +486,27 @@ function DocumentModal({
                 {payMethod === 'flouci' && <input value={flouciPhone} onChange={e=>setFlouciPhone(e.target.value)} placeholder="N° Flouci" style={inputStyle} />}
               </div>
 
-              {/* Action (for non-card methods) */}
-              {payMethod !== 'carte' && (
-                <div style={{ marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px', textAlign: 'center' }}>
-                  <p style={{ fontSize: '10px', textTransform: 'uppercase', color: '#475569', marginBottom: '6px' }}>Montant total</p>
-                  <p style={{ fontSize: '28px', fontWeight: 900, color: '#fff', margin: '0 0 20px' }}>{fmt(data.solde_du ?? derivedTotalTTC)}</p>
-                  
-                  <button onClick={() => {
-                      if (!payerNom || !payerPrenom || !payerTelephone) { 
-                        setPaymentError('Veuillez remplir vos informations de contact.'); 
-                        return; 
-                      }
-                      setShowConfirmPayment(true);
-                    }}
-                    disabled={paying}
-                    style={{
-                      width: '100%', padding: '16px', borderRadius: '14px', border: 'none',
-                      background: 'linear-gradient(135deg, #10b981, #059669)',
-                      color: '#fff', fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px',
-                      cursor: paying ? 'not-allowed' : 'pointer', transition: '0.2s', boxShadow: '0 10px 20px rgba(16,185,129,0.2)'
-                    }}>
-                    {paying ? '⏳ Prévu...' : 'Payer Maintenant'}
-                  </button>
-                </div>
-              )}
+              <div style={{ marginTop: '24px', borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: '20px', textAlign: 'center' }}>
+                <p style={{ fontSize: '10px', textTransform: 'uppercase', color: '#475569', marginBottom: '6px' }}>Montant total</p>
+                <p style={{ fontSize: '28px', fontWeight: 900, color: '#fff', margin: '0 0 20px' }}>{fmt(data.solde_du ?? derivedTotalTTC)}</p>
+                
+                <button onClick={() => {
+                    if (!payerNom || !payerPrenom || !payerTelephone) { 
+                      setPaymentError('Veuillez remplir vos informations de contact.'); 
+                      return; 
+                    }
+                    setShowConfirmPayment(true);
+                  }}
+                  disabled={paying}
+                  style={{
+                    width: '100%', padding: '16px', borderRadius: '14px', border: 'none',
+                    background: 'linear-gradient(135deg, #10b981, #059669)',
+                    color: '#fff', fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '1px',
+                    cursor: paying ? 'not-allowed' : 'pointer', transition: '0.2s', boxShadow: '0 10px 20px rgba(16,185,129,0.2)'
+                  }}>
+                  {paying ? '⏳ En cours...' : 'Enregistrer le paiement'}
+                </button>
+              </div>
             </div>
           )}
 
@@ -549,14 +538,21 @@ function DocumentModal({
                             body: JSON.stringify({
                               montant: Number(data.solde_du ?? derivedTotalTTC) || 0,
                               methode_paiement: payMethod,
-                              details: { 
-                                nom: payerNom, prenom: payerPrenom, telephone: payerTelephone, email: data.temp_client_email || '',
-                                ...(payMethod==='carte'?{carte:cardNumber,expiry:cardExpiry,cvc:cardCvc}:{})
-                              }
+                              details: {
+                                nom: payerNom,
+                                prenom: payerPrenom,
+                                telephone: payerTelephone,
+                                email: data.temp_client_email || '',
+                                ...(payMethod === 'virement' ? { reference_virement: virementRef } : {}),
+                                ...(payMethod === 'paypal' ? { paypal: paypalEmail } : {}),
+                                ...(payMethod === 'flouci' ? { flouci: flouciPhone } : {}),
+                                ...(payMethod === 'carte' ? { reference_transaction: carteRef } : {}),
+                              },
                             }),
                           });
                           setPaymentSuccess('Paiement enregistré avec succès !');
                           setLastPaymentDate(new Date().toLocaleString());
+                          onRefresh?.();
                           setTimeout(() => {
                             setShowReceipt(true);
                           }, 1000);
@@ -1173,10 +1169,13 @@ function DevisCard({ devis, user, factures, onRefresh, onSeeFacture }: { devis: 
             setSelectedFacture(null);
           }}
           onAction={() => {}}
+          onRefresh={onRefresh}
         />
       )}
 
-      <div className={`group relative overflow-hidden flex flex-col bg-slate-900/40 backdrop-blur-3xl border ${isExpiringSoon ? 'border-red-500 animate-flash-red' : 'border-slate-100/10'} rounded-[2rem] transition-all hover:bg-slate-900/60 hover:shadow-2xl hover:shadow-blue-500/10 mb-4 ring-1 ring-white/5`}>
+      <div
+        className={`group relative mb-4 flex flex-col overflow-hidden rounded-[2rem] border border-border bg-card/95 shadow-sm backdrop-blur-3xl transition-all hover:bg-muted/30 hover:shadow-xl hover:shadow-blue-500/10 dark:border-slate-100/10 dark:bg-slate-900/40 dark:shadow-none dark:ring-1 dark:ring-white/5 dark:hover:bg-slate-900/60 ${isExpiringSoon ? 'animate-flash-red border-red-500' : ''}`}
+      >
         <div className={`absolute top-0 left-0 w-1 h-full ${devis.statut === 'accepté' ? 'bg-emerald-500' : isExpiringSoon ? 'bg-red-500' : 'bg-blue-600'}`} />
         
         <div onClick={() => setShowModal(true)} className="cursor-pointer relative z-10 grid grid-cols-1 md:grid-cols-12 items-center gap-6 px-8 py-6">
@@ -1430,13 +1429,14 @@ function FactureCard({ facture, user, onRefresh }: { facture: Facture; user: BMP
           data={facture} 
           user={user} 
           onClose={() => setShowModal(false)} 
-          onAction={onRefresh} 
+          onAction={() => {}}
+          onRefresh={onRefresh}
         />
       )}
 
       <div 
         onMouseEnter={() => playAlertSound()}
-        className={`group relative overflow-hidden flex flex-col bg-slate-900/40 backdrop-blur-3xl border rounded-[2rem] transition-all hover:bg-slate-900/60 hover:shadow-2xl hover:shadow-purple-500/10 mb-4 ring-1 ring-white/5 ${isOverdue ? 'animate-overdue-card' : ''}`}
+        className={`group relative mb-4 flex flex-col overflow-hidden rounded-[2rem] border border-border bg-card/95 shadow-sm backdrop-blur-3xl transition-all hover:bg-muted/40 hover:shadow-2xl hover:shadow-purple-500/10 dark:border-transparent dark:bg-slate-900/40 dark:shadow-none dark:ring-1 dark:ring-white/5 dark:hover:bg-slate-900/60 ${isOverdue ? 'animate-overdue-card' : ''}`}
         style={!isOverdue && isApproaching ? { borderColor: `rgba(239, 68, 68, ${intensity})`, backgroundColor: `rgba(239, 68, 68, ${intensity / 10})` } : {}}
       >
         <div className={`absolute top-0 left-0 w-1 h-full ${isPaid ? 'bg-emerald-500' : isOverdue ? 'bg-red-500' : isApproaching ? 'bg-red-400' : 'bg-purple-600'}`} style={!isOverdue && isApproaching ? { opacity: intensity + 0.2 } : {}} />
@@ -1695,20 +1695,19 @@ function GestionDevisContent() {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
-      let url = `${API}/projects?`;
-      if (initialProjectId) url += `projectId=${initialProjectId}&`;
-      const res = await fetch(url, { 
+      /** Périmètre devis : expert → projets assignés ; artisan/ouvrier → chantiers acceptés ; admin → tous. */
+      const params = new URLSearchParams({ forQuotes: "1" });
+      const res = await fetch(`${API}/projects?${params.toString()}`, {
         signal: controller.signal,
-        headers: { 
-          "x-user-id": user._id || "", 
+        headers: {
+          "x-user-id": user._id || "",
           "x-user-role": user.role || "",
-          "x-user-email": user.email || ""
-        }
+          "x-user-email": user.email || "",
+        },
       });
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
-      console.log("DEBUG PROJECTS LOADED:", data);
       setProjectsList(Array.isArray(data) ? data : []);
     } catch (err: any) {
       if (err.name === 'AbortError') return;
@@ -1722,14 +1721,18 @@ function GestionDevisContent() {
     try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 15000);
-      const url = `${API}/users?role=client`;
-      const res = await fetch(url, { 
+      const rq = (user.role || "").toLowerCase();
+      const params = new URLSearchParams({ role: "client" });
+      if (["expert", "artisan", "ouvrier"].includes(rq)) {
+        params.set("forQuotes", "1");
+      }
+      const res = await fetch(`${API}/users?${params.toString()}`, {
         signal: controller.signal,
-        headers: { 
-          "x-user-id": user._id || "", 
+        headers: {
+          "x-user-id": user._id || "",
           "x-user-role": user.role || "",
-          "x-user-email": user.email || ""
-        }
+          "x-user-email": user.email || "",
+        },
       });
       clearTimeout(timeoutId);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -1898,40 +1901,66 @@ function GestionDevisContent() {
   }) : [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950 text-white" dir={lang === 'ar-SA' ? 'rtl' : 'ltr'}>
-      {showSuccessNotif && <SuccessNotification onClose={() => setShowSuccessNotif(false)} />}
+    <div
+      className="min-h-screen bg-background text-foreground dark:bg-gradient-to-b dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 dark:text-white"
+      dir={lang === 'ar-SA' ? 'rtl' : 'ltr'}
+    >
+      {showSuccessNotif && (
+        <div
+          role="status"
+          className="fixed top-4 right-4 z-[500] flex max-w-sm items-start gap-3 rounded-2xl border border-emerald-500/35 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-950 shadow-lg backdrop-blur-sm dark:text-emerald-100"
+        >
+          <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <div className="flex-1">
+            <p className="font-semibold">Paiement pris en compte</p>
+            <p className="mt-0.5 text-xs opacity-90">Les données ont été mises à jour.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowSuccessNotif(false)}
+            className="rounded-lg px-2 py-1 text-xs font-bold text-emerald-800 hover:bg-emerald-500/20 dark:text-emerald-200"
+          >
+            OK
+          </button>
+        </div>
+      )}
       <style dangerouslySetInnerHTML={{ __html: OVERDUE_STYLES }} />
-      <div className="fixed inset-0 z-0 bg-gradient-to-br from-purple-950/20 via-gray-950/90 to-gray-950" />
+      <div className="pointer-events-none fixed inset-0 z-0 bg-gradient-to-br from-muted/50 via-background to-muted/40 dark:from-purple-950/20 dark:via-gray-950/90 dark:to-gray-950" />
       <div className="relative z-10 container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-gray-400 hover:text-amber-300 transition-colors">
+            <Link href="/" className="text-muted-foreground hover:text-primary transition-colors">
               <ArrowLeft className={`w-5 h-5 ${lang === 'ar-SA' ? 'rotate-180' : ''}`} />
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                <FileText className="w-6 h-6 text-purple-400" />
+              <h1 className="text-2xl font-bold text-foreground dark:text-white flex items-center gap-2">
+                <FileText className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                 {T.devis} & {T.factures} IA
               </h1>
-              <p className="text-xs text-gray-400">{T.cycle}</p>
+              <p className="text-xs text-muted-foreground dark:text-gray-400">{T.cycle}</p>
             </div>
           </div>
         </div>
 
         {/* Alerte Globale Client pour Factures en Retard */}
         {user?.role === 'client' && overdueClientFactures.length > 0 && (
-          <div className="mb-8 p-5 rounded-[2rem] bg-red-500/10 border border-red-500/30 flex items-center justify-between shadow-[0_0_20px_rgba(239,68,68,0.15)] animate-in slide-in-from-top-4">
+          <div className="mb-8 p-5 rounded-[2rem] border border-red-500/35 bg-red-500/10 text-red-950 shadow-[0_0_20px_rgba(239,68,68,0.12)] animate-in slide-in-from-top-4 dark:bg-red-500/10 dark:text-red-100 dark:shadow-[0_0_20px_rgba(239,68,68,0.15)] flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-red-500/20 rounded-2xl">
-                <AlertTriangle className="w-8 h-8 text-red-500 animate-pulse" />
+              <div className="p-3 rounded-2xl bg-red-500/20 dark:bg-red-500/20">
+                <AlertTriangle className="w-8 h-8 text-red-600 animate-pulse dark:text-red-500" />
               </div>
               <div>
-                <h3 className="text-lg font-black text-red-400 uppercase tracking-tight">Action Requise</h3>
-                <p className="text-sm font-medium text-red-200 mt-1">Vous avez {overdueClientFactures.length} facture(s) en retard de paiement (dépassant 1 jour depuis l'émission).</p>
+                <h3 className="text-lg font-black uppercase tracking-tight text-red-800 dark:text-red-400">Action requise</h3>
+                <p className="mt-1 text-sm font-medium text-red-900/90 dark:text-red-200">
+                  Vous avez {overdueClientFactures.length} facture(s) en retard de paiement (dépassant 1 jour depuis l&apos;émission).
+                </p>
               </div>
             </div>
-            <button onClick={() => setTab("factures")} className="px-6 py-3 rounded-xl bg-red-500/20 text-red-300 font-bold text-xs uppercase tracking-widest border border-red-500/20 hover:bg-red-500/30 hover:text-red-200 transition-colors">
+            <button
+              onClick={() => setTab("factures")}
+              className="rounded-xl border border-red-500/30 bg-red-500/15 px-6 py-3 text-xs font-bold uppercase tracking-widest text-red-900 transition-colors hover:bg-red-500/25 dark:border-red-500/20 dark:bg-red-500/20 dark:text-red-300 dark:hover:bg-red-500/30 dark:hover:text-red-200"
+            >
               Consulter
             </button>
           </div>
@@ -1939,81 +1968,81 @@ function GestionDevisContent() {
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="group relative overflow-hidden rounded-[2rem] bg-white/[0.03] border border-white/10 p-5 transition-all hover:bg-white/[0.05]">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-              <Send className="w-12 h-12 text-blue-400" />
+          <div className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-5 shadow-sm transition-all hover:bg-muted/40 dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:bg-white/[0.05]">
+            <div className="absolute top-0 right-0 p-3 opacity-10 transition-opacity group-hover:opacity-20 dark:opacity-10">
+              <Send className="w-12 h-12 text-blue-500 dark:text-blue-400" />
             </div>
-            <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">{T.devis_env}</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">{T.devis_env}</p>
             <div className="flex items-end gap-2">
-              <p className="text-3xl font-black text-white">{statsCounts.envoyé}</p>
-              <div className="mb-1 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
+              <p className="text-3xl font-black text-foreground dark:text-white">{statsCounts.envoyé}</p>
+              <div className="mb-1 h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
             </div>
           </div>
 
-          <div className="group relative overflow-hidden rounded-[2rem] bg-white/[0.03] border border-white/10 p-5 transition-all hover:bg-white/[0.05]">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-              <CheckCircle2 className="w-12 h-12 text-emerald-400" />
+          <div className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-5 shadow-sm transition-all hover:bg-muted/40 dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:bg-white/[0.05]">
+            <div className="absolute top-0 right-0 p-3 opacity-10 transition-opacity group-hover:opacity-20 dark:opacity-10">
+              <CheckCircle2 className="w-12 h-12 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">{T.devis_acc}</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">{T.devis_acc}</p>
             <div className="flex items-end gap-2">
-              <p className="text-3xl font-black text-white">{statsCounts.accepté}</p>
-              <div className="mb-1 w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+              <p className="text-3xl font-black text-foreground dark:text-white">{statsCounts.accepté}</p>
+              <div className="mb-1 h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
             </div>
           </div>
 
-          <div className="group relative overflow-hidden rounded-[2rem] bg-white/[0.03] border border-white/10 p-5 transition-all hover:bg-white/[0.05]">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-              <CreditCard className="w-12 h-12 text-amber-400" />
+          <div className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-5 shadow-sm transition-all hover:bg-muted/40 dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:bg-white/[0.05]">
+            <div className="absolute top-0 right-0 p-3 opacity-10 transition-opacity group-hover:opacity-20 dark:opacity-10">
+              <CreditCard className="w-12 h-12 text-amber-600 dark:text-amber-400" />
             </div>
-            <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">{T.tot_fact}</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">{T.tot_fact}</p>
             <div className="flex items-end gap-2">
-              <p className="text-2xl font-black text-amber-300">{fmt(factureStats.total)}</p>
+              <p className="text-2xl font-black text-amber-700 dark:text-amber-300">{fmt(factureStats.total)}</p>
             </div>
           </div>
 
-          <div className="group relative overflow-hidden rounded-[2rem] bg-white/[0.03] border border-white/10 p-5 transition-all hover:bg-white/[0.05]">
-            <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
-              <AlertTriangle className="w-12 h-12 text-red-400" />
+          <div className="group relative overflow-hidden rounded-[2rem] border border-border bg-card p-5 shadow-sm transition-all hover:bg-muted/40 dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none dark:hover:bg-white/[0.05]">
+            <div className="absolute top-0 right-0 p-3 opacity-10 transition-opacity group-hover:opacity-20 dark:opacity-10">
+              <AlertTriangle className="w-12 h-12 text-red-500 dark:text-red-400" />
             </div>
-            <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wider">{T.fact_ret}</p>
+            <p className="mb-2 text-xs font-medium uppercase tracking-wider text-muted-foreground">{T.fact_ret}</p>
             <div className="flex items-end gap-2">
-              <p className="text-3xl font-black text-white">{factureStats.enRetard}</p>
-              {factureStats.enRetard > 0 && <AlertTriangle className="w-5 h-5 text-red-500 animate-pulse" />}
+              <p className="text-3xl font-black text-foreground dark:text-white">{factureStats.enRetard}</p>
+              {factureStats.enRetard > 0 && <AlertTriangle className="h-5 w-5 animate-pulse text-red-600 dark:text-red-500" />}
             </div>
           </div>
         </div>
 
         {/* Tabs and Filters */}
         <div className="flex flex-col md:flex-row gap-6 justify-between items-start md:items-center mb-10">
-          <div className="flex gap-1.5 p-1.5 rounded-[1.25rem] bg-white/[0.03] border border-white/10 w-fit backdrop-blur-sm shadow-xl">
+          <div className="flex w-fit gap-1.5 rounded-[1.25rem] border border-border bg-card p-1.5 shadow-sm backdrop-blur-sm dark:border-white/10 dark:bg-white/[0.03] dark:shadow-xl">
             <button onClick={() => setTab("devis")}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${tab === "devis" ? "bg-amber-500 text-gray-950 shadow-lg shadow-amber-500/20" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
+              className={`rounded-xl px-6 py-2.5 text-sm font-bold transition-all duration-300 ${tab === "devis" ? "bg-amber-500 text-gray-950 shadow-lg shadow-amber-500/20" : "text-muted-foreground hover:bg-muted hover:text-foreground dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"}`}>
               {T.devis}
-              <span className="ml-2 py-0.5 px-2 rounded-full bg-black/20 text-[10px]">{filteredDevis.length}</span>
+              <span className="ml-2 rounded-full bg-black/10 px-2 py-0.5 text-[10px] dark:bg-black/20">{filteredDevis.length}</span>
             </button>
             <button onClick={() => setTab("factures")}
-              className={`px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 ${tab === "factures" ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20" : "text-gray-400 hover:text-white hover:bg-white/5"}`}>
+              className={`rounded-xl px-6 py-2.5 text-sm font-bold transition-all duration-300 ${tab === "factures" ? "bg-purple-600 text-white shadow-lg shadow-purple-600/20" : "text-muted-foreground hover:bg-muted hover:text-foreground dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"}`}>
               {T.factures}
-              <span className="ml-2 py-0.5 px-2 rounded-full bg-black/20 text-[10px]">{filteredFactures.length}</span>
+              <span className="ml-2 rounded-full bg-black/10 px-2 py-0.5 text-[10px] dark:bg-black/20">{filteredFactures.length}</span>
             </button>
           </div>
 
           <div className="flex gap-3 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
-              <Search className={`absolute ${lang === 'ar-SA' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500`} />
+              <Search className={`absolute ${lang === 'ar-SA' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`} />
               <input type="text"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 placeholder={T.recherche}
-                className={`w-full bg-white/5 border border-white/10 rounded-xl ${lang === 'ar-SA' ? 'pr-9 pl-4' : 'pl-9 pr-4'} py-2 text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-amber-500/50`}
+                className={`w-full rounded-xl border border-border bg-background py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-amber-500/50 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder:text-gray-500 ${lang === 'ar-SA' ? 'pr-9 pl-4' : 'pl-9 pr-4'}`}
               />
             </div>
             <div className="relative">
-              <Filter className={`absolute ${lang === 'ar-SA' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500`} />
+              <Filter className={`absolute ${lang === 'ar-SA' ? 'right-3' : 'left-3'} top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground`} />
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className={`appearance-none bg-white/5 border border-white/10 rounded-xl ${lang === 'ar-SA' ? 'pr-9 pl-8' : 'pl-9 pr-8'} py-2 text-sm text-white focus:outline-none focus:border-amber-500/50 cursor-pointer`}
+                className={`cursor-pointer appearance-none rounded-xl border border-border bg-background py-2 text-sm text-foreground focus:border-amber-500/50 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white ${lang === 'ar-SA' ? 'pr-9 pl-8' : 'pl-9 pr-8'}`}
               >
                 <option value="">{T.tous_statuts}</option>
                 <option value="brouillon">Brouillon</option>
@@ -2034,7 +2063,7 @@ function GestionDevisContent() {
             </div>
             <button 
               onClick={handleExportPDF}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-white hover:bg-white/10 transition-all text-sm font-bold shadow-xl active:scale-95 whitespace-nowrap"
+              className="flex items-center gap-2 whitespace-nowrap rounded-xl border border-border bg-muted/50 px-4 py-2 text-sm font-bold text-foreground shadow-sm transition-all hover:bg-muted active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:shadow-xl dark:hover:bg-white/10 dark:hover:text-white"
             >
               <Download className="w-4 h-4" /> Exporter PDF
             </button>
@@ -2046,12 +2075,12 @@ function GestionDevisContent() {
           {tab === "devis" && (
             <>
               <div className="space-y-4">
-                <h2 className="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-widest">{T.tous_devis}</h2>
+                <h2 className="mb-2 text-sm font-semibold uppercase tracking-widest text-muted-foreground dark:text-gray-300">{T.tous_devis}</h2>
                 {loading ? (
                   <div className="flex justify-center py-12"><div className="w-12 h-12 rounded-full border-4 border-amber-500/20 border-t-amber-400 animate-spin" /></div>
                 ) : filteredDevis.length === 0 ? (
-                  <div className="text-center py-20 bg-white/5 rounded-[3rem] border border-dashed border-white/10">
-                    <p className="text-gray-500 font-medium italic">{T.no_devis}</p>
+                  <div className="rounded-[3rem] border border-dashed border-border bg-muted/30 py-20 text-center dark:border-white/10 dark:bg-white/5">
+                    <p className="font-medium italic text-muted-foreground">{T.no_devis}</p>
                   </div>
                 ) : (
                   filteredDevis.map((d) => (
@@ -2075,12 +2104,12 @@ function GestionDevisContent() {
 
           {tab === "factures" && (
             <div className="space-y-4">
-              <h2 className="text-sm font-semibold text-gray-300 mb-2 uppercase tracking-widest">{T.toutes_fact}</h2>
+              <h2 className="mb-2 text-sm font-semibold uppercase tracking-widest text-muted-foreground dark:text-gray-300">{T.toutes_fact}</h2>
               {loading ? (
                 <div className="flex justify-center py-12"><div className="w-12 h-12 rounded-full border-4 border-purple-500/20 border-t-purple-400 animate-spin" /></div>
               ) : filteredFactures.length === 0 ? (
-                <div className="text-center py-20 bg-white/5 rounded-[3rem] border border-dashed border-white/10">
-                  <p className="text-gray-500 font-medium italic">{T.no_fact}</p>
+                <div className="rounded-[3rem] border border-dashed border-border bg-muted/30 py-20 text-center dark:border-white/10 dark:bg-white/5">
+                  <p className="font-medium italic text-muted-foreground">{T.no_fact}</p>
                 </div>
               ) : (
                 filteredFactures.map((f) => (
@@ -2098,7 +2127,7 @@ function GestionDevisContent() {
 // ── Export with Suspense boundary ──────────────────────────────────────
 export default function GestionDevisPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-950 flex items-center justify-center"><div className="w-12 h-12 rounded-full border-4 border-amber-500/20 border-t-amber-400 animate-spin" /></div>}>
+    <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-background dark:bg-gray-950"><div className="h-12 w-12 animate-spin rounded-full border-4 border-amber-500/20 border-t-amber-400" /></div>}>
       <GestionDevisContent />
     </Suspense>
   );

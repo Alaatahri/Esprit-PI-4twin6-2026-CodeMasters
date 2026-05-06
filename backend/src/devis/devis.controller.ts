@@ -21,11 +21,14 @@ import { DevisService } from './devis.service';
 export class DevisController {
   constructor(private readonly devisService: DevisService) {}
 
+  /**
+   * Corps enrichi (titre, articles, …). `@Body()` typé `CreateDevisDto` déclenche le
+   * ValidationPipe global (`forbidNonWhitelisted`). Avec `body: any`, le pipe global
+   * ignore la validation (métatype Object) : le JSON arrive tel quel au service.
+   */
   @Post()
-  create(@Body() createDevisDto: CreateDevisDto) {
-    return this.devisService.create(
-      createDevisDto as unknown as Partial<Devis>,
-    );
+  create(@Body() body: any) {
+    return this.devisService.create(body as CreateDevisDto);
   }
 
   @Get()
@@ -34,6 +37,32 @@ export class DevisController {
       return this.devisService.findByProject(projectId);
     }
     return this.devisService.findAll();
+  }
+
+  /**
+   * Client : accepte / refuse (chemins statiques en premier — même logique que :id/…).
+   * Préféré par le frontend ; les variantes `:id/accepter` restent pour compatibilité.
+   */
+  @Post('accepter/:id')
+  accepterDevis(@Param('id') id: string) {
+    return this.devisService.accepter(id);
+  }
+
+  @Post('refuser/:id')
+  refuserDevis(@Param('id') id: string) {
+    return this.devisService.refuser(id);
+  }
+
+  /** @deprecated Utiliser POST /devis/accepter/:id — conservé pour anciens clients */
+  @Post(':id/accepter')
+  accepter(@Param('id') id: string) {
+    return this.devisService.accepter(id);
+  }
+
+  /** @deprecated Utiliser POST /devis/refuser/:id */
+  @Post(':id/refuser')
+  refuser(@Param('id') id: string) {
+    return this.devisService.refuser(id);
   }
 
   @Get(':id')

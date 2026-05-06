@@ -4,12 +4,14 @@ import { DevisController } from './devis.controller';
 import { DevisService } from './devis.service';
 import { Devis, DevisSchema } from './schemas/devis.schema';
 import { DevisItem, DevisItemSchema } from './schemas/devis-item.schema';
+import { Facture, FactureSchema } from './schemas/facture.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([
       { name: Devis.name, schema: DevisSchema },
       { name: DevisItem.name, schema: DevisItemSchema },
+      { name: Facture.name, schema: FactureSchema },
     ]),
   ],
   controllers: [DevisController],

@@ -9,7 +9,7 @@ export async function fetchAPI(url: string, options: RequestInit = {}) {
   };
 
   if (user) {
-    headers['x-user-id'] = user._id || "";
+    headers["x-user-id"] = String(user._id ?? "").trim();
     headers['x-user-role'] = user.role || "";
     headers['x-user-email'] = user.email || "";
   }

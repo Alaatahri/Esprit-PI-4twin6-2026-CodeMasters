@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import 'dotenv/config';
 
 import { ValidationPipe } from '@nestjs/common';
@@ -57,6 +58,10 @@ async function bootstrap() {
   console.log('   - GET  /api/projects');
   console.log('   - GET  /api/suivi-projects');
   console.log('   - GET  /api/devis');
+  console.log('   - POST /api/devis/accepter/:id (client — préféré)');
+  console.log('   - POST /api/devis/refuser/:id (client — préféré)');
+  console.log('   - POST /api/devis/:id/accepter | /refuser (compat.)');
+  console.log('   - GET  /api/factures (liste) + GET/POST …/factures/:id/paiements');
   console.log('   - GET  /api/marketplace/produits');
   console.log('   - GET  /api/marketplace/commandes');
 }

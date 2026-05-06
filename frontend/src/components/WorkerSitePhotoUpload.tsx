@@ -44,6 +44,10 @@ export function WorkerSitePhotoUpload({
   const inputRef = useRef<HTMLInputElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [comment, setComment] = useState("");
+  const [manualPercentStr, setManualPercentStr] = useState("");
+  const [manualPercentError, setManualPercentError] = useState<string | null>(
+    null,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
@@ -79,9 +83,21 @@ export function WorkerSitePhotoUpload({
     setCommentError(null);
     const fe = validateImageFile(file);
     const ce = validatePhotoComment(comment);
+    let mpErr: string | null = null;
+    const t = manualPercentStr.trim();
+    let progressPercent: number | undefined;
+    if (t !== "") {
+      const n = Number(t.replace(",", "."));
+      if (!Number.isFinite(n) || n < 0 || n > 100) {
+        mpErr = "Pourcentage entre 0 et 100.";
+      } else {
+        progressPercent = Math.round(n * 10) / 10;
+      }
+    }
+    setManualPercentError(mpErr);
     if (fe) setFileError(fe);
     if (ce) setCommentError(ce);
-    if (fe || ce) return;
+    if (fe || ce || mpErr) return;
     if (!file) return;
 
     setLoading(true);
@@ -103,6 +119,7 @@ export function WorkerSitePhotoUpload({
           photoUrl,
           photoBase64,
           comment: comment.trim() || undefined,
+          ...(progressPercent !== undefined ? { progressPercent } : {}),
         }),
       });
 
@@ -149,6 +166,7 @@ export function WorkerSitePhotoUpload({
 
       setFile(null);
       setComment("");
+      setManualPercentStr("");
       if (inputRef.current) inputRef.current.value = "";
     } catch (err) {
       setError(
@@ -170,8 +188,9 @@ export function WorkerSitePhotoUpload({
         Envoyer une photo du chantier
       </div>
       <p className="text-xs text-muted-foreground dark:text-gray-400">
-        L&apos;image est analysée automatiquement (gratuit : sans clé API, le serveur
-        utilise une estimation locale). Formats courants : JPG, PNG, WebP.
+        Avec clé API Anthropic, l&apos;image est analysée pour estimer l&apos;avancement.
+        Sinon, indiquez un pourcentage ci‑dessous ou l&apos;avancement reste inchangé.
+        Formats : JPG, PNG, WebP.
       </p>
 
       <input
@@ -224,6 +243,32 @@ export function WorkerSitePhotoUpload({
           className={fieldTextareaClass(!!commentError, loading)}
         />
         <FieldError id="err-ws-comment" message={commentError ?? undefined} />
+      </div>
+
+      <div>
+        <label
+          htmlFor="ws-pct"
+          className="block text-[11px] text-muted-foreground dark:text-gray-400 mb-1"
+        >
+          Avancement estimé % (optionnel, 0–100)
+        </label>
+        <input
+          id="ws-pct"
+          type="text"
+          inputMode="decimal"
+          value={manualPercentStr}
+          onChange={(e) => {
+            setManualPercentStr(e.target.value);
+            setManualPercentError(null);
+          }}
+          disabled={loading}
+          placeholder="Ex. 37 ou 62,5"
+          className="w-full rounded-xl border border-border dark:border-white/15 bg-background dark:bg-black/30 px-3 py-2 text-sm text-foreground dark:text-white placeholder:text-muted-foreground"
+        />
+        <FieldError
+          id="err-ws-pct"
+          message={manualPercentError ?? undefined}
+        />
       </div>
 
       <button

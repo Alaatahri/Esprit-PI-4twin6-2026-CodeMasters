@@ -12,43 +12,51 @@ import {
   Package,
   Loader2,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getStoredUser, type BMPUser } from "@/lib/auth";
 import { GuestLandingShowcase } from "@/components/GuestLandingShowcase";
-
-const modules = [
-  {
-    href: "/gestion-chantier",
-    title: "Gestion de Chantier",
-    description: "Planification, suivi des projets et avancement en temps réel.",
-    icon: Briefcase,
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
-    color: "from-amber-500 to-orange-600",
-    label: "Accéder",
-  },
-  {
-    href: "/gestion-devis-facturation",
-    title: "Devis & Facturation",
-    description: "Devis et facturation assistés par IA pour vos chantiers.",
-    icon: FileText,
-    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
-    color: "from-blue-500 to-cyan-600",
-    label: "Accéder",
-  },
-  {
-    href: "/gestion-marketplace",
-    title: "Marketplace",
-    description: "Matériaux et équipements de construction. Commandez en ligne.",
-    icon: ShoppingCart,
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
-    color: "from-emerald-500 to-teal-600",
-    label: "Voir le catalogue",
-  },
-];
+import { useLanguage } from "@/components/LanguageProvider";
 
 export default function EspacePage() {
   const router = useRouter();
+  const { t, lang } = useLanguage();
+
+  const modules = useMemo(
+    () => [
+      {
+        href: "/gestion-chantier",
+        title: t("mod_chantier_title"),
+        description: t("mod_chantier_desc"),
+        icon: Briefcase,
+        image:
+          "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+        color: "from-amber-500 to-orange-600",
+        label: t("mod_chantier_btn"),
+      },
+      {
+        href: "/gestion-devis-facturation",
+        title: t("mod_devis_title"),
+        description: t("mod_devis_desc"),
+        icon: FileText,
+        image:
+          "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
+        color: "from-blue-500 to-cyan-600",
+        label: t("mod_devis_btn"),
+      },
+      {
+        href: "/gestion-marketplace",
+        title: t("mod_market_title"),
+        description: t("mod_market_desc"),
+        icon: ShoppingCart,
+        image:
+          "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&q=80",
+        color: "from-emerald-500 to-teal-600",
+        label: t("mod_market_btn"),
+      },
+    ],
+    [lang, t],
+  );
   const [user, setUser] = useState<BMPUser | null>(null);
   const [bootstrapped, setBootstrapped] = useState(false);
 
@@ -84,7 +92,7 @@ export default function EspacePage() {
       <div className="flex min-h-[50vh] flex-col items-center justify-center gap-4 text-muted-foreground">
         <Loader2 className="h-10 w-10 animate-spin text-amber-400/80" aria-hidden />
         <p className="text-sm">
-          {redirecting ? "Redirection vers votre espace…" : "Chargement…"}
+          {redirecting ? t("espace_redirecting") : t("espace_loading")}
         </p>
       </div>
     );
@@ -93,7 +101,7 @@ export default function EspacePage() {
   const isGuest = !user;
 
   return (
-    <div className="space-y-16 lg:space-y-24">
+    <div className="space-y-16 lg:space-y-24" dir={lang === "ar-SA" ? "rtl" : "ltr"}>
       {/* Welcome hero */}
       <motion.section
         initial={{ opacity: 0, y: 24 }}
@@ -115,12 +123,13 @@ export default function EspacePage() {
             <HardHat className="w-8 h-8 text-amber-400" />
           </div>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground dark:text-white mb-4">
-            Bienvenue sur <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">BMP.tn</span>
+            {t("espace_welcome_prefix")}{" "}
+            <span className="bg-gradient-to-r from-amber-300 to-yellow-400 bg-clip-text text-transparent">
+              BMP.tn
+            </span>
           </h1>
           <p className="text-muted-foreground dark:text-gray-300 max-w-2xl mx-auto text-lg mb-4">
-            {isGuest
-              ? "La plateforme qui connecte clients, experts et artisans pour des chantiers suivis de bout en bout."
-              : "Accédez à vos outils de gestion de chantier, devis et marketplace depuis un seul espace."}
+            {isGuest ? t("espace_subtitle_guest") : t("espace_subtitle_user")}
           </p>
           {isGuest && (
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-6">
@@ -128,13 +137,13 @@ export default function EspacePage() {
                 href="/inscription"
                 className="inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold px-7 py-3 text-sm shadow-lg shadow-amber-500/25 w-full sm:w-auto"
               >
-                Commencer gratuitement
+                {t("espace_cta_register")}
               </Link>
               <Link
                 href="/login"
                 className="inline-flex items-center justify-center rounded-2xl border border-border bg-card/60 text-foreground font-medium px-7 py-3 text-sm hover:bg-accent w-full sm:w-auto dark:border-white/25 dark:bg-white/5 dark:text-white dark:hover:bg-black/5 dark:bg-white/10"
               >
-                Connexion
+                {t("connexion")}
               </Link>
             </div>
           )}
@@ -151,7 +160,7 @@ export default function EspacePage() {
           transition={{ delay: 0.15 }}
           className="text-xl font-semibold text-muted-foreground dark:text-gray-300 mb-8 text-center sm:text-left"
         >
-          {isGuest ? "Découvrez les outils BMP.tn" : "Nos modules"}
+          {isGuest ? t("espace_section_guest") : t("espace_section_user")}
         </motion.h2>
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
           {modules.map((mod, i) => {
@@ -211,8 +220,8 @@ export default function EspacePage() {
             <Briefcase className="w-6 h-6 text-amber-400" />
           </div>
           <div>
-            <p className="font-medium text-foreground dark:text-white">Gestion de Chantier</p>
-            <p className="text-xs text-foreground dark:text-gray-500">Projets & suivi</p>
+            <p className="font-medium text-foreground dark:text-white">{t("quick_chantier_title")}</p>
+            <p className="text-xs text-foreground dark:text-gray-500">{t("quick_chantier_sub")}</p>
           </div>
           <ArrowRight className="w-5 h-5 text-amber-400/50 ml-auto" />
         </Link>
@@ -224,8 +233,8 @@ export default function EspacePage() {
             <Calculator className="w-6 h-6 text-blue-400" />
           </div>
           <div>
-            <p className="font-medium text-foreground dark:text-white">Devis & Facturation</p>
-            <p className="text-xs text-foreground dark:text-gray-500">Devis IA</p>
+            <p className="font-medium text-foreground dark:text-white">{t("quick_devis_title")}</p>
+            <p className="text-xs text-foreground dark:text-gray-500">{t("quick_devis_sub")}</p>
           </div>
           <ArrowRight className="w-5 h-5 text-blue-400/50 ml-auto" />
         </Link>
@@ -237,8 +246,8 @@ export default function EspacePage() {
             <Package className="w-6 h-6 text-emerald-400" />
           </div>
           <div>
-            <p className="font-medium text-foreground dark:text-white">Marketplace</p>
-            <p className="text-xs text-foreground dark:text-gray-500">Catalogue B2B</p>
+            <p className="font-medium text-foreground dark:text-white">{t("quick_market_title")}</p>
+            <p className="text-xs text-foreground dark:text-gray-500">{t("quick_market_sub")}</p>
           </div>
           <ArrowRight className="w-5 h-5 text-emerald-400/50 ml-auto" />
         </Link>

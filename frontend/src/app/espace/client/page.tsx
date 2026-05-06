@@ -17,10 +17,18 @@ import {
   ChevronRight,
   LayoutDashboard,
   TrendingUp,
+  FileText,
+  AlertTriangle,
 } from "lucide-react";
 import { getApiBaseUrl } from "@/lib/api-base";
 
 const API_URL = getApiBaseUrl();
+
+type BillingSummary = {
+  devisEnAttente: number;
+  facturesImpayees: number;
+  facturesEnRetard: number;
+};
 
 type Project = {
   _id: string;
@@ -118,6 +126,7 @@ export default function ClientSpacePage() {
   const [loadingUser, setLoadingUser] = useState(true);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
+  const [billingSummary, setBillingSummary] = useState<BillingSummary | null>(null);
 
   useEffect(() => {
     const stored = getStoredUser();
@@ -149,6 +158,61 @@ export default function ClientSpacePage() {
     };
 
     fetchProjects();
+  }, [user]);
+
+  useEffect(() => {
+    if (!user || user.role !== "client") return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const h: Record<string, string> = {
+          "x-user-id": String(user._id || ""),
+          "x-user-role": user.role || "",
+          "x-user-email": user.email || "",
+        };
+        const [dRes, fRes] = await Promise.all([
+          fetch(`${API_URL}/devis`, { headers: h }),
+          fetch(`${API_URL}/factures`, { headers: h }),
+        ]);
+        if (!dRes.ok || !fRes.ok || cancelled) return;
+        const devis = (await dRes.json()) as Array<{ statut?: string }>;
+        const factures = (await fRes.json()) as Array<{
+          statut?: string;
+          date_echeance?: string;
+          solde_du?: number;
+          montant_total?: number;
+          montant_paye?: number;
+        }>;
+        const devisEnAttente = Array.isArray(devis)
+          ? devis.filter((d) => d.statut === "envoyé").length
+          : 0;
+        const now = Date.now();
+        let facturesImpayees = 0;
+        let facturesEnRetard = 0;
+        if (Array.isArray(factures)) {
+          for (const f of factures) {
+            if (f.statut === "payée") continue;
+            const total = Number(f.montant_total ?? 0);
+            const paye = Number(f.montant_paye ?? 0);
+            const solde = Number(f.solde_du ?? Math.max(0, total - paye));
+            if (solde <= 0 && total <= paye) continue;
+            facturesImpayees += 1;
+            const dueTs = f.date_echeance ? new Date(f.date_echeance).getTime() : 0;
+            if (f.statut === "en_retard" || (dueTs > 0 && dueTs < now && solde > 0)) {
+              facturesEnRetard += 1;
+            }
+          }
+        }
+        if (!cancelled) {
+          setBillingSummary({ devisEnAttente, facturesImpayees, facturesEnRetard });
+        }
+      } catch {
+        if (!cancelled) setBillingSummary(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const projectStats = useMemo(() => {
@@ -226,6 +290,14 @@ export default function ClientSpacePage() {
               <PlusCircle className="h-4 w-4" />
               Nouveau projet
             </button>
+            <button
+              type="button"
+              onClick={() => router.push("/gestion-devis-facturation")}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-amber-500/40 bg-amber-500/10 px-5 py-2.5 text-sm font-semibold text-amber-950 dark:text-amber-50 hover:bg-amber-500/20"
+            >
+              <FileText className="h-4 w-4" />
+              Devis &amp; paiements
+            </button>
             <Link
               href="/espace/client/suivi"
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-border dark:border-white/15 bg-black/5 dark:bg-white/5 px-5 py-2.5 text-sm font-medium text-foreground/90 dark:text-white/90 hover:bg-black/5 dark:bg-white/10"
@@ -264,6 +336,58 @@ export default function ClientSpacePage() {
           </div>
         </div>
       </header>
+
+      {billingSummary &&
+        (billingSummary.devisEnAttente > 0 ||
+          billingSummary.facturesImpayees > 0 ||
+          billingSummary.facturesEnRetard > 0) && (
+          <div
+            className={`rounded-2xl border px-4 py-3 sm:px-5 sm:py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 ${
+              billingSummary.facturesEnRetard > 0
+                ? "border-red-500/50 bg-red-500/10 text-red-950 dark:text-red-100"
+                : "border-amber-500/40 bg-amber-500/10 text-amber-950 dark:text-amber-50"
+            }`}
+          >
+            <div className="flex items-start gap-3">
+              <AlertTriangle
+                className={`h-5 w-5 shrink-0 mt-0.5 ${
+                  billingSummary.facturesEnRetard > 0 ? "text-red-600 dark:text-red-300" : "text-amber-700 dark:text-amber-300"
+                }`}
+              />
+              <div className="text-sm">
+                {billingSummary.facturesEnRetard > 0 ? (
+                  <p className="font-semibold">
+                    Paiement en retard : {billingSummary.facturesEnRetard} facture
+                    {billingSummary.facturesEnRetard > 1 ? "s" : ""} à régler.
+                  </p>
+                ) : (
+                  <p className="font-semibold">Documents à traiter</p>
+                )}
+                <p className="mt-1 text-xs opacity-90">
+                  {billingSummary.devisEnAttente > 0 && (
+                    <span>
+                      {billingSummary.devisEnAttente} devis à consulter ou accepter
+                      {billingSummary.facturesImpayees > 0 ? " · " : ""}
+                    </span>
+                  )}
+                  {billingSummary.facturesImpayees > 0 && (
+                    <span>
+                      {billingSummary.facturesImpayees} facture
+                      {billingSummary.facturesImpayees > 1 ? "s" : ""} avec solde à payer
+                    </span>
+                  )}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => router.push("/gestion-devis-facturation")}
+              className="shrink-0 rounded-xl bg-gray-900 px-4 py-2 text-xs font-bold text-white hover:bg-gray-800 dark:bg-white dark:text-gray-900 dark:hover:bg-gray-100"
+            >
+              Voir devis &amp; factures
+            </button>
+          </div>
+        )}
 
       <div className="grid gap-8 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] xl:gap-10">
         {/* Inspiration */}

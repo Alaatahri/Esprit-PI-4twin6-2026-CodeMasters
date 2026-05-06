@@ -1,7 +1,18 @@
-import { Controller, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
+import { FacturesService } from './factures/factures.service';
 
 @Controller()
 export class AppController {
+  constructor(private readonly facturesService: FacturesService) {}
+
   @Get()
   getHello() {
     return {
@@ -34,6 +45,11 @@ export class AppController {
           create: 'POST /api/devis',
           addItem: 'POST /api/devis/:id/items',
         },
+        factures: {
+          getAll: 'GET /api/factures',
+          getOne: 'GET /api/factures/:id',
+          paiements: 'GET|POST /api/factures/:id/paiements',
+        },
         marketplace: {
           produits: {
             getAll: 'GET /api/marketplace/produits',
@@ -56,5 +72,31 @@ export class AppController {
       status: 'ok',
       timestamp: new Date().toISOString(),
     };
+  }
+
+  /** Chemins les plus spécifiques en premier (Nest / Express). */
+  @Get('factures/:id/paiements')
+  getFacturePaiements(@Param('id') id: string) {
+    return this.facturesService.getPaiements(id);
+  }
+
+  @Post('factures/:id/paiements')
+  addFacturePaiement(@Param('id') id: string, @Body() body: any) {
+    return this.facturesService.recordPaiement(id, body ?? {});
+  }
+
+  @Get('factures/:id')
+  getFactureOne(@Param('id') id: string) {
+    return this.facturesService.findOne(id);
+  }
+
+  @Get('factures')
+  listFactures(
+    @Query('projectId') projectId?: string,
+    @Headers('x-user-id') userId?: string,
+    @Headers('x-user-role') role?: string,
+    @Headers('x-user-email') userEmail?: string,
+  ) {
+    return this.facturesService.findForUser(userId, role, userEmail, projectId);
   }
 }

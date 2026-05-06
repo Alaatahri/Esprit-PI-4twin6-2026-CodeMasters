@@ -15,6 +15,8 @@ export async function uploadSuiviPhoto(payload: {
   workerId: string;
   photoUrl: string;
   photoBase64?: string;
+  /** 0–100 si pas d’analyse IA ou en complément */
+  progressPercent?: number;
 }) {
   return api.post<SuiviPhotoResponse>('/suivi/photo', payload, {
     timeout: 120000,

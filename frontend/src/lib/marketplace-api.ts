@@ -72,6 +72,9 @@ export interface DeliveryRequest {
   historique_position: Array<{ lat: number; lng: number; timestamp: string }>;
 }
 
+/** Alias pour les hooks / composants anglophones */
+export type Delivery = DeliveryRequest;
+
 class MarketplaceAPI {
   private normalizeProduct(p: Product): Product {
     if (p && typeof p.image_url === "string" && p.image_url.trim() !== "") {
@@ -210,6 +213,11 @@ class MarketplaceAPI {
     const res = await fetch(`${API_URL}/marketplace/commandes/${orderId}/livraison`);
     if (!res.ok) throw new Error('Livraison non trouvée');
     return res.json();
+  }
+
+  /** Alias pour le code UI qui attend ce nom */
+  async getDeliveryByOrder(orderId: string): Promise<DeliveryRequest> {
+    return this.getLivraisonByOrder(orderId);
   }
 
   // ==================== MÉTHODES LIVREUR ====================

@@ -25,7 +25,7 @@ export async function calculateETA(origin: Coordinates, destination: Coordinates
         origins: [{ lat: origin.lat, lng: origin.lng }],
         destinations: [{ lat: destination.lat, lng: destination.lng }],
         key: GOOGLE_MAPS_API_KEY,
-        departure_time: 'now', // Uses predictive traffic
+        departure_time: Math.floor(Date.now() / 1000),
       }
     });
 

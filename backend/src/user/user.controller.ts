@@ -6,6 +6,8 @@ import {
   Put,
   Param,
   Delete,
+  Query,
+  Headers,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -38,7 +40,24 @@ export class UserController {
   }
 
   @Get()
-  findAll() {
+  findAll(
+    @Query('role') role?: string,
+    @Query('forQuotes') forQuotes?: string,
+    @Headers('x-user-id') xUserId?: string,
+    @Headers('x-user-role') xUserRole?: string,
+  ) {
+    const rqRole = (xUserRole || '').toLowerCase().trim();
+    const quoteScopedRoles = ['expert', 'artisan', 'ouvrier'];
+    if (role === 'client' && forQuotes === '1' && quoteScopedRoles.includes(rqRole)) {
+      const uid = xUserId?.trim();
+      if (uid) {
+        return this.userService.findClientsForQuoteUi(uid, rqRole);
+      }
+      return [];
+    }
+    if (role === 'client') {
+      return this.userService.findByRole('client');
+    }
     return this.userService.findAll();
   }
 

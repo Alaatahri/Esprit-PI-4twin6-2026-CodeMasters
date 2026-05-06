@@ -10,6 +10,7 @@ import React, {
   useMemo,
 } from "react";
 import { Globe } from "lucide-react";
+import { BMP_LANG_STORAGE_KEY } from "@/lib/lang-storage";
 
 export type LangCode = "fr-FR" | "en-US" | "ar-SA";
 
@@ -83,6 +84,64 @@ export const translations = {
     aria_fermer_menu: "Fermer le menu",
     aria_fermer: "Fermer",
     title_suivi_photos: "Voir le taux d'avancement et les photos de chantier",
+    nav_dashboard: "Tableau de bord",
+    nav_stats: "Statistiques",
+    theme_light_title: "Mode clair",
+    theme_dark_title: "Mode sombre",
+    aria_theme_to_light: "Activer le mode clair",
+    aria_theme_to_dark: "Activer le mode sombre",
+    badge_new: "NOUVEAU",
+    footer_desc:
+      "La plateforme qui relie clients, experts et artisans — suivi, devis et marketplace au même endroit.",
+    footer_location: "Tunisie · projets sur tout le territoire",
+    footer_support: "Support du lundi au vendredi",
+    footer_section_account: "Compte & accès",
+    footer_section_tools: "Outils BMP",
+    footer_sign_up: "S'inscrire",
+    footer_copyright: "Construction digitale. Tous droits réservés.",
+    footer_legal: "Mentions légales",
+    footer_privacy: "Confidentialité",
+    footer_cookies: "Cookies",
+    footer_aria_legal: "Informations légales",
+    espace_welcome_prefix: "Bienvenue sur",
+    espace_subtitle_guest:
+      "La plateforme qui connecte clients, experts et artisans pour des chantiers suivis de bout en bout.",
+    espace_subtitle_user:
+      "Accédez à vos outils de gestion de chantier, devis et marketplace depuis un seul espace.",
+    espace_cta_register: "Commencer gratuitement",
+    espace_section_guest: "Découvrez les outils BMP.tn",
+    espace_section_user: "Nos modules",
+    mod_chantier_title: "Gestion de Chantier",
+    mod_chantier_desc: "Planification, suivi des projets et avancement en temps réel.",
+    mod_chantier_btn: "Accéder",
+    mod_devis_title: "Devis & Facturation",
+    mod_devis_desc: "Devis et facturation assistés par IA pour vos chantiers.",
+    mod_devis_btn: "Accéder",
+    mod_market_title: "Marketplace",
+    mod_market_desc: "Matériaux et équipements de construction. Commandez en ligne.",
+    mod_market_btn: "Voir le catalogue",
+    quick_chantier_title: "Gestion de Chantier",
+    quick_chantier_sub: "Projets & suivi",
+    quick_devis_title: "Devis & Facturation",
+    quick_devis_sub: "Devis IA",
+    quick_market_title: "Marketplace",
+    quick_market_sub: "Catalogue B2B",
+    espace_loading: "Chargement…",
+    espace_redirecting: "Redirection vers votre espace…",
+    access_title: "Accessibilité universelle",
+    access_standard: "Mode standard",
+    access_malvoyant_label: "Malvoyant",
+    access_malvoyant_desc: "Grand texte, contraste fort",
+    access_daltonien_label: "Daltonien",
+    access_daltonien_desc: "Couleurs adaptées, contrastes purs",
+    access_dyslexique_label: "Dyslexique",
+    access_dyslexique_desc: "Police espacée, lignes claires",
+    access_mobilite_label: "Mobilité réduite",
+    access_mobilite_desc: "Navigation clavier, gros focus",
+    access_senior_label: "Senior",
+    access_senior_desc: "Texte lisible, simplifié",
+    access_concentration_label: "Concentration",
+    access_concentration_desc: "Masque de lecture, sans animations",
   },
   "en-US": {
     espace_client: "Client Space",
@@ -153,6 +212,64 @@ export const translations = {
     aria_fermer_menu: "Close menu",
     aria_fermer: "Close",
     title_suivi_photos: "View progress and site photos",
+    nav_dashboard: "Dashboard",
+    nav_stats: "Statistics",
+    theme_light_title: "Light mode",
+    theme_dark_title: "Dark mode",
+    aria_theme_to_light: "Turn on light mode",
+    aria_theme_to_dark: "Turn on dark mode",
+    badge_new: "NEW",
+    footer_desc:
+      "The platform connecting clients, experts and contractors — tracking, quotes and marketplace in one place.",
+    footer_location: "Tunisia · projects nationwide",
+    footer_support: "Support Monday to Friday",
+    footer_section_account: "Account & access",
+    footer_section_tools: "BMP tools",
+    footer_sign_up: "Sign up",
+    footer_copyright: "Digital construction. All rights reserved.",
+    footer_legal: "Legal",
+    footer_privacy: "Privacy",
+    footer_cookies: "Cookies",
+    footer_aria_legal: "Legal information",
+    espace_welcome_prefix: "Welcome to",
+    espace_subtitle_guest:
+      "The platform connecting clients, experts and contractors for end-to-end site tracking.",
+    espace_subtitle_user:
+      "Access site management, quotes and marketplace tools from one place.",
+    espace_cta_register: "Get started free",
+    espace_section_guest: "Explore BMP.tn tools",
+    espace_section_user: "Our modules",
+    mod_chantier_title: "Site management",
+    mod_chantier_desc: "Planning, project tracking and real-time progress.",
+    mod_chantier_btn: "Open",
+    mod_devis_title: "Quotes & invoicing",
+    mod_devis_desc: "AI-assisted quotes and invoicing for your sites.",
+    mod_devis_btn: "Open",
+    mod_market_title: "Marketplace",
+    mod_market_desc: "Construction materials and equipment. Order online.",
+    mod_market_btn: "Browse catalogue",
+    quick_chantier_title: "Site management",
+    quick_chantier_sub: "Projects & tracking",
+    quick_devis_title: "Quotes & invoicing",
+    quick_devis_sub: "AI quotes",
+    quick_market_title: "Marketplace",
+    quick_market_sub: "B2B catalogue",
+    espace_loading: "Loading…",
+    espace_redirecting: "Redirecting to your space…",
+    access_title: "Accessibility",
+    access_standard: "Standard mode",
+    access_malvoyant_label: "Low vision",
+    access_malvoyant_desc: "Large text, strong contrast",
+    access_daltonien_label: "Colour blindness",
+    access_daltonien_desc: "Adjusted colours, pure contrast",
+    access_dyslexique_label: "Dyslexia",
+    access_dyslexique_desc: "Spaced font, clear lines",
+    access_mobilite_label: "Reduced mobility",
+    access_mobilite_desc: "Keyboard navigation, large focus",
+    access_senior_label: "Senior",
+    access_senior_desc: "Readable text, simplified UI",
+    access_concentration_label: "Focus",
+    access_concentration_desc: "Reading mask, no animations",
   },
   "ar-SA": {
     espace_client: "مساحة العميل",
@@ -221,6 +338,64 @@ export const translations = {
     aria_fermer_menu: "إغلاق القائمة",
     aria_fermer: "إغلاق",
     title_suivi_photos: "عرض نسبة الإنجاز وصور الموقع",
+    nav_dashboard: "لوحة التحكم",
+    nav_stats: "الإحصائيات",
+    theme_light_title: "الوضع الفاتح",
+    theme_dark_title: "الوضع الداكن",
+    aria_theme_to_light: "تفعيل الوضع الفاتح",
+    aria_theme_to_dark: "تفعيل الوضع الداكن",
+    badge_new: "جديد",
+    footer_desc:
+      "المنصة التي تربط العملاء والخبراء والحرفيين — المتابعة والعروض والسوق في مكان واحد.",
+    footer_location: "تونس · مشاريع على كامل التراب",
+    footer_support: "الدعم من الإثنين إلى الجمعة",
+    footer_section_account: "الحساب والوصول",
+    footer_section_tools: "أدوات BMP",
+    footer_sign_up: "إنشاء حساب",
+    footer_copyright: "البناء الرقمي. جميع الحقوق محفوظة.",
+    footer_legal: "قانوني",
+    footer_privacy: "الخصوصية",
+    footer_cookies: "ملفات تعريف الارتباط",
+    footer_aria_legal: "معلومات قانونية",
+    espace_welcome_prefix: "مرحبًا بك في",
+    espace_subtitle_guest:
+      "المنصة التي تربط العملاء والخبراء والحرفيين لمتابعة المشاريع من البداية إلى النهاية.",
+    espace_subtitle_user:
+      "الوصول إلى أدوات إدارة الموقع والعروض والسوق من مكان واحد.",
+    espace_cta_register: "ابدأ مجانًا",
+    espace_section_guest: "اكتشف أدوات BMP.tn",
+    espace_section_user: "وحداتنا",
+    mod_chantier_title: "إدارة الموقع",
+    mod_chantier_desc: "التخطيط ومتابعة المشاريع والتقدم في الوقت الفعلي.",
+    mod_chantier_btn: "دخول",
+    mod_devis_title: "العروض والفواتير",
+    mod_devis_desc: "عروض وفواتير مدعومة بالذكاء الاصطناعي لمواقعك.",
+    mod_devis_btn: "دخول",
+    mod_market_title: "السوق",
+    mod_market_desc: "مواد ومعدات البناء. اطلب عبر الإنترنت.",
+    mod_market_btn: "عرض الكتالوج",
+    quick_chantier_title: "إدارة الموقع",
+    quick_chantier_sub: "المشاريع والمتابعة",
+    quick_devis_title: "العروض والفواتير",
+    quick_devis_sub: "عروض ذكية",
+    quick_market_title: "السوق",
+    quick_market_sub: "كتالوج B2B",
+    espace_loading: "جاري التحميل…",
+    espace_redirecting: "إعادة التوجيه إلى مساحتك…",
+    access_title: "إمكانية الوصول",
+    access_standard: "الوضع القياسي",
+    access_malvoyant_label: "ضعف البصر",
+    access_malvoyant_desc: "نص كبير وتباين قوي",
+    access_daltonien_label: "عمى الألوان",
+    access_daltonien_desc: "ألوان مناسبة وتباين نقي",
+    access_dyslexique_label: "عسر القراءة",
+    access_dyslexique_desc: "خط متباعد وأسطر واضحة",
+    access_mobilite_label: "تقليل الحركة",
+    access_mobilite_desc: "تصفح لوحة المفاتيح وتركيز كبير",
+    access_senior_label: "كبار السن",
+    access_senior_desc: "نص مقروء وواجهة مبسطة",
+    access_concentration_label: "التركيز",
+    access_concentration_desc: "قناع قراءة، بدون حركات",
   },
 };
 
@@ -240,24 +415,53 @@ const LanguageContext = createContext<LangContextType>({
 
 function applyDocumentLang(code: LangCode) {
   if (typeof document === "undefined") return;
+  document.documentElement.setAttribute("data-bmp-lang", code);
   document.documentElement.dir = code === "ar-SA" ? "rtl" : "ltr";
   document.documentElement.lang = code === "ar-SA" ? "ar" : code === "en-US" ? "en" : "fr";
 }
 
+function readInitialLang(): LangCode {
+  if (typeof window === "undefined") return "fr-FR";
+  try {
+    const fromDom = document.documentElement.getAttribute("data-bmp-lang");
+    if (fromDom === "fr-FR" || fromDom === "en-US" || fromDom === "ar-SA") {
+      return fromDom;
+    }
+    const raw = localStorage.getItem(BMP_LANG_STORAGE_KEY);
+    if (raw === "fr-FR" || raw === "en-US" || raw === "ar-SA") return raw;
+  } catch {
+    /* ignore */
+  }
+  return "fr-FR";
+}
+
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  /** Toujours fr au 1er rendu (SSR + hydratation) pour éviter tout décalage avec le HTML serveur. */
   const [lang, setLangState] = useState<LangCode>("fr-FR");
 
   useLayoutEffect(() => {
-    const raw = localStorage.getItem("bmp_lang");
-    if (raw === "fr-FR" || raw === "en-US" || raw === "ar-SA") {
-      setLangState(raw);
-      applyDocumentLang(raw);
-    }
+    const next = readInitialLang();
+    setLangState(next);
+    applyDocumentLang(next);
+    // Sync unique après montage : le script boot peut déjà avoir mis data-bmp-lang sur <html>.
+  }, []);
+
+  useEffect(() => {
+    const onStorage = (e: StorageEvent) => {
+      if (e.key !== BMP_LANG_STORAGE_KEY || !e.newValue) return;
+      const next = e.newValue as LangCode;
+      if (next === "fr-FR" || next === "en-US" || next === "ar-SA") {
+        setLangState(next);
+        applyDocumentLang(next);
+      }
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   const handleSetLang = useCallback((newLang: LangCode) => {
     setLangState(newLang);
-    localStorage.setItem("bmp_lang", newLang);
+    localStorage.setItem(BMP_LANG_STORAGE_KEY, newLang);
     applyDocumentLang(newLang);
     try {
       window.dispatchEvent(new CustomEvent("bmp:lang-change", { detail: newLang }));
@@ -301,6 +505,9 @@ export function LanguageSwitcher({
         onClick={() => setOpen((v) => !v)}
         className="w-12 h-12 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-white/20 shadow-lg transition-transform hover:scale-105"
         title={t("changer_langue")}
+        aria-expanded={open}
+        aria-haspopup="menu"
+        aria-label={t("changer_langue")}
       >
         <Globe className="w-5 h-5" />
         <span className="absolute -bottom-1 -right-1 bg-amber-500 text-[10px] font-bold px-1.5 py-0.5 rounded-full border border-gray-900">

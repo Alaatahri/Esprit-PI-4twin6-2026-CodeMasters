@@ -153,6 +153,46 @@ export class UserService {
       .exec();
   }
 
+  async findByRole(role: string, limit = 500): Promise<SafeUser[]> {
+    const r = (role || '').trim().toLowerCase();
+    if (!r) {
+      return this.findAll(limit) as Promise<SafeUser[]>;
+    }
+    const rows = await this.userModel
+      .find({ role: r })
+      .select('-mot_de_passe')
+      .sort({ nom: 1 })
+      .limit(limit)
+      .lean()
+      .exec();
+    return rows as SafeUser[];
+  }
+
+  /** Clients des projets assignés à l’expert / artisan / ouvrier (création de devis). */
+  async findClientsForQuoteUi(
+    userId: string,
+    role: string,
+  ): Promise<SafeUser[]> {
+    const ids = await this.projectService.findClientIdsForQuoteUi(
+      userId,
+      role,
+    );
+    if (ids.length === 0) {
+      return [];
+    }
+    const oids = ids
+      .filter((id) => Types.ObjectId.isValid(id))
+      .map((id) => new Types.ObjectId(id));
+    const rows = await this.userModel
+      .find({ _id: { $in: oids }, role: 'client' })
+      .select('-mot_de_passe')
+      .sort({ nom: 1 })
+      .limit(500)
+      .lean()
+      .exec();
+    return rows as SafeUser[];
+  }
+
   /** Artisans et experts pour la page d'accueil (sans mot de passe ni email). */
   async findPublicWorkers(limit = 48): Promise<Record<string, unknown>[]> {
     const users = await this.userModel

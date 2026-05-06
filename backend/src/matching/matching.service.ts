@@ -16,7 +16,10 @@ import {
   MatchingRequestDocument,
 } from './schemas/matching-request.schema';
 import { analyzeProject } from './services/projectAnalysisService';
-import { findBestExperts } from './services/matchingService';
+import {
+  computeExpertMatchScore,
+  findBestExperts,
+} from './services/matchingService';
 import {
   Proposal,
   ProposalDocument,
@@ -156,7 +159,25 @@ export class MatchingService {
         .exec();
 
       const extra = (fallback || [])
+        .map((e: any) => {
+          const { score } = computeExpertMatchScore(
+            e,
+            analysis.requiredCompetences || [],
+          );
+          return {
+            _id: e._id,
+            prenom: e.prenom,
+            nom: e.nom,
+            email: e.email,
+            competences: e.competences,
+            isAvailable: e.isAvailable,
+            rating: e.rating,
+            experienceYears: e.experienceYears,
+            score,
+          };
+        })
         .sort((a: any, b: any) => {
+          if (b.score !== a.score) return b.score - a.score;
           const ra = Number(a?.rating ?? 0);
           const rb = Number(b?.rating ?? 0);
           if (rb !== ra) return rb - ra;
@@ -164,18 +185,7 @@ export class MatchingService {
           const eb = Number(b?.experienceYears ?? 0);
           return eb - ea;
         })
-        .slice(0, need)
-        .map((e: any) => ({
-          _id: e._id,
-          prenom: e.prenom,
-          nom: e.nom,
-          email: e.email,
-          competences: e.competences,
-          isAvailable: e.isAvailable,
-          rating: e.rating,
-          experienceYears: e.experienceYears,
-          score: matchedExperts.length === 0 ? 10 : 5,
-        }));
+        .slice(0, need);
 
       matchedExperts = [...matchedExperts, ...extra];
     }
@@ -353,7 +363,7 @@ export class MatchingService {
     return reqDoc.toObject();
   }
 
-  /** Experts et administrateurs : vue globale de tous les dossiers projets. */
+  /** Experts et administrateurs : catalogue projets (admin = tout ; expert = dossiers assignés uniquement). */
   async assertExpertOrAdmin(userId: string) {
     if (!this.isValidObjectId(userId)) {
       throw new ForbiddenException('Utilisateur non authentifié');
@@ -373,12 +383,19 @@ export class MatchingService {
 
   async getExpertProjectCatalog(userId: string) {
     try {
-      await this.assertExpertOrAdmin(userId);
+      const actor = await this.assertExpertOrAdmin(userId);
+      const actorRole = String(actor.role ?? '')
+        .trim()
+        .toLowerCase();
+      const projectFilter =
+        actorRole === 'admin'
+          ? {}
+          : { expertId: new Types.ObjectId(userId) };
 
       let projects: any[];
       try {
         projects = await this.projectModel
-          .find()
+          .find(projectFilter)
           .sort({ createdAt: -1 })
           .limit(200)
           .populate('clientId', 'prenom nom email telephone role')
@@ -390,7 +407,7 @@ export class MatchingService {
           `Catalogue: populate projet échoué (${err instanceof Error ? err.message : String(err)}), repli sans jointure`,
         );
         projects = await this.projectModel
-          .find()
+          .find(projectFilter)
           .sort({ createdAt: -1 })
           .limit(200)
           .lean()
@@ -461,7 +478,7 @@ export class MatchingService {
   /** Rapport détaillé : projet + invitations matching + propositions. */
   async getExpertProjectReport(projectId: string, userId: string) {
     try {
-      await this.assertExpertOrAdmin(userId);
+      const actor = await this.assertExpertOrAdmin(userId);
       if (!this.isValidObjectId(projectId)) {
         throw new BadRequestException('ID projet invalide');
       }
@@ -482,6 +499,24 @@ export class MatchingService {
       }
 
       if (!project) throw new NotFoundException('Projet introuvable');
+
+      const actorRole = String(actor.role ?? '')
+        .trim()
+        .toLowerCase();
+      if (actorRole === 'expert') {
+        const assignedExpertId = (() => {
+          const e = project.expertId;
+          if (!e) return '';
+          if (typeof e === 'object' && e !== null && '_id' in e && (e as any)._id)
+            return String((e as any)._id);
+          return String(e);
+        })();
+        if (!assignedExpertId || assignedExpertId !== userId) {
+          throw new ForbiddenException(
+            'Accès réservé aux dossiers qui vous sont assignés.',
+          );
+        }
+      }
 
       let matchingRequests: any[];
       try {

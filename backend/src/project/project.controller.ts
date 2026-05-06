@@ -6,10 +6,10 @@ import {
   Delete,
   Get,
   Headers,
+  Query,
   Param,
   Post,
   Put,
-  Query,
   Req,
   UploadedFiles,
   UseInterceptors,
@@ -58,7 +58,18 @@ export class ProjectController {
   }
 
   @Get()
-  findAll() {
+  findAll(
+    @Query('forQuotes') forQuotes?: string,
+    @Headers('x-user-id') xUserId?: string,
+    @Headers('x-user-role') xUserRole?: string,
+  ) {
+    if (forQuotes === '1') {
+      const uid = xUserId?.trim();
+      const role = xUserRole?.trim();
+      if (uid && role) {
+        return this.projectService.findProjectsForQuoteUi(uid, role);
+      }
+    }
     return this.projectService.findAll();
   }
 

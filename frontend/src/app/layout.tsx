@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ChatbotLayout } from "@/components/ChatbotLayout";
+import { KeyboardTTS } from "@/components/KeyboardTTS";
+import { LanguageProvider } from "@/components/LanguageProvider";
+import { AccessibilityProvider } from "@/components/AccessibilityProvider";
 import GlobalNavbar from "@/components/GlobalNavbar";
 import SiteFooter from "@/components/SiteFooter";
 import { AppPreviewChrome } from "@/components/AppPreviewChrome";
 import { BMP_THEME_BOOT_SCRIPT } from "@/lib/theme-storage";
+import { BMP_LANG_BOOT_SCRIPT } from "@/lib/lang-storage";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,24 +39,31 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <head>
-        <script
-          // Évite le flash blanc: applique le thème avant le rendu.
-          dangerouslySetInnerHTML={{
-            __html: BMP_THEME_BOOT_SCRIPT,
-          }}
-        />
-      </head>
       <body
+        suppressHydrationWarning
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col bg-background text-foreground scrollbar-bmp`}
       >
-        <AppPreviewChrome>
-          <GlobalNavbar />
-          <div className="flex min-h-0 flex-1 flex-col">{children}</div>
-          <SiteFooter />
-          {/* Chatbot intégré - affiché sur toutes les pages */}
-          <ChatbotLayout />
-        </AppPreviewChrome>
+        <Script
+          id="bmp-theme-boot"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: BMP_THEME_BOOT_SCRIPT }}
+        />
+        <Script
+          id="bmp-lang-boot"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: BMP_LANG_BOOT_SCRIPT }}
+        />
+        <AccessibilityProvider>
+          <LanguageProvider>
+            <AppPreviewChrome>
+              <GlobalNavbar />
+              <div className="flex min-h-0 flex-1 flex-col">{children}</div>
+              <SiteFooter />
+              <KeyboardTTS />
+              <ChatbotLayout />
+            </AppPreviewChrome>
+          </LanguageProvider>
+        </AccessibilityProvider>
       </body>
     </html>
   );

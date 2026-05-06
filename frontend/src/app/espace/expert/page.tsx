@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getStoredUser, type BMPUser } from "@/lib/auth";
@@ -8,8 +8,6 @@ import { SuiviTimeline } from "@/components/SuiviTimeline";
 import {
   Users,
   Star,
-  Phone,
-  Mail,
   ClipboardList,
   CheckCircle2,
   Clock,
@@ -22,22 +20,10 @@ import {
   UserCircle,
 } from "lucide-react";
 import { getApiBaseUrl } from "@/lib/api-base";
-import { refId } from "@/lib/project-refs";
+import { mongoIdString, refId } from "@/lib/project-refs";
 import { readJsonSafe } from "@/lib/read-json-safe";
 
 const API_URL = getApiBaseUrl();
-
-type Artisan = {
-  _id: string;
-  nom: string;
-  email: string;
-  telephone: string;
-  role: string;
-  competences?: string[];
-  specialites?: string[];
-  ratingMoyen?: number;
-  nbProjets?: number;
-};
 
 type ArtisanApplication = {
   _id: string;
@@ -47,7 +33,15 @@ type ArtisanApplication = {
     ratingMoyen?: number;
     competences?: string[];
   };
-  artisanId?: string | { _id?: string };
+  artisanId?:
+    | string
+    | {
+        _id?: string;
+        nom?: string;
+        email?: string;
+        ratingMoyen?: number;
+        competences?: string[];
+      };
   statut: "en_attente" | "acceptee" | "refusee";
   createdAt?: string;
 };
@@ -59,12 +53,37 @@ type ExpertProject = {
   budget_estime: number;
   statut: string;
   clientNom?: string;
+  /** Injecté par l’API expert pour filtrer par client sans ambiguïté */
+  clientKeyForExpertUi?: string;
+  clientId?: string | { _id?: string; prenom?: string; nom?: string; email?: string };
   date_debut?: string;
   date_fin_prevue?: string;
   avancement_global?: number;
   requestStatus?: string;
   applications?: ArtisanApplication[];
 };
+
+type ExpertClientRow = {
+  id: string;
+  label: string;
+  projectCount: number;
+};
+
+function clientKeyFromProject(p: ExpertProject): string {
+  const fromApi = p.clientKeyForExpertUi?.trim();
+  if (fromApi) return fromApi.toLowerCase();
+  return mongoIdString(p.clientId).toLowerCase();
+}
+
+function clientDisplayName(p: ExpertProject): string {
+  if (p.clientNom?.trim()) return p.clientNom.trim();
+  const c = p.clientId;
+  if (c && typeof c === "object") {
+    const n = [c.prenom, c.nom].filter(Boolean).join(" ").trim();
+    return n || (c.email ?? "").trim() || "Client";
+  }
+  return "Client";
+}
 
 /** Recrutement artisan : désactivé une fois le dossier engagé (contrat / exécution). */
 function projectAllowsArtisanRecruitment(p: ExpertProject): boolean {
@@ -85,79 +104,16 @@ function projectAllowsArtisanRecruitment(p: ExpertProject): boolean {
   return true;
 }
 
-const exampleArtisans: Artisan[] = [
-  {
-    _id: "a1",
-    nom: "Ali Ben Salah",
-    email: "ali.artisan@example.com",
-    telephone: "+216 20 123 456",
-    role: "artisan",
-    competences: ["Maçonnerie", "Gros œuvre"],
-    specialites: ["Maisons individuelles", "Extensions"],
-    ratingMoyen: 4.8,
-    nbProjets: 12,
-  },
-  {
-    _id: "a2",
-    nom: "Meriem Trabelsi",
-    email: "meriem.peintre@example.com",
-    telephone: "+216 24 654 321",
-    role: "artisan",
-    competences: ["Peinture", "Finitions"],
-    specialites: ["Rénovation intérieure"],
-    ratingMoyen: 4.6,
-    nbProjets: 8,
-  },
-];
-
-const exampleExpertProjects: ExpertProject[] = [
-  {
-    _id: "p1",
-    titre: "Rénovation appartement centre-ville",
-    description:
-      "Rénovation complète d'un F3 : sols, murs, cuisine et salle de bain.",
-    budget_estime: 55000,
-    statut: "Ouvert",
-    clientNom: "Karim H.",
-    date_debut: new Date().toISOString(),
-    date_fin_prevue: new Date(
-      new Date().setMonth(new Date().getMonth() + 2)
-    ).toISOString(),
-    applications: [
-      {
-        _id: "ap1",
-        statut: "en_attente",
-        artisan: {
-          _id: "a1",
-          nom: "Ali Ben Salah",
-          ratingMoyen: 4.8,
-          competences: ["Maçonnerie", "Gros œuvre"],
-        },
-      },
-      {
-        _id: "ap2",
-        statut: "en_attente",
-        artisan: {
-          _id: "a2",
-          nom: "Meriem Trabelsi",
-          ratingMoyen: 4.6,
-          competences: ["Peinture", "Finitions"],
-        },
-      },
-    ],
-  },
-];
-
 export default function ExpertSpacePage() {
   const router = useRouter();
   const [user, setUser] = useState<BMPUser | null>(null);
   const [loadingUser, setLoadingUser] = useState(true);
-  const [artisans, setArtisans] = useState<Artisan[]>(exampleArtisans);
-  const [loadingArtisans, setLoadingArtisans] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [projects, setProjects] =
-    useState<ExpertProject[]>(exampleExpertProjects);
+  const [projects, setProjects] = useState<ExpertProject[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  /** Une fois qu’un premier client a été choisi automatiquement, ne pas le refaire. */
+  const initialClientSelectionDoneRef = useRef(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
@@ -170,25 +126,9 @@ export default function ExpertSpacePage() {
   useEffect(() => {
     if (!user || user.role !== "expert") return;
 
-    const fetchArtisans = async () => {
-      setLoadingArtisans(true);
-      setError(null);
-      try {
-        const res = await fetch(`${API_URL}/users`);
-        if (!res.ok) {
-          throw new Error("Unable to load contractors.");
-        }
-        const data = (await res.json()) as Artisan[];
-        setArtisans(data.filter((u) => u.role === "artisan"));
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Loading error.");
-      } finally {
-        setLoadingArtisans(false);
-      }
-    };
-
     const fetchProjectsForExpert = async () => {
       setLoadingProjects(true);
+      setError(null);
       try {
         const res = await fetch(
           `${API_URL}/projects/expert/${encodeURIComponent(user._id)}`,
@@ -201,21 +141,23 @@ export default function ExpertSpacePage() {
         const data = (await res.json()) as ExpertProject[];
         const filtered = data
           .filter((p) =>
-            ["En attente", "En cours", "Terminé"].includes(p.statut),
+            ["En attente", "En cours", "Terminé", "Ouvert"].includes(p.statut),
           )
           .map((p) => ({
             ...p,
+            clientNom: p.clientNom?.trim()
+              ? p.clientNom
+              : clientDisplayName(p),
             applications: p.applications ?? [],
           }));
         setProjects(filtered);
       } catch {
-        /* ignore */
+        setError("Unable to load your projects.");
       } finally {
         setLoadingProjects(false);
       }
     };
 
-    fetchArtisans();
     fetchProjectsForExpert();
   }, [user]);
 
@@ -280,16 +222,37 @@ export default function ExpertSpacePage() {
       return app.artisan;
     }
 
+    const aid = app.artisanId;
+    if (aid && typeof aid === "object") {
+      const id =
+        typeof aid._id === "string"
+          ? aid._id
+          : aid._id != null
+            ? String(aid._id)
+            : "";
+      const nom = aid.nom?.trim();
+      if (nom || id) {
+        return {
+          _id: id,
+          nom: nom || "Contractor",
+          ratingMoyen: aid.ratingMoyen,
+          competences: aid.competences,
+        };
+      }
+    }
+
     const rawArtisanId =
       typeof app.artisanId === "string"
         ? app.artisanId
-        : app.artisanId?._id;
+        : app.artisanId &&
+            typeof app.artisanId === "object" &&
+            app.artisanId._id != null
+          ? String(app.artisanId._id)
+          : "";
 
-    if (!rawArtisanId) {
-      return undefined;
-    }
-
-    return artisans.find((artisan) => artisan._id === rawArtisanId);
+    return rawArtisanId
+      ? { _id: rawArtisanId, nom: "Contractor" }
+      : undefined;
   };
 
   /** Id utilisateur artisan pour la page publique /profil/[id] */
@@ -307,12 +270,50 @@ export default function ExpertSpacePage() {
     );
   };
 
+  const expertClients = useMemo((): ExpertClientRow[] => {
+    const m = new Map<string, ExpertClientRow>();
+    for (const p of projects) {
+      const id = clientKeyFromProject(p);
+      if (!id) continue;
+      const label = clientDisplayName(p);
+      const prev = m.get(id);
+      if (prev) prev.projectCount += 1;
+      else m.set(id, { id, label, projectCount: 1 });
+    }
+    return Array.from(m.values()).sort((a, b) =>
+      a.label.localeCompare(b.label, "fr"),
+    );
+  }, [projects]);
+
+  const filteredProjects = useMemo(() => {
+    if (!selectedClientId) return projects;
+    return projects.filter((p) => clientKeyFromProject(p) === selectedClientId);
+  }, [projects, selectedClientId]);
+
+  /** Par défaut : premier client (sinon selectedClientId reste null → tous les projets / toutes les candidatures). */
+  useLayoutEffect(() => {
+    if (loadingProjects || initialClientSelectionDoneRef.current) return;
+    if (expertClients.length === 0) return;
+    initialClientSelectionDoneRef.current = true;
+    setSelectedClientId(expertClients[0].id);
+  }, [loadingProjects, expertClients]);
+
+  useEffect(() => {
+    if (!selectedClientId || loadingProjects) return;
+    const valid = projects.some(
+      (p) => clientKeyFromProject(p) === selectedClientId,
+    );
+    if (!valid && expertClients.length > 0) {
+      setSelectedClientId(expertClients[0].id);
+    }
+  }, [projects, expertClients, selectedClientId, loadingProjects]);
+
   const pendingApplicationsCount = useMemo(() => {
-    return projects.reduce((acc, p) => {
+    return filteredProjects.reduce((acc, p) => {
       const n = (p.applications ?? []).filter((a) => a.statut === "en_attente").length;
       return acc + n;
     }, 0);
-  }, [projects]);
+  }, [filteredProjects]);
 
   if (!loadingUser && !user) {
     return (
@@ -373,10 +374,10 @@ export default function ExpertSpacePage() {
                   Expert workspace
                 </p>
                 <h1 className="text-2xl sm:text-3xl font-bold text-foreground dark:text-white leading-tight">
-                  Contractors, projects & applications
+                  Clients, projets & candidatures
                 </h1>
                 <p className="text-sm text-muted-foreground dark:text-gray-400 max-w-2xl">
-                  Match the right profiles to jobs, track dossiers, and stay aligned with clients.
+                  Uniquement vos dossiers assignés : choisissez un client pour filtrer ses projets et traiter les candidatures artisans.
                 </p>
               </div>
             </div>
@@ -427,19 +428,23 @@ export default function ExpertSpacePage() {
           <div className="rounded-2xl border border-amber-200/90 bg-amber-50 p-4 dark:border-amber-500/20 dark:bg-amber-950/20">
             <p className="text-[11px] uppercase tracking-wider text-amber-900/80 dark:text-amber-200/70 flex items-center gap-2">
               <Users className="h-3.5 w-3.5" />
-              Contractors
+              Clients (dossiers assignés)
             </p>
             <p className="mt-1 text-2xl font-bold text-foreground dark:text-white tabular-nums">
-              {loadingArtisans ? "…" : artisans.length}
+              {loadingProjects ? "…" : expertClients.length}
             </p>
           </div>
           <div className="rounded-2xl border border-border/60 bg-card p-4 shadow-bmp-sm dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none">
             <p className="text-[11px] uppercase tracking-wider text-muted-foreground dark:text-gray-500 flex items-center gap-2">
               <ClipboardList className="h-3.5 w-3.5 text-brand dark:text-amber-400/80" />
-              My projects
+              Projets affichés
             </p>
             <p className="mt-1 text-2xl font-bold text-foreground dark:text-white tabular-nums">
-              {loadingProjects ? "…" : projects.length}
+              {loadingProjects
+                ? "…"
+                : selectedClientId
+                  ? filteredProjects.length
+                  : projects.length}
             </p>
           </div>
           <div className="rounded-2xl border border-sky-200/90 bg-sky-50 p-4 dark:border-sky-500/20 dark:bg-sky-950/20">
@@ -454,26 +459,43 @@ export default function ExpertSpacePage() {
         </div>
 
         <p className="text-xs text-muted-foreground dark:text-gray-500 max-w-3xl">
-          Contractors apply from their workspace. For each project where you are the assigned expert,
-          you can accept or decline applications below (validated securely on the server).
+          Les artisans postulent depuis leur espace. Pour chaque projet où vous êtes l&apos;expert référent,
+          vous pouvez accepter ou refuser les candidatures ci‑dessous (contrôle côté serveur).
         </p>
 
         <div className="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-        {/* Colonne artisans */}
+        {/* Clients liés à vos projets assignés */}
         <section className="rounded-3xl border border-border/60 bg-card shadow-bmp-sm overflow-hidden flex flex-col min-h-[320px] dark:border-white/10 dark:bg-white/[0.03] dark:shadow-none">
           <div className="flex items-center justify-between gap-3 px-5 py-4 border-b border-border/60 dark:border-white/10">
             <div className="flex items-center gap-2">
               <Users className="w-5 h-5 text-amber-700 dark:text-amber-300" />
               <h2 className="text-sm font-semibold text-foreground dark:text-white">
-                Available contractors
+                Mes clients
               </h2>
             </div>
-            {loadingArtisans && (
+            {loadingProjects && (
               <Loader2 className="w-4 h-4 animate-spin text-amber-400/80" />
             )}
           </div>
 
-          {loadingArtisans ? (
+          <div className="px-5 pt-4 pb-2">
+            <button
+              type="button"
+              onClick={() => setSelectedClientId(null)}
+              className={`w-full rounded-2xl border px-4 py-2.5 text-left text-xs font-medium transition ${
+                selectedClientId === null
+                  ? "border-amber-500/50 bg-amber-500/15 text-amber-950 dark:text-amber-100"
+                  : "border-border/60 bg-muted/30 text-muted-foreground hover:border-brand/30 dark:border-white/10 dark:bg-black/20 dark:text-gray-300"
+              }`}
+            >
+              Tous mes projets assignés
+              <span className="block text-[10px] font-normal opacity-80 mt-0.5">
+                {projects.length} projet{projects.length === 1 ? "" : "s"}
+              </span>
+            </button>
+          </div>
+
+          {loadingProjects ? (
             <div className="p-5 space-y-3 flex-1">
               {Array.from({ length: 4 }).map((_, i) => (
                 <div
@@ -482,65 +504,35 @@ export default function ExpertSpacePage() {
                 />
               ))}
             </div>
-          ) : artisans.length === 0 ? (
+          ) : expertClients.length === 0 ? (
             <div className="p-6 text-sm text-muted-foreground dark:text-gray-400 flex-1">
-              No contractors yet. Registered profiles will show up here.
+              Aucun client pour l&apos;instant : les clients ayant au moins un projet où vous êtes assigné apparaîtront ici.
             </div>
           ) : (
-            <div className="space-y-3 max-h-[420px] overflow-y-auto p-5 pr-2 scrollbar-bmp">
-              {artisans.map((artisan) => (
-                <div
-                  key={artisan._id}
-                  className="rounded-2xl border border-border/60 bg-muted/40 px-4 py-4 text-sm space-y-2 hover:border-brand/35 transition dark:border-white/10 dark:bg-black/20 dark:hover:border-amber-500/25"
+            <div className="space-y-3 max-h-[420px] overflow-y-auto p-5 pt-2 pr-2 scrollbar-bmp">
+              {expertClients.map((row) => (
+                <button
+                  key={row.id}
+                  type="button"
+                  onClick={() => setSelectedClientId(row.id)}
+                  className={`w-full rounded-2xl border px-4 py-4 text-sm text-left space-y-1 transition dark:border-white/10 dark:bg-black/20 ${
+                    selectedClientId === row.id
+                      ? "border-amber-500/45 bg-amber-500/10 ring-1 ring-amber-500/25"
+                      : "border-border/60 bg-muted/40 hover:border-brand/35 dark:hover:border-amber-500/25"
+                  }`}
                 >
                   <div className="flex items-center justify-between gap-3">
-                    <div>
-                      <p className="font-medium text-foreground dark:text-white line-clamp-1">
-                        {artisan.nom}
-                      </p>
-                      <p className="text-[11px] text-amber-700 dark:text-amber-300 uppercase tracking-[0.18em]">
-                        Contractor
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px] text-muted-foreground dark:text-gray-300">
-                      <Star className="w-3.5 h-3.5 text-amber-700 dark:text-amber-300 fill-amber-300" />
-                      <span>
-                        {artisan.ratingMoyen?.toFixed(1) ?? "4.5"}
-                      </span>
-                      {typeof artisan.nbProjets === "number" && (
-                        <span className="text-foreground dark:text-gray-500">
-                          ({artisan.nbProjets})
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  {artisan.competences && artisan.competences.length > 0 && (
-                    <p className="text-[11px] text-muted-foreground dark:text-gray-300">
-                      Skills:{" "}
-                      <span className="text-foreground dark:text-gray-200">
-                        {artisan.competences.join(", ")}
-                      </span>
+                    <p className="font-medium text-foreground dark:text-white line-clamp-1">
+                      {row.label}
                     </p>
-                  )}
-                  {artisan.specialites && artisan.specialites.length > 0 && (
-                    <p className="text-[11px] text-muted-foreground dark:text-gray-300">
-                      Specialties:{" "}
-                      <span className="text-foreground dark:text-gray-200">
-                        {artisan.specialites.join(", ")}
-                      </span>
-                    </p>
-                  )}
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground dark:text-gray-400">
-                    <span className="inline-flex items-center gap-1">
-                      <Mail className="w-3.5 h-3.5" />
-                      {artisan.email}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Phone className="w-3.5 h-3.5" />
-                      {artisan.telephone}
+                    <span className="text-[11px] tabular-nums text-muted-foreground dark:text-gray-400 shrink-0">
+                      {row.projectCount} projet{row.projectCount === 1 ? "" : "s"}
                     </span>
                   </div>
-                </div>
+                  <p className="text-[11px] text-muted-foreground dark:text-gray-500">
+                    Cliquez pour n&apos;afficher que les projets de ce client.
+                  </p>
+                </button>
               ))}
             </div>
           )}
@@ -552,7 +544,7 @@ export default function ExpertSpacePage() {
             <div className="flex items-center gap-2">
               <ClipboardList className="w-5 h-5 text-amber-700 dark:text-amber-300" />
               <h2 className="text-sm font-semibold text-foreground dark:text-white">
-                Projects & applications
+                Projets & candidatures
               </h2>
             </div>
             {loadingProjects && (
@@ -569,13 +561,17 @@ export default function ExpertSpacePage() {
                 />
               ))}
             </div>
-          ) : projects.length === 0 ? (
+          ) : filteredProjects.length === 0 ? (
             <div className="p-6 text-sm text-muted-foreground dark:text-gray-400">
-              No projects loaded yet. Assignments you are linked to will appear here with contractor applications.
+              {projects.length === 0
+                ? "Aucun projet assigné pour le moment."
+                : selectedClientId
+                  ? "Aucun projet pour ce client avec les filtres actuels."
+                  : "Aucun projet à afficher."}
             </div>
           ) : (
             <div className="space-y-4 max-h-[560px] overflow-y-auto p-5 pr-2 scrollbar-bmp">
-              {projects.map((project) => (
+              {filteredProjects.map((project) => (
                 <div
                   key={project._id}
                   className="rounded-2xl border border-border/60 bg-muted/40 px-4 py-4 text-sm space-y-3 hover:border-brand/30 transition dark:border-white/10 dark:bg-black/20 dark:hover:border-amber-500/20"
