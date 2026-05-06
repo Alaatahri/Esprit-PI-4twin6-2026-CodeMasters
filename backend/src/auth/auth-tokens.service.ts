@@ -1,5 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import type { SignOptions } from 'jsonwebtoken';
 
 export interface JwtAccessPayload {
   sub: string;
@@ -28,18 +29,22 @@ export class AuthTokensService {
     refreshToken: string;
   } {
     const roleNorm = String(role || '').toLowerCase().trim();
+    const accessExpires = (process.env.JWT_ACCESS_EXPIRES?.trim() ||
+      '15m') as SignOptions['expiresIn'];
+    const refreshExpires = (process.env.JWT_REFRESH_EXPIRES?.trim() ||
+      '7d') as SignOptions['expiresIn'];
     const accessToken = this.jwt.sign(
       { sub, role: roleNorm, typ: 'access' },
       {
         secret: this.accessSecret(),
-        expiresIn: process.env.JWT_ACCESS_EXPIRES?.trim() || '15m',
+        expiresIn: accessExpires,
       },
     );
     const refreshToken = this.jwt.sign(
       { sub, typ: 'refresh' },
       {
         secret: this.refreshSecret(),
-        expiresIn: process.env.JWT_REFRESH_EXPIRES?.trim() || '7d',
+        expiresIn: refreshExpires,
       },
     );
     return { accessToken, refreshToken };
