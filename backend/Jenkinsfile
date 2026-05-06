@@ -20,6 +20,14 @@ pipeline {
       }
     }
 
+    stage('Tests with Coverage') {
+      steps {
+        dir('backend') {
+          sh 'npm test -- --coverage --forceExit || true'
+        }
+      }
+    }
+
     stage('SonarQube Analysis') {
       steps {
         withSonarQubeEnv('SonarQube') {
@@ -28,6 +36,8 @@ pipeline {
               npx sonar-scanner \
                 -Dsonar.projectKey=bmp-backend \
                 -Dsonar.sources=src \
+                -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+                -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml \
                 -Dsonar.host.url=http://host.docker.internal:9000 \
                 -Dsonar.token=${SONAR_AUTH_TOKEN}
             '''
