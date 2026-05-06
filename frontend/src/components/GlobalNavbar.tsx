@@ -101,17 +101,42 @@ export default function GlobalNavbar() {
     })();
   }, [pathname, userId]);
 
-  const baseNavItems = useMemo(
-    () => [
+  const baseNavItems = useMemo(() => {
+    // Invité : navigation publique (accueil + marketplace + contact).
+    if (!user) {
+      return [
+        { key: "home", href: "/espace", label: "Accueil", icon: Home },
+        {
+          key: "marketplace",
+          href: "/gestion-marketplace",
+          label: t("marketplace"),
+          icon: ShoppingCart,
+        },
+        { key: "contact", href: "/contact", label: t("contact"), icon: Mail },
+      ];
+    }
+
+    // Connecté : modules + accès selon rôle.
+    return [
       { key: "home", href: "/espace", label: t("nav_dashboard"), icon: Home },
-      { key: "chantier", href: "/gestion-chantier", label: t("nav_chantier"), icon: Briefcase },
+      {
+        key: "chantier",
+        href: "/gestion-chantier",
+        label: t("nav_chantier"),
+        icon: Briefcase,
+      },
       {
         key: "devis",
         href: "/gestion-devis-facturation",
         label: t("nav_devis"),
         icon: FileText,
       },
-      { key: "marketplace", href: "/gestion-marketplace", label: t("marketplace"), icon: ShoppingCart },
+      {
+        key: "marketplace",
+        href: "/gestion-marketplace",
+        label: t("marketplace"),
+        icon: ShoppingCart,
+      },
       {
         key: "stats",
         href: "/gestion-marketplace/stats",
@@ -119,9 +144,8 @@ export default function GlobalNavbar() {
         icon: BarChart3,
       },
       { key: "contact", href: "/contact", label: t("contact"), icon: Mail },
-    ],
-    [lang, t],
-  );
+    ];
+  }, [lang, t, user]);
 
   const navItems = useMemo(() => {
     const role = user?.role;
@@ -179,6 +203,15 @@ export default function GlobalNavbar() {
     setMobileOpen(false);
     router.push("/espace");
   };
+
+  const profileHref = useMemo(() => {
+    if (!user) return "/login";
+    const r = normalizeRole(user.role);
+    // Clients : page de profil/avis interne
+    if (r === "client") return "/espace/profil";
+    // Workers : page profil public (fiche claire, notes, travaux, avis)
+    return `/profil/${encodeURIComponent(user._id)}`;
+  }, [user]);
 
   const applyTheme = (mode: BMPThemeMode) => {
     try {
@@ -410,17 +443,33 @@ export default function GlobalNavbar() {
             </button>
             {user ? (
               <>
-                <div className="hidden sm:flex items-center gap-3 pl-2 border-l border-border/60">
-                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center border border-amber-500/30">
-                    <span className="text-sm font-bold text-amber-700 dark:text-amber-300">
-                      {user.nom?.charAt(0).toUpperCase() || "U"}
-                    </span>
+                <Link
+                  href={profileHref}
+                  className="hidden sm:flex items-center gap-3 pl-2 border-l border-border/60 group"
+                  title="Voir mon profil"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/20 flex items-center justify-center border border-amber-500/30 overflow-hidden shrink-0 group-hover:border-amber-500/45 transition-colors">
+                    {user.avatarUrl ? (
+                      <img
+                        src={user.avatarUrl}
+                        alt={user.nom}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-sm font-bold text-amber-700 dark:text-amber-300">
+                        {user.nom?.charAt(0).toUpperCase() || "U"}
+                      </span>
+                    )}
                   </div>
                   <div className="leading-tight">
-                    <p className="text-sm font-medium text-foreground">{user.nom}</p>
-                    <p className="text-xs text-amber-400/80 capitalize">{user.role}</p>
+                    <p className="text-sm font-medium text-foreground group-hover:text-amber-800 dark:group-hover:text-amber-200 transition-colors">
+                      {user.nom}
+                    </p>
+                    <p className="text-xs text-amber-400/80 capitalize">
+                      {user.role}
+                    </p>
                   </div>
-                </div>
+                </Link>
                 <button
                   onClick={handleLogout}
                   className="hidden sm:flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card/50 border border-border/60 text-muted-foreground hover:text-foreground hover:border-amber-500/30 hover:bg-amber-500/10 transition-all"

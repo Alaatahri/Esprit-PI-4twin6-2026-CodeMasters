@@ -1,7 +1,7 @@
-import { getStoredUser } from "@/lib/auth";
+import { getAccessToken, getStoredUser } from "@/lib/auth";
 
 export async function fetchAPI(url: string, options: RequestInit = {}) {
-  const token = localStorage.getItem('bmp_token');
+  const token = getAccessToken();
   const user = getStoredUser();
   const headers: any = {
     ...options.headers,

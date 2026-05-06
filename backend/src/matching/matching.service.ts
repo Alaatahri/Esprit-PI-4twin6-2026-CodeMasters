@@ -222,7 +222,7 @@ export class MatchingService {
       .find()
       .sort({ sentAt: -1 })
       .populate('expertId', 'prenom nom email competences rating')
-      .populate('projectId', 'titre nom description')
+      .populate('projectId', 'titre description')
       .lean()
       .exec();
 
@@ -236,27 +236,41 @@ export class MatchingService {
   async listMyRequests(expertId: string) {
     if (!this.isValidObjectId(expertId)) return [];
     const now = new Date();
-    const rows: any[] = await this.matchingRequestModel
-      .find({ expertId: new Types.ObjectId(expertId) })
-      .sort({ sentAt: -1 })
-      .populate({
-        path: 'projectId',
-        select:
-          'titre description ville categorie urgence adresse surface_m2 type_batiment budget_estime budget_min budget_max date_debut date_fin_prevue statut requestStatus clientId expertId createdAt',
-        populate: {
-          path: 'expertId',
-          select: 'prenom nom email',
-        },
-      })
-      .populate('expertId', 'prenom nom email')
-      .lean()
-      .exec();
+    // Pas de populate imbriqué projectId.expertId : des projets peuvent avoir expertId=""
+    // ou une valeur invalide → CastError Mongoose sur le modèle User (500).
+    let rows: any[];
+    try {
+      rows = await this.matchingRequestModel
+        .find({ expertId: new Types.ObjectId(expertId) })
+        .sort({ sentAt: -1 })
+        .populate({
+          path: 'projectId',
+          select:
+            'titre description ville categorie urgence adresse surface_m2 type_batiment budget_estime budget_min budget_max date_debut date_fin_prevue statut requestStatus clientId expertId createdAt',
+        })
+        .populate('expertId', 'prenom nom email')
+        .lean()
+        .exec();
+    } catch (err) {
+      this.logger.warn(
+        `listMyRequests: populate échoué (${err instanceof Error ? err.message : String(err)}), repli sans jointure`,
+      );
+      rows = await this.matchingRequestModel
+        .find({ expertId: new Types.ObjectId(expertId) })
+        .sort({ sentAt: -1 })
+        .lean()
+        .exec();
+    }
 
-    return (rows || []).map((r: any) => ({
-      ...r,
-      isExpired:
-        r?.status === 'pending' && r?.expiresAt && new Date(r.expiresAt) <= now,
-    }));
+    return toPlainJson(
+      (rows || []).map((r: any) => ({
+        ...r,
+        isExpired:
+          r?.status === 'pending' &&
+          r?.expiresAt &&
+          new Date(r.expiresAt) <= now,
+      })),
+    );
   }
 
   /** Détail d’une demande de matching pour l’expert connecté (même invitation). */
@@ -281,17 +295,29 @@ export class MatchingService {
       throw new NotFoundException('Demande introuvable');
     }
 
-    const project: any = await this.projectModel
-      .findById(reqRow.projectId)
-      .populate('clientId', 'prenom nom email telephone role')
-      .populate('expertId', 'prenom nom email telephone')
-      .lean()
-      .exec();
+    let project: any;
+    try {
+      project = await this.projectModel
+        .findById(reqRow.projectId)
+        .populate('clientId', 'prenom nom email telephone role')
+        .populate('expertId', 'prenom nom email telephone')
+        .lean()
+        .exec();
+    } catch (err) {
+      this.logger.warn(
+        `getMyRequestById: populate projet échoué (${err instanceof Error ? err.message : String(err)}), repli sans expertId peuplé`,
+      );
+      project = await this.projectModel
+        .findById(reqRow.projectId)
+        .populate('clientId', 'prenom nom email telephone role')
+        .lean()
+        .exec();
+    }
 
-    return {
+    return toPlainJson({
       request: reqRow,
       project: project || null,
-    };
+    });
   }
 
   async respondToRequest(

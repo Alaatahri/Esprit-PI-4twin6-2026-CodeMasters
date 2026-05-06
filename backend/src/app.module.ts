@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { Facture, FactureSchema } from './devis/schemas/facture.schema';
@@ -16,9 +17,12 @@ import { MessagesModule } from './messages/messages.module';
 import { ProposalsModule } from './proposals/proposals.module';
 import { ContractsModule } from './contracts/contracts.module';
 import { AuthModule } from './auth/auth.module';
+import { JwtTokensModule } from './auth/jwt-tokens.module';
+import { JwtUserInterceptor } from './auth/jwt-user.interceptor';
 
 @Module({
   imports: [
+    JwtTokensModule,
     MongooseModule.forRoot(
       process.env.MONGODB_URI || 'mongodb://localhost:27017/bmp-tn',
       {
@@ -41,6 +45,9 @@ import { AuthModule } from './auth/auth.module';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [FacturesService],
+  providers: [
+    FacturesService,
+    { provide: APP_INTERCEPTOR, useClass: JwtUserInterceptor },
+  ],
 })
 export class AppModule {}

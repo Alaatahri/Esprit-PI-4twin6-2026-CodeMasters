@@ -4,14 +4,33 @@ import { validateBulkOrder, CartItem } from '@/lib/bulkOrder';
 import { reserveStock } from '@/lib/stock';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_dummy', {
-  apiVersion: '2025-02-24.acacia' as any,
+  apiVersion: '2026-04-22.dahlia',
 });
 
 export async function POST(req: Request) {
   try {
-    const { items, userId, isVerifiedBusiness } = await req.json();
+    const body = await req.json().catch(() => ({}));
+    const { items, userId, isVerifiedBusiness } = body as {
+      items?: CartItem[];
+      userId?: string;
+      isVerifiedBusiness?: boolean;
+    };
 
-    if (!items || items.length === 0 || !userId) {
+    // Exiger login uniquement au moment de l'achat.
+    // (Marketplace reste navigable sans compte.)
+    const headerUserId =
+      req.headers.get('x-user-id')?.trim() ||
+      req.headers.get('x-userid')?.trim() ||
+      '';
+    const effectiveUserId = (userId || headerUserId || '').trim();
+    if (!effectiveUserId) {
+      return NextResponse.json(
+        { error: 'login_required', message: 'Veuillez vous connecter pour acheter.' },
+        { status: 401 },
+      );
+    }
+
+    if (!items || items.length === 0) {
       return NextResponse.json({ error: 'Missing items or userId' }, { status: 400 });
     }
 
@@ -24,7 +43,7 @@ export async function POST(req: Request) {
     // Reserve stock for all items
     const orderIds = [];
     for (const item of items) {
-      const reserveResult = await reserveStock(item.productId, item.quantity, userId);
+      const reserveResult = await reserveStock(item.productId, item.quantity, effectiveUserId);
       if (!reserveResult.success) {
         return NextResponse.json({ error: `Failed to reserve stock for product ${item.productId}: ${reserveResult.message}` }, { status: 400 });
       }
@@ -39,7 +58,7 @@ export async function POST(req: Request) {
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
-      line_items: items.map((item: any) => ({
+      line_items: items.map((item: CartItem) => ({
         price_data: {
           currency: 'tnd', // Tunisian Dinar (or your preferred currency)
           product_data: {
@@ -55,13 +74,13 @@ export async function POST(req: Request) {
       success_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'}/checkout/cancel`,
       metadata: {
-        userId: userId ?? '',
+        userId: effectiveUserId ?? '',
         orderId: masterOrderId ?? '',
       },
     });
 
     return NextResponse.json({ sessionId: session.id, url: session.url });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Checkout error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

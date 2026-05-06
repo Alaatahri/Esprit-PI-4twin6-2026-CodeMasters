@@ -1,17 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import {
   FolderKanban,
   Loader2,
   MessageCircle,
   ClipboardList,
   Send,
+  Search,
 } from "lucide-react";
 import { getStoredUser, normalizeRole } from "@/lib/auth";
 import { getApiBaseUrl } from "@/lib/api-base";
+import { fetchAPI } from "@/lib/fetchHelper";
 
 const API_URL = getApiBaseUrl();
 
@@ -39,8 +41,14 @@ function refId(ref: unknown): string {
   return String(ref);
 }
 
-export default function ExpertProjetsPage() {
+function ExpertProjetsContent() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const qRaw = (searchParams.get("q") ?? "").trim();
+  const statutRaw = (searchParams.get("statut") ?? "").trim();
+  const sortRaw = (searchParams.get("sort") ?? "titre").trim();
+
   const [projects, setProjects] = useState<ProjectRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState<string | null>(null);
@@ -52,18 +60,29 @@ export default function ExpertProjetsPage() {
 
   const user = getStoredUser();
 
+  const setQuery = useCallback(
+    (patch: Record<string, string>) => {
+      const p = new URLSearchParams(searchParams.toString());
+      for (const [k, v] of Object.entries(patch)) {
+        if (!v) p.delete(k);
+        else p.set(k, v);
+      }
+      const qs = p.toString();
+      router.replace(`${pathname}${qs ? `?${qs}` : ""}`, { scroll: false });
+    },
+    [pathname, router, searchParams],
+  );
+
   const load = useCallback(async () => {
     const u = getStoredUser();
     if (!u || normalizeRole(u.role) !== "expert") return;
     setLoading(true);
     setErr(null);
     try {
-      const res = await fetch(
+      const data = (await fetchAPI(
         `${API_URL}/projects/expert/${encodeURIComponent(u._id)}`,
         { cache: "no-store" },
-      );
-      if (!res.ok) throw new Error("Impossible de charger les projets.");
-      const data = (await res.json()) as ProjectRow[];
+      )) as ProjectRow[];
       const list = Array.isArray(data) ? data : [];
       setProjects(list);
       const fb: Record<string, string> = {};
@@ -82,7 +101,7 @@ export default function ExpertProjetsPage() {
   useEffect(() => {
     const u = getStoredUser();
     if (!u) {
-      router.replace("/login");
+      router.replace("/login?returnUrl=/expert/projets");
       return;
     }
     if (normalizeRole(u.role) !== "expert") {
@@ -92,6 +111,44 @@ export default function ExpertProjetsPage() {
     void load();
   }, [load, router]);
 
+  const statutOptions = useMemo(() => {
+    const s = new Set<string>();
+    for (const p of projects) {
+      const st = (p.statut ?? "").trim();
+      if (st) s.add(st);
+    }
+    return [...s].sort((a, b) => a.localeCompare(b, "fr"));
+  }, [projects]);
+
+  const filtered = useMemo(() => {
+    const q = qRaw.toLowerCase();
+    let list = [...projects];
+    if (q) {
+      list = list.filter((p) => {
+        const titre = (p.titre ?? "").toLowerCase();
+        const desc = (p.description ?? "").toLowerCase();
+        return titre.includes(q) || desc.includes(q);
+      });
+    }
+    if (statutRaw) {
+      list = list.filter(
+        (p) => (p.statut ?? "").trim().toLowerCase() === statutRaw.toLowerCase(),
+      );
+    }
+    const sort = sortRaw.toLowerCase();
+    if (sort === "avancement") {
+      list.sort(
+        (a, b) =>
+          (b.avancement_global ?? 0) - (a.avancement_global ?? 0),
+      );
+    } else {
+      list.sort((a, b) =>
+        (a.titre ?? "").localeCompare(b.titre ?? "", "fr"),
+      );
+    }
+    return list;
+  }, [projects, qRaw, statutRaw, sortRaw]);
+
   const saveFeedback = async (projectId: string) => {
     const u = getStoredUser();
     if (!u) return;
@@ -100,23 +157,13 @@ export default function ExpertProjetsPage() {
     setSavingId(projectId);
     setSaveOk(null);
     try {
-      const res = await fetch(
-        `${API_URL}/projects/${projectId}/expert/feedback`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-user-id": u._id,
-          },
-          body: JSON.stringify({ text }),
+      await fetchAPI(`${API_URL}/projects/${projectId}/expert/feedback`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(
-          typeof j.message === "string" ? j.message : `Erreur ${res.status}`,
-        );
-      }
+        body: JSON.stringify({ text }),
+      });
       setSaveOk(projectId);
       setTimeout(() => setSaveOk(null), 2500);
     } catch (e) {
@@ -156,6 +203,41 @@ export default function ExpertProjetsPage() {
         </Link>
       </div>
 
+      <div className="flex flex-col sm:flex-row flex-wrap gap-3 items-stretch sm:items-center rounded-2xl border border-border dark:border-white/10 bg-white/[0.03] p-4">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" aria-hidden />
+          <input
+            type="search"
+            placeholder="Rechercher par titre ou description…"
+            value={qRaw}
+            className="w-full rounded-xl border border-border dark:border-white/15 bg-background/80 pl-10 pr-3 py-2 text-sm"
+            onChange={(e) => setQuery({ q: e.target.value })}
+          />
+        </div>
+        <select
+          className="rounded-xl border border-border dark:border-white/15 bg-background/80 px-3 py-2 text-sm min-w-[160px]"
+          value={statutRaw}
+          onChange={(e) => setQuery({ statut: e.target.value })}
+          aria-label="Filtrer par statut"
+        >
+          <option value="">Tous les statuts</option>
+          {statutOptions.map((st) => (
+            <option key={st} value={st}>
+              {st}
+            </option>
+          ))}
+        </select>
+        <select
+          className="rounded-xl border border-border dark:border-white/15 bg-background/80 px-3 py-2 text-sm min-w-[160px]"
+          value={sortRaw === "avancement" ? "avancement" : "titre"}
+          onChange={(e) => setQuery({ sort: e.target.value })}
+          aria-label="Tri"
+        >
+          <option value="titre">Titre (A–Z)</option>
+          <option value="avancement">Avancement décroissant</option>
+        </select>
+      </div>
+
       {err && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
           {err}
@@ -166,13 +248,15 @@ export default function ExpertProjetsPage() {
         <div className="flex justify-center py-24">
           <Loader2 className="w-12 h-12 animate-spin text-amber-400/80" />
         </div>
-      ) : projects.length === 0 ? (
+      ) : filtered.length === 0 ? (
         <p className="text-center text-foreground dark:text-gray-500 py-16">
-          Aucun projet ne vous est encore assigné en tant qu&apos;expert.
+          {projects.length === 0
+            ? "Aucun projet ne vous est encore assigné en tant qu'expert."
+            : "Aucun projet ne correspond aux filtres."}
         </p>
       ) : (
         <ul className="space-y-6">
-          {projects.map((p) => {
+          {filtered.map((p) => {
             const clientId = refId(p.clientId);
             const acceptedApp = p.applications?.find(
               (a) => a.statut === "acceptee",
@@ -191,7 +275,7 @@ export default function ExpertProjetsPage() {
                     <div className="min-w-0">
                       <Link
                         href={`/expert/projects/${encodeURIComponent(p._id)}?from=projets`}
-                        className="text-lg font-semibold text-foreground dark:text-white hover:text-amber-800 dark:text-amber-200 transition"
+                        className="text-lg font-semibold text-foreground dark:text-white hover:text-amber-800 dark:hover:text-amber-200 transition"
                       >
                         {p.titre}
                       </Link>
@@ -280,5 +364,19 @@ export default function ExpertProjetsPage() {
         </ul>
       )}
     </div>
+  );
+}
+
+export default function ExpertProjetsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center py-24">
+          <Loader2 className="w-12 h-12 animate-spin text-amber-400/80" />
+        </div>
+      }
+    >
+      <ExpertProjetsContent />
+    </Suspense>
   );
 }

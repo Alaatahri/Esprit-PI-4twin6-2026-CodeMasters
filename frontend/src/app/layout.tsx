@@ -9,6 +9,7 @@ import { AccessibilityProvider } from "@/components/AccessibilityProvider";
 import GlobalNavbar from "@/components/GlobalNavbar";
 import SiteFooter from "@/components/SiteFooter";
 import { AppPreviewChrome } from "@/components/AppPreviewChrome";
+import { AuthCookieSync } from "@/components/AuthCookieSync";
 import { BMP_THEME_BOOT_SCRIPT } from "@/lib/theme-storage";
 import { BMP_LANG_BOOT_SCRIPT } from "@/lib/lang-storage";
 
@@ -55,6 +56,7 @@ export default function RootLayout({
         />
         <AccessibilityProvider>
           <LanguageProvider>
+            <AuthCookieSync />
             <AppPreviewChrome>
               <GlobalNavbar />
               <div className="flex min-h-0 flex-1 flex-col">{children}</div>

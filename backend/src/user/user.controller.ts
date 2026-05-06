@@ -13,10 +13,14 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthTokensService } from '../auth/auth-tokens.service';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authTokens: AuthTokensService,
+  ) {}
 
   // ==================== ADMIN : validation des experts ====================
   @Get('admin/experts/pending')
@@ -102,7 +106,17 @@ export class UserController {
         zones_travail: dbUser.zones_travail,
         createdAt: dbUser.createdAt,
       };
-      return { success: true, user: safeUser };
+      const uid = String(safeUser._id ?? '').trim();
+      const tokens =
+        uid && safeUser.role
+          ? this.authTokens.issuePair(uid, String(safeUser.role))
+          : { accessToken: '', refreshToken: '' };
+      return {
+        success: true,
+        user: safeUser,
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      };
     } catch (error) {
       console.error('Login error:', error);
       return { success: false, message: 'Erreur lors de la connexion' };

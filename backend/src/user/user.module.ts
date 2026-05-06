@@ -6,6 +6,7 @@ import { User, UserSchema } from './schemas/user.schema';
 import { ProjectModule } from '../project/project.module';
 import { MailModule } from '../mail/mail.module';
 import { MarketplaceModule } from '../marketplace/marketplace.module';
+import { JwtTokensModule } from '../auth/jwt-tokens.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { MarketplaceModule } from '../marketplace/marketplace.module';
     ProjectModule,
     MailModule,
     MarketplaceModule,
+    JwtTokensModule,
   ],
   controllers: [UserController],
   providers: [UserService],

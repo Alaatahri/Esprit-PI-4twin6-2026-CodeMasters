@@ -1,6 +1,8 @@
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:opsz,wght@9..40,400;500;600&family=Playfair+Display:wght@500;600;700&family=Outfit:wght@300;400;500;600&display=swap");
 @import "tailwindcss";
-@plugin "@tailwindcss/typography";
 @import "tw-animate-css";
+
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -306,4 +308,1785 @@ html.access-mobilite button,
 html.access-mobilite a,
 html.access-mobilite input {
   cursor: pointer !important;
+}
+
+/* ===========================================================
+   Luxury Dark Gold — /espace/client/nouveau-projet (styles only)
+   Scoping: this page is detected by presence of #np-titre.
+   =========================================================== */
+
+.dark {
+  --np-bg-base: #080808;
+  --np-bg-surface: #0f0f0f;
+  --np-bg-elevated: #161616;
+  --np-bg-input: #111111;
+  --np-border-subtle: rgba(255, 255, 255, 0.06);
+  --np-border-focus: #c8a84b;
+  --np-accent-gold: #c8a84b;
+  --np-accent-light: #e2c06a;
+  --np-accent-glow: rgba(200, 168, 75, 0.15);
+  --np-text-primary: #f0ece0;
+  --np-text-secondary: rgba(240, 236, 224, 0.5);
+  --np-text-muted: rgba(240, 236, 224, 0.3);
+  --np-danger: #e05555;
+  --np-radius-sm: 8px;
+  --np-radius-md: 12px;
+  --np-radius-lg: 18px;
+}
+
+/* Page wrapper background */
+body:has(#np-titre) {
+  background: radial-gradient(
+      ellipse 80% 60% at 50% -10%,
+      rgba(200, 168, 75, 0.07) 0%,
+      transparent 70%
+    ),
+    var(--np-bg-base);
+}
+
+/* Base typography for the page */
+body:has(#np-titre) .mx-auto.max-w-\[800px\] {
+  font-family: "DM Sans", system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  color: var(--np-text-primary);
+}
+
+/* Wrapper page (centering + padding + min height) */
+body:has(#np-titre) .mx-auto.max-w-\[800px\] {
+  min-height: 100vh;
+  padding: 60px 24px;
+  max-width: 760px; /* spec */
+}
+
+@media (max-width: 768px) {
+  body:has(#np-titre) .mx-auto.max-w-\[800px\] {
+    padding: 32px 24px;
+  }
+}
+
+/* Card form */
+body:has(#np-titre) .mx-auto.max-w-\[800px\] form[novalidate] {
+  margin: 0 auto;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.035) 0%,
+    rgba(255, 255, 255, 0.01) 100%
+  );
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: var(--np-radius-lg);
+  padding: 56px 52px;
+  backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 0 1px rgba(200, 168, 75, 0.05),
+    0 32px 80px rgba(0, 0, 0, 0.6);
+}
+
+@media (max-width: 768px) {
+  body:has(#np-titre) .mx-auto.max-w-\[800px\] form[novalidate] {
+    padding: 32px 24px;
+  }
+}
+
+/* General spacing between groups */
+body:has(#np-titre) .mx-auto.max-w-\[800px\] form[novalidate] {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Header (badge + title + description + separator) */
+body:has(#np-titre) .mx-auto.max-w-\[800px\] > .space-y-3 {
+  position: relative;
+}
+
+body:has(#np-titre) .mx-auto.max-w-\[800px\] > .space-y-3 h1 {
+  font: 600 2.6rem/1.1 "Cormorant Garamond", serif !important;
+  letter-spacing: -0.02em !important;
+  color: var(--np-text-primary) !important;
+  margin: 0 0 10px !important;
+  text-wrap: balance;
+}
+
+body:has(#np-titre) .mx-auto.max-w-\[800px\] > .space-y-3 h1::before {
+  content: "NOUVEAU PROJET";
+  display: block;
+  width: fit-content;
+  font: 500 0.65rem/1 "DM Sans", sans-serif;
+  letter-spacing: 0.15em;
+  color: var(--np-accent-gold);
+  border: 1px solid rgba(200, 168, 75, 0.3);
+  border-radius: 4px;
+  padding: 5px 10px;
+  margin: 0 0 16px 0;
+}
+
+body:has(#np-titre) .mx-auto.max-w-\[800px\] > .space-y-3 p {
+  font: 400 0.9rem/1.6 "DM Sans", sans-serif !important;
+  color: var(--np-text-secondary) !important;
+  max-width: 480px;
+  margin: 0;
+}
+
+body:has(#np-titre) .mx-auto.max-w-\[800px\] > .space-y-3 p::after {
+  content: "";
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, var(--np-accent-gold), transparent);
+  margin: 28px 0 36px;
+  opacity: 0.3;
+  width: min(560px, 100%);
+}
+
+@media (max-width: 768px) {
+  body:has(#np-titre) .mx-auto.max-w-\[800px\] > .space-y-3 h1 {
+    font-size: 2rem !important;
+  }
+}
+
+/* Labels */
+body:has(#np-titre) label {
+  font: 500 0.72rem/1.2 "DM Sans", sans-serif !important;
+  letter-spacing: 0.1em !important;
+  text-transform: uppercase !important;
+  color: var(--np-text-secondary) !important;
+  margin-bottom: 8px !important;
+}
+
+body:has(#np-titre) label span {
+  color: var(--np-accent-gold) !important;
+}
+
+/* Inputs / textarea / select (scoped by ids to avoid global impact) */
+body:has(#np-titre) #np-titre,
+body:has(#np-titre) #np-ville,
+body:has(#np-titre) #np-adr,
+body:has(#np-titre) #np-surf,
+body:has(#np-titre) #np-desc,
+body:has(#np-titre) #np-pref,
+body:has(#np-titre) #np-exi,
+body:has(#np-titre) #np-categorie,
+body:has(#np-titre) #np-type {
+  background: var(--np-bg-input) !important;
+  border: 1px solid var(--np-border-subtle) !important;
+  border-radius: var(--np-radius-md) !important;
+  color: var(--np-text-primary) !important;
+  font: 400 0.95rem/1.25 "DM Sans", sans-serif !important;
+  padding: 14px 18px !important;
+  width: 100% !important;
+  outline: none !important;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease !important;
+}
+
+body:has(#np-titre) #np-desc,
+body:has(#np-titre) #np-pref,
+body:has(#np-titre) #np-exi {
+  line-height: 1.6 !important;
+  resize: vertical;
+}
+
+body:has(#np-titre) #np-desc {
+  min-height: 130px;
+}
+
+body:has(#np-titre) #np-titre::placeholder,
+body:has(#np-titre) #np-ville::placeholder,
+body:has(#np-titre) #np-adr::placeholder,
+body:has(#np-titre) #np-surf::placeholder,
+body:has(#np-titre) #np-desc::placeholder,
+body:has(#np-titre) #np-pref::placeholder,
+body:has(#np-titre) #np-exi::placeholder {
+  color: var(--np-text-muted) !important;
+  font-style: italic;
+}
+
+body:has(#np-titre) #np-titre:focus,
+body:has(#np-titre) #np-ville:focus,
+body:has(#np-titre) #np-adr:focus,
+body:has(#np-titre) #np-surf:focus,
+body:has(#np-titre) #np-desc:focus,
+body:has(#np-titre) #np-pref:focus,
+body:has(#np-titre) #np-exi:focus,
+body:has(#np-titre) #np-categorie:focus,
+body:has(#np-titre) #np-type:focus {
+  border-color: var(--np-border-focus) !important;
+  background: #141414 !important;
+  box-shadow:
+    0 0 0 3px var(--np-accent-glow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+/* Select dropdown arrow */
+body:has(#np-titre) #np-categorie,
+body:has(#np-titre) #np-type {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8a84b' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 44px !important;
+}
+
+/* 2-col grids */
+body:has(#np-titre) form[novalidate] .grid.sm\:grid-cols-2 {
+  gap: 20px !important;
+}
+
+@media (max-width: 600px) {
+  body:has(#np-titre) form[novalidate] .grid.sm\:grid-cols-2 {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Informative block (hide old icon, add diamond via ::before) */
+body:has(#np-titre) form[novalidate] > div.relative.rounded-lg {
+  background: linear-gradient(
+    135deg,
+    rgba(200, 168, 75, 0.06),
+    rgba(200, 168, 75, 0.02)
+  ) !important;
+  border: 1px solid rgba(200, 168, 75, 0.18) !important;
+  border-left: 3px solid var(--np-accent-gold) !important;
+  border-radius: var(--np-radius-sm) !important;
+  padding: 14px 18px !important;
+  font: 400 0.875rem/1.5 "DM Sans", sans-serif !important;
+  color: var(--np-text-secondary) !important;
+}
+
+body:has(#np-titre) form[novalidate] > div.relative.rounded-lg > div.absolute {
+  display: none !important;
+}
+
+body:has(#np-titre) form[novalidate] > div.relative.rounded-lg::before {
+  content: "◆";
+  color: var(--np-accent-gold);
+  margin-right: 10px;
+  font-size: 0.6rem;
+  vertical-align: middle;
+}
+
+/* Submit button */
+body:has(#np-titre) form[novalidate] button[type="submit"] {
+  background: linear-gradient(135deg, #b8962e 0%, #d4a843 40%, #e8c060 100%) !important;
+  color: #0a0804 !important;
+  font: 600 0.82rem/1 "DM Sans", sans-serif !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  border: none !important;
+  border-radius: var(--np-radius-md) !important;
+  padding: 15px 40px !important;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease !important;
+  box-shadow:
+    0 4px 24px rgba(200, 168, 75, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+body:has(#np-titre) form[novalidate] button[type="submit"]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.15),
+    transparent
+  );
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+body:has(#np-titre) form[novalidate] button[type="submit"]:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 8px 32px rgba(200, 168, 75, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+body:has(#np-titre) form[novalidate] button[type="submit"]:hover::after {
+  left: 150%;
+}
+
+body:has(#np-titre) form[novalidate] button[type="submit"]:active {
+  transform: translateY(0);
+}
+
+/* Scrollbar (page-scoped, as requested) */
+body:has(#np-titre) ::-webkit-scrollbar {
+  width: 6px;
+}
+body:has(#np-titre) ::-webkit-scrollbar-track {
+  background: transparent;
+}
+body:has(#np-titre) ::-webkit-scrollbar-thumb {
+  background: rgba(200, 168, 75, 0.3);
+  border-radius: 3px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   /espace/artisan — Dark premium (CSS uniquement)
+   Ciblage : présence du lien « Mon profil » unique à cette page.
+   ───────────────────────────────────────────────────────────────────────────── */
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) {
+  --bg-base: #07090d;
+  --bg-card: #0f1520;
+  --bg-card-hover: #141d2e;
+  --border-subtle: rgba(255, 255, 255, 0.07);
+  --border-gold: rgba(200, 162, 60, 0.3);
+  --accent-gold: #c8a23c;
+  --accent-warm: #e2b84a;
+  --accent-glow: rgba(200, 162, 60, 0.12);
+  --text-primary: #eef0f4;
+  --text-secondary: rgba(238, 240, 244, 0.55);
+  --text-muted: rgba(238, 240, 244, 0.28);
+  --green: #2ecc8a;
+  --green-bg: rgba(46, 204, 138, 0.1);
+  --orange: #f0973a;
+  --orange-bg: rgba(240, 151, 58, 0.1);
+  --blue: #4a9eff;
+  --blue-bg: rgba(74, 158, 255, 0.1);
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.4), 0 12px 40px rgba(0, 0, 0, 0.25);
+
+  background: radial-gradient(
+      ellipse 60% 40% at 15% 0%,
+      rgba(200, 162, 60, 0.06) 0%,
+      transparent 60%
+    ),
+    var(--bg-base) !important;
+  font-family: "Outfit", sans-serif;
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 32px;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"] {
+  --tw-gradient-from: transparent !important;
+  --tw-gradient-via: transparent !important;
+  --tw-gradient-to: transparent !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="rounded-3xl"][class*="shadow-bmp-md"] {
+  background: linear-gradient(
+      135deg,
+      rgba(200, 162, 60, 0.07) 0%,
+      rgba(255, 255, 255, 0.02) 100%
+    ),
+    var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-top: 1px solid rgba(200, 162, 60, 0.2) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 40px 48px !important;
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="rounded-3xl"][class*="shadow-bmp-md"]
+  h1 {
+  font-family: "Playfair Display", serif !important;
+  font-size: 2.1rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.01em !important;
+  color: var(--text-primary) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="grid"][class*="sm:grid-cols-3"]
+  > div {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 24px 28px !important;
+  box-shadow: var(--shadow-card);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="grid"][class*="sm:grid-cols-3"]
+  > div::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-gold), transparent);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="grid"][class*="sm:grid-cols-3"]
+  > div:hover {
+  border-color: rgba(200, 162, 60, 0.2) !important;
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card), 0 0 24px rgba(200, 162, 60, 0.1);
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="grid"][class*="sm:grid-cols-3"]
+  > div
+  > p:first-child {
+  font-family: "Outfit", sans-serif !important;
+  font-size: 0.65rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 12px !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="grid"][class*="sm:grid-cols-3"]
+  > div
+  > p.text-2xl,
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  > div[class*="max-w-6xl"]
+  > div[class*="grid"][class*="sm:grid-cols-3"]
+  > div
+  > p[class*="text-2xl"] {
+  font-family: "Playfair Display", serif !important;
+  font-size: 2.6rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--text-primary) !important;
+  line-height: 1 !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) section.rounded-3xl,
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div.rounded-3xl {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) section.rounded-3xl > div.flex.items-center.justify-between.gap-3.border-b,
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div.rounded-3xl
+  > div.flex.items-center.justify-between.gap-3.border-b {
+  padding: 20px 24px 16px !important;
+  border-bottom: 1px solid var(--border-subtle) !important;
+  font-family: "Playfair Display", serif !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) section.rounded-3xl > div.border-b h2,
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div.rounded-3xl
+  > div.border-b
+  h2 {
+  font-family: inherit !important;
+  font-size: inherit !important;
+  font-weight: inherit !important;
+  color: inherit !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) section.rounded-3xl > div.border-b svg,
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div.rounded-3xl
+  > div.border-b
+  svg {
+  color: var(--accent-gold) !important;
+  opacity: 0.85;
+  width: 16px;
+  height: 16px;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  padding: 16px 18px !important;
+  margin-bottom: 10px !important;
+  transition: all 0.2s ease;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(200, 162, 60, 0.2) !important;
+  transform: translateX(3px);
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article
+  .font-semibold.line-clamp-1 {
+  font-weight: 600 !important;
+  font-size: 0.95rem !important;
+  color: var(--text-primary) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article
+  .text-\[11px\].line-clamp-1 {
+  font-size: 0.78rem !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 4px !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article
+  .text-xs.text-muted-foreground {
+  font-size: 0.8rem !important;
+  color: var(--text-secondary) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article
+  .mt-3.flex.flex-wrap.items-center.justify-between {
+  font-size: 0.8rem !important;
+  color: var(--text-secondary) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article
+  button[type="button"] {
+  background: linear-gradient(135deg, #b8922a, #d4a840, #e8be55) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  color: #060809 !important;
+  font-family: "Outfit", sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 0.82rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  padding: 11px 20px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  margin-top: 12px !important;
+  box-shadow: 0 4px 16px rgba(200, 162, 60, 0.25) !important;
+  transition: all 0.25s ease !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  div[class*="lg:grid-cols-"]
+  > section:not(.space-y-6)
+  article
+  button[type="button"]:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(200, 162, 60, 0.4) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(1)
+  div.flex.items-center.justify-between.gap-3.rounded-2xl {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 11px 14px !important;
+  border-radius: 8px !important;
+  border: 1px solid transparent !important;
+  transition: all 0.2s ease !important;
+  margin-bottom: 6px !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(1)
+  div.flex.items-center.justify-between.gap-3.rounded-2xl:hover {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-color: var(--border-subtle) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(1)
+  div.flex.items-center.justify-between.gap-3.rounded-2xl
+  > p {
+  font-size: 0.85rem !important;
+  color: var(--text-secondary) !important;
+  flex: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(1)
+  span.dark\:bg-amber-500\/15.dark\:text-amber-200 {
+  background: var(--orange-bg) !important;
+  color: var(--orange) !important;
+  border: 1px solid rgba(240, 151, 58, 0.25) !important;
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(1)
+  span.dark\:bg-emerald-500\/15.dark\:text-emerald-300 {
+  background: var(--green-bg) !important;
+  color: var(--green) !important;
+  border: 1px solid rgba(46, 204, 138, 0.25) !important;
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(2)
+  article
+  span.dark\:bg-amber-500\/15.dark\:text-amber-200 {
+  background: var(--blue-bg) !important;
+  color: var(--blue) !important;
+  border: 1px solid rgba(74, 158, 255, 0.25) !important;
+  font-size: 0.72rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(2)
+  article
+  a.inline-flex.items-center.gap-2.rounded-xl {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  color: var(--text-secondary) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  padding: 8px 14px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"])
+  section.space-y-6
+  > div:nth-child(2)
+  article
+  a.inline-flex.items-center.gap-2.rounded-xl:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  color: var(--text-primary) !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) .scrollbar-bmp {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 162, 60, 0.25) transparent;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) .scrollbar-bmp::-webkit-scrollbar {
+  width: 4px !important;
+  height: 4px !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) .scrollbar-bmp::-webkit-scrollbar-track {
+  background: transparent !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) .scrollbar-bmp::-webkit-scrollbar-thumb {
+  background: rgba(200, 162, 60, 0.2) !important;
+  border-radius: 2px !important;
+  border: none !important;
+}
+
+div.min-h-screen:has(a[href="/espace/artisan/profil"]) .scrollbar-bmp::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 162, 60, 0.35) !important;
+}
+
+@media (max-width: 640px) {
+  div.min-h-screen:has(a[href="/espace/artisan/profil"])
+    > div[class*="max-w-6xl"]
+    > div[class*="rounded-3xl"][class*="shadow-bmp-md"] {
+    padding: 28px 24px !important;
+  }
+
+  div.min-h-screen:has(a[href="/espace/artisan/profil"])
+    > div[class*="max-w-6xl"]
+    > div[class*="rounded-3xl"][class*="shadow-bmp-md"]
+    h1 {
+    font-size: 1.7rem !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   /gestion-chantier (liste) — Premium dark / or (CSS uniquement)
+   Scope : placeholder de recherche unique à cette page.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@keyframes gc-live-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  ) {
+  --bg-base: #07090d;
+  --bg-surface: #0c1018;
+  --bg-card: #0f1520;
+  --bg-card-hover: #141d2e;
+  --bg-elevated: #1a2236;
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-medium: rgba(255, 255, 255, 0.1);
+  --border-gold: rgba(200, 162, 60, 0.3);
+  --accent-gold: #c8a23c;
+  --accent-warm: #e2b84a;
+  --accent-glow: rgba(200, 162, 60, 0.12);
+  --text-primary: #eef0f4;
+  --text-secondary: rgba(238, 240, 244, 0.55);
+  --text-muted: rgba(238, 240, 244, 0.28);
+  --green: #2ecc8a;
+  --green-bg: rgba(46, 204, 138, 0.1);
+  --orange: #f0973a;
+  --orange-bg: rgba(240, 151, 58, 0.1);
+  --blue: #4a9eff;
+  --blue-bg: rgba(74, 158, 255, 0.1);
+  --red: #ff6b6b;
+  --red-bg: rgba(255, 107, 107, 0.1);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.5), 0 16px 48px rgba(0, 0, 0, 0.3);
+  --shadow-gold: 0 0 32px rgba(200, 162, 60, 0.12);
+  --font-display: "Playfair Display", serif;
+  --font-body: "Outfit", sans-serif;
+
+  background:
+      radial-gradient(
+        ellipse 50% 35% at 50% -5%,
+        rgba(200, 162, 60, 0.07) 0%,
+        transparent 65%
+      ),
+      radial-gradient(
+        ellipse 30% 25% at 90% 80%,
+        rgba(30, 60, 120, 0.06) 0%,
+        transparent 60%
+      ),
+      var(--bg-base) !important;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  padding: 48px 32px;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  > div.fixed.inset-0.z-0 {
+  opacity: 0.35 !important;
+  pointer-events: none;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  > div.relative.z-10[class*="container"] {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="rounded-2xl"][class*="from-amber-500"] {
+  background: linear-gradient(135deg, #b8922a, #d4a840, #e8be55) !important;
+  border-radius: 20px !important;
+  width: 72px !important;
+  height: 72px !important;
+  min-width: 72px;
+  min-height: 72px;
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 8px 32px rgba(200, 162, 60, 0.35),
+    0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  margin-bottom: 20px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div.text-center {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div.text-center
+  > h1 {
+  font-family: var(--font-display) !important;
+  font-size: 2.6rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 10px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div.text-center
+  > p {
+  font-size: 0.95rem !important;
+  font-weight: 300 !important;
+  color: var(--text-secondary) !important;
+  letter-spacing: 0.01em !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"] {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 16px !important;
+  margin-bottom: 28px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 24px 26px !important;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: all 0.25s ease;
+  backdrop-filter: none !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-gold), transparent);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div:hover {
+  border-color: rgba(200, 162, 60, 0.2) !important;
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card), var(--shadow-gold);
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div
+  > p:first-child {
+  font-size: 0.63rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.13em !important;
+  text-transform: uppercase !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 14px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div
+  > p.text-2xl {
+  font-family: var(--font-display) !important;
+  font-size: 2.8rem !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.03em !important;
+  color: var(--text-primary) !important;
+  line-height: 1 !important;
+  margin-bottom: 8px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div
+  > p.mt-1.text-xs {
+  font-size: 0.78rem !important;
+  color: var(--text-muted) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div:first-child
+  > p.mt-1.text-xs {
+  color: var(--text-secondary) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div:first-child
+  span.text-amber-700,
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div[class*="grid"][class*="lg:grid-cols-4"]
+  > div:first-child
+  span.dark\:text-amber-300 {
+  color: var(--accent-gold) !important;
+  font-weight: 600 !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl[class*="backdrop-blur-xl"] {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-xl) !important;
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  backdrop-filter: none !important;
+  padding: 28px 32px 24px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.sm\:flex-row.sm\:items-center.sm\:justify-between.gap-4.mb-5 {
+  padding: 0 0 20px !important;
+  margin-bottom: 0 !important;
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex !important;
+  align-items: flex-start !important;
+  justify-content: space-between !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.sm\:flex-row.sm\:items-center.sm\:justify-between.gap-4.mb-5
+  h2 {
+  font-family: var(--font-display) !important;
+  font-size: 1.3rem !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 4px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.sm\:flex-row.sm\:items-center.sm\:justify-between.gap-4.mb-5
+  p.text-xs {
+  font-size: 0.82rem !important;
+  color: var(--text-muted) !important;
+  font-weight: 300 !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.sm\:flex-row.sm\:items-center.sm\:justify-between.gap-4.mb-5
+  > span.uppercase.tracking-\[0\.18em\] {
+  background: rgba(46, 204, 138, 0.12) !important;
+  color: var(--green) !important;
+  border: 1px solid rgba(46, 204, 138, 0.25) !important;
+  font-size: 0.62rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.15em !important;
+  padding: 4px 10px !important;
+  border-radius: 20px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  position: relative;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.sm\:flex-row.sm\:items-center.sm\:justify-between.gap-4.mb-5
+  > span.uppercase.tracking-\[0\.18em\]::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: var(--green);
+  border-radius: 50%;
+  animation: gc-live-dot-pulse 2s infinite;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.lg\:flex-row.lg\:items-center.gap-3.mb-5 {
+  padding-top: 24px !important;
+  margin-bottom: 0 !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  input[placeholder="Rechercher un projet (titre, description, statut)..."] {
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-md) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.88rem !important;
+  padding: 12px 16px 12px 42px !important;
+  width: 100% !important;
+  outline: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: none !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  input[placeholder="Rechercher un projet (titre, description, statut)..."]::placeholder {
+  color: var(--text-muted) !important;
+  font-style: italic !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  input[placeholder="Rechercher un projet (titre, description, statut)..."]:focus {
+  border-color: var(--accent-gold) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 0 0 3px var(--accent-glow) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  .relative.flex-1
+  svg.absolute {
+  color: var(--text-muted) !important;
+  left: 14px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.lg\:flex-row
+  > div.flex.flex-wrap.items-center.gap-2 {
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  margin: 16px 0 !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  button.px-3.py-2.rounded-2xl.text-xs.border.transition {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: 20px !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  padding: 7px 16px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  button.px-3.py-2.rounded-2xl.text-xs.border.transition:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: var(--border-medium) !important;
+  color: var(--text-primary) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  button.border-amber-500\/40.bg-amber-500\/10.text-amber-800.dark\:text-amber-200 {
+  background: linear-gradient(135deg, #b8922a, #d4a840) !important;
+  border-color: transparent !important;
+  color: #060809 !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(200, 162, 60, 0.3) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div.flex.flex-col.lg\:flex-row
+  > div.flex.items-center.gap-2:last-child
+  > div.inline-flex.items-center.gap-2.rounded-2xl.border {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  select.bg-transparent.text-xs {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text-secondary) !important;
+  font-family: var(--font-body) !important;
+  font-size: 0.8rem !important;
+  padding: 7px 32px 7px 14px !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23c8a23c' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  cursor: pointer !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  > div[class*="grid"][class*="sm:grid-cols-2"][class*="gap-4"] {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 20px !important;
+  margin-top: 20px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-lg) !important;
+  padding: 22px 24px !important;
+  transition: all 0.25s ease !important;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: none !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(200, 162, 60, 0.2) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.flex.items-start.justify-between.gap-3 {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: flex-start !important;
+  gap: 12px !important;
+  margin-bottom: 10px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  .font-semibold.line-clamp-1 {
+  font-weight: 600 !important;
+  font-size: 0.92rem !important;
+  color: var(--text-primary) !important;
+  line-height: 1.3 !important;
+  flex: 1 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  .text-xs.text-muted-foreground.line-clamp-2 {
+  font-size: 0.8rem !important;
+  color: var(--text-secondary) !important;
+  line-height: 1.5 !important;
+  margin-bottom: 14px !important;
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2 !important;
+  -webkit-box-orient: vertical !important;
+  overflow: hidden !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.flex.items-center.justify-between.text-\[11px\] {
+  font-size: 0.78rem !important;
+  color: var(--text-muted) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  margin-bottom: 10px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.flex.items-center.justify-between.text-\[11px\]
+  > span:last-child {
+  color: var(--accent-gold) !important;
+  font-weight: 600 !important;
+  margin-left: auto !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.h-2.rounded-full {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-radius: 999px !important;
+  height: 5px !important;
+  width: 100% !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.h-2.rounded-full
+  > div.h-full {
+  background: linear-gradient(90deg, #b8922a, #e2b84a) !important;
+  border-radius: 999px !important;
+  height: 100% !important;
+  box-shadow: 0 0 8px rgba(200, 162, 60, 0.5) !important;
+  transition: width 0.6s ease !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.flex.items-center.justify-between.text-xs
+  > span:first-child {
+  font-size: 0.75rem !important;
+  color: var(--text-muted) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.08em !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.flex.items-center.justify-between.text-xs
+  > span:last-child {
+  font-family: var(--font-display) !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  color: var(--text-primary) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  a[href^="/gestion-chantier/"] {
+  background: linear-gradient(135deg, #b8922a, #d4a840, #e8be55) !important;
+  border: none !important;
+  border-radius: var(--radius-sm) !important;
+  color: #06080a !important;
+  font-family: var(--font-body) !important;
+  font-weight: 600 !important;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  padding: 11px 20px !important;
+  width: 100% !important;
+  cursor: pointer !important;
+  margin-top: 14px !important;
+  box-shadow: 0 4px 16px rgba(200, 162, 60, 0.25) !important;
+  transition: all 0.25s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 8px !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  a[href^="/gestion-chantier/"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(200, 162, 60, 0.4) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  span.bg-blue-500\/15.text-blue-300 {
+  background: var(--blue-bg) !important;
+  color: var(--blue) !important;
+  border: 1px solid rgba(74, 158, 255, 0.25) !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  span[class*="bg-gray-500/15"],
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  span.bg-gray-500\/15.text-muted-foreground,
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  span.dark\:text-gray-300.bg-gray-500\/15 {
+  background: var(--orange-bg) !important;
+  color: var(--orange) !important;
+  border: 1px solid rgba(240, 151, 58, 0.25) !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  span.bg-emerald-500\/15.text-emerald-300 {
+  background: var(--green-bg) !important;
+  color: var(--green) !important;
+  border: 1px solid rgba(46, 204, 138, 0.25) !important;
+  font-size: 0.7rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  padding: 4px 12px !important;
+  border-radius: 20px !important;
+  white-space: nowrap !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  > div.flex.flex-col.gap-2
+  > div.rounded-xl.border.border-border.dark\:border-white\/10 {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  button.w-full.flex.items-center.justify-between.gap-2.px-3.py-2\.5.text-left.text-xs {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--border-subtle) !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 12px 16px !important;
+  font-size: 0.83rem !important;
+  color: var(--text-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  width: 100% !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  button.w-full.flex.items-center.justify-between.gap-2.px-3.py-2\.5.text-left.text-xs:hover {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: var(--text-primary) !important;
+  border-color: rgba(200, 162, 60, 0.15) !important;
+}
+
+div.min-h-screen:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  .max-w-4xl.mx-auto
+  > div[class*="mt-8"]
+  > div.rounded-3xl
+  div[class*="grid"]
+  > div.group
+  button.w-full.flex.items-center.justify-between.gap-2.px-3.py-2\.5.text-left.text-xs
+  svg {
+  color: var(--accent-gold) !important;
+}
+
+html:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  ) {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 162, 60, 0.2) transparent;
+}
+
+html:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  ::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+html:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  ::-webkit-scrollbar-thumb {
+  background: rgba(200, 162, 60, 0.2);
+  border-radius: 3px;
+}
+
+html:has(
+    input[placeholder="Rechercher un projet (titre, description, statut)..."]
+  )
+  ::-webkit-scrollbar-thumb:hover {
+  background: rgba(200, 162, 60, 0.4);
+}
+
+@media (max-width: 900px) {
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    ) {
+    padding: 24px 16px !important;
+  }
+
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    )
+    .max-w-4xl.mx-auto
+    > div[class*="mt-8"]
+    > div[class*="grid"][class*="lg:grid-cols-4"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 600px) {
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    )
+    .max-w-4xl.mx-auto
+    > div.text-center
+    > h1 {
+    font-size: 1.8rem !important;
+  }
+
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    )
+    .max-w-4xl.mx-auto
+    > div[class*="mt-8"]
+    > div[class*="grid"][class*="lg:grid-cols-4"] {
+    grid-template-columns: 1fr !important;
+  }
+
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    )
+    .max-w-4xl.mx-auto
+    > div[class*="mt-8"]
+    > div.rounded-3xl[class*="backdrop-blur-xl"] {
+    padding: 16px !important;
+  }
+
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    )
+    .max-w-4xl.mx-auto
+    > div[class*="mt-8"]
+    > div.rounded-3xl
+    > div[class*="grid"][class*="sm:grid-cols-2"][class*="gap-4"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 700px) {
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    )
+    .max-w-4xl.mx-auto
+    > div[class*="mt-8"]
+    > div.rounded-3xl
+    > div[class*="grid"][class*="sm:grid-cols-2"][class*="gap-4"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 500px) {
+  div.min-h-screen:has(
+      input[placeholder="Rechercher un projet (titre, description, statut)..."]
+    )
+    .max-w-4xl.mx-auto
+    > div[class*="mt-8"]
+    > div[class*="grid"][class*="lg:grid-cols-4"] {
+    grid-template-columns: 1fr !important;
+  }
 }

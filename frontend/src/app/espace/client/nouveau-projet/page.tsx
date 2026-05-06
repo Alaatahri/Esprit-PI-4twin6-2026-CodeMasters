@@ -193,12 +193,12 @@ export default function NouveauProjetPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-2xl font-semibold text-foreground dark:text-white">
+    <div className="mx-auto max-w-[800px] space-y-8 px-4 sm:px-6">
+      <div className="space-y-3">
+        <h1 className="text-[2rem] font-bold tracking-tight text-foreground dark:text-white relative pb-3 after:content-[''] after:absolute after:left-0 after:bottom-0 after:h-px after:w-16 after:bg-gradient-to-r after:from-amber-400 after:to-yellow-200/40">
           Créer un nouveau projet
         </h1>
-        <p className="text-sm text-muted-foreground dark:text-gray-400">
+        <p className="text-[0.95rem] text-muted-foreground/80 dark:text-white/[0.55] leading-relaxed">
           Décrivez votre besoin (construction, rénovation, extension…) pour que
           les experts et artisans puissent vous accompagner.
         </p>
@@ -216,13 +216,17 @@ export default function NouveauProjetPage() {
         </div>
       )}
 
-      <form noValidate onSubmit={handleSubmit} className="space-y-4">
+      <form
+        noValidate
+        onSubmit={handleSubmit}
+        className="space-y-6 rounded-2xl border border-white/[0.08] bg-white/[0.03] p-6 sm:p-10 backdrop-blur-[8px] shadow-[0_20px_70px_rgba(0,0,0,0.35)]"
+      >
         <div>
           <label
             htmlFor="np-titre"
-            className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+            className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
           >
-            Titre du projet <span className="text-red-400/90">*</span>
+            Titre du projet <span className="text-[#e8c96d]">*</span>
           </label>
           <input
             id="np-titre"
@@ -233,7 +237,7 @@ export default function NouveauProjetPage() {
             placeholder="Ex: Construction maison familiale, Extension chambre, Rénovation cuisine…"
             aria-invalid={!!fieldErrors.titre}
             aria-describedby={fieldErrors.titre ? "err-np-titre" : undefined}
-            className={fieldInputClass(!!fieldErrors.titre, submitting)}
+            className={`${fieldInputClass(!!fieldErrors.titre, submitting)} rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out`}
           />
           <FieldError id="err-np-titre" message={fieldErrors.titre} />
         </div>
@@ -241,9 +245,9 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-categorie"
-            className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+            className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
           >
-            Catégorie <span className="text-red-400/90">*</span>
+            Catégorie <span className="text-[#e8c96d]">*</span>
           </label>
           <select
             id="np-categorie"
@@ -251,7 +255,7 @@ export default function NouveauProjetPage() {
             onChange={(e) => handleChange("categorie", e.target.value)}
             aria-invalid={!!fieldErrors.categorie}
             aria-describedby={fieldErrors.categorie ? "err-np-cat" : undefined}
-            className={`${fieldInputClass(!!fieldErrors.categorie, submitting)} appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3 bg-[length:18px] pr-10`}
+            className={`${fieldInputClass(!!fieldErrors.categorie, submitting)} rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-4 bg-[length:18px] pr-12`}
           >
             <option value="" className="bg-gray-950">
               Choisir une catégorie…
@@ -277,9 +281,9 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-desc"
-            className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+            className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
           >
-            Description <span className="text-red-400/90">*</span>
+            Description <span className="text-[#e8c96d]">*</span>
           </label>
           <textarea
             id="np-desc"
@@ -290,18 +294,18 @@ export default function NouveauProjetPage() {
             placeholder="Décrivez votre besoin, la surface, le budget estimé, les délais souhaités, etc."
             aria-invalid={!!fieldErrors.description}
             aria-describedby={fieldErrors.description ? "err-np-desc" : undefined}
-            className={fieldTextareaClass(!!fieldErrors.description, submitting)}
+            className={`${fieldTextareaClass(!!fieldErrors.description, submitting)} rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out`}
           />
           <FieldError id="err-np-desc" message={fieldErrors.description} />
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-6">
           <div>
             <label
               htmlFor="np-ville"
-              className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+              className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
             >
-              Ville <span className="text-red-400/90">*</span>
+              Ville <span className="text-[#e8c96d]">*</span>
             </label>
             <input
               id="np-ville"
@@ -311,7 +315,7 @@ export default function NouveauProjetPage() {
               onChange={(e) => handleChange("ville", e.target.value)}
               aria-invalid={!!fieldErrors.ville}
               aria-describedby={fieldErrors.ville ? "err-np-ville" : undefined}
-              className={fieldInputClass(!!fieldErrors.ville, submitting)}
+              className={`${fieldInputClass(!!fieldErrors.ville, submitting)} rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out`}
               placeholder="Ex: Tunis"
             />
             <FieldError id="err-np-ville" message={fieldErrors.ville} />
@@ -319,9 +323,9 @@ export default function NouveauProjetPage() {
           <div>
             <label
               htmlFor="np-adr"
-              className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+              className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
             >
-              Adresse exacte <span className="text-red-400/90">*</span>
+              Adresse exacte <span className="text-[#e8c96d]">*</span>
             </label>
             <input
               id="np-adr"
@@ -331,23 +335,26 @@ export default function NouveauProjetPage() {
               onChange={(e) => handleChange("adresse", e.target.value)}
               aria-invalid={!!fieldErrors.adresse}
               aria-describedby={fieldErrors.adresse ? "err-np-adr" : undefined}
-              className={fieldInputClass(!!fieldErrors.adresse, submitting)}
+              className={`${fieldInputClass(!!fieldErrors.adresse, submitting)} rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out`}
               placeholder="Rue, quartier…"
             />
             <FieldError id="err-np-adr" message={fieldErrors.adresse} />
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/20 p-4">
-          <p className="text-sm text-muted-foreground dark:text-gray-300">
+        <div className="relative rounded-lg bg-[rgba(201,168,76,0.08)] border border-[rgba(201,168,76,0.18)] border-l-[3px] border-l-[#c9a84c] px-4 py-3 pl-11">
+          <div className="absolute left-3 top-3 text-[#e8c96d] text-base leading-none select-none">
+            ℹ
+          </div>
+          <p className="text-sm text-white/70 leading-relaxed">
             Les dates et le budget seront proposés par l&apos;expert après analyse du
             dossier.
           </p>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2">
+            <label className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3">
               Surface (m²) (optionnel)
             </label>
             <input
@@ -358,7 +365,7 @@ export default function NouveauProjetPage() {
               onChange={(e) => handleChange("surface_m2", e.target.value)}
               aria-invalid={!!fieldErrors.surface_m2}
               aria-describedby={fieldErrors.surface_m2 ? "err-np-surf" : undefined}
-              className={fieldInputClass(!!fieldErrors.surface_m2, submitting)}
+              className={`${fieldInputClass(!!fieldErrors.surface_m2, submitting)} rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out`}
               placeholder="Ex: 120"
             />
             <FieldError id="err-np-surf" message={fieldErrors.surface_m2} />
@@ -366,9 +373,9 @@ export default function NouveauProjetPage() {
           <div>
             <label
               htmlFor="np-type"
-              className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+              className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
             >
-              Type de bâtiment <span className="text-red-400/90">*</span>
+              Type de bâtiment <span className="text-[#e8c96d]">*</span>
             </label>
             <select
               id="np-type"
@@ -378,7 +385,7 @@ export default function NouveauProjetPage() {
               aria-describedby={
                 fieldErrors.type_batiment ? "err-np-type" : undefined
               }
-              className={`${fieldInputClass(!!fieldErrors.type_batiment, submitting)} appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-3 bg-[length:18px] pr-10`}
+              className={`${fieldInputClass(!!fieldErrors.type_batiment, submitting)} rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E')] bg-no-repeat bg-right-4 bg-[length:18px] pr-12`}
             >
               <option value="" className="bg-gray-950">
                 Choisir…
@@ -394,10 +401,10 @@ export default function NouveauProjetPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2">
+          <label className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3">
             Urgence
           </label>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {[
               { id: "urgent", label: "Urgent" },
               { id: "normal", label: "Normal" },
@@ -412,10 +419,10 @@ export default function NouveauProjetPage() {
                     u.id as "urgent" | "normal" | "flexible",
                   )
                 }
-                className={`px-4 py-2 rounded-xl border text-sm transition ${
+                className={`px-5 py-2.5 rounded-[10px] border text-sm transition-all duration-200 ease-out ${
                   form.urgence === u.id
                     ? "border-amber-400/50 bg-amber-500/15 text-amber-800 dark:text-amber-200"
-                    : "border-border dark:border-white/10 bg-black/5 dark:bg-white/5 text-foreground dark:text-gray-200 hover:bg-black/5 dark:bg-white/10"
+                    : "border-white/[0.12] bg-white/[0.04] text-white/80 hover:bg-white/[0.06] hover:border-white/[0.18]"
                 }`}
               >
                 {u.label}
@@ -427,10 +434,10 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-pref"
-            className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+            className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
           >
             Préférences matériaux{" "}
-            <span className="text-foreground dark:text-gray-500 text-xs">(optionnel)</span>
+            <span className="text-white/[0.45] text-xs normal-case tracking-normal">(optionnel)</span>
           </label>
           <textarea
             id="np-pref"
@@ -445,7 +452,7 @@ export default function NouveauProjetPage() {
             className={fieldTextareaClass(
               !!fieldErrors.preferences_materiaux,
               submitting,
-            )}
+            ) + " rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out"}
             placeholder="Ex: carrelage grand format, aluminium, PVC…"
           />
           <FieldError
@@ -457,10 +464,10 @@ export default function NouveauProjetPage() {
         <div>
           <label
             htmlFor="np-exi"
-            className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2"
+            className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3"
           >
             Exigences techniques{" "}
-            <span className="text-foreground dark:text-gray-500 text-xs">(optionnel)</span>
+            <span className="text-white/[0.45] text-xs normal-case tracking-normal">(optionnel)</span>
           </label>
           <textarea
             id="np-exi"
@@ -475,7 +482,7 @@ export default function NouveauProjetPage() {
             className={fieldTextareaClass(
               !!fieldErrors.exigences_techniques,
               submitting,
-            )}
+            ) + " rounded-[10px] px-4 py-[14px] bg-white/[0.04] border border-white/[0.12] focus:border-[#c9a84c] focus:ring-0 focus:outline-none focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] transition-[box-shadow,border-color,background-color] duration-200 ease-out"}
             placeholder="Ex: isolation phonique, normes, contraintes accès…"
           />
           <FieldError
@@ -484,10 +491,12 @@ export default function NouveauProjetPage() {
           />
         </div>
 
-        <div className="rounded-2xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/20 p-4 space-y-3">
-          <p className="text-sm font-semibold text-foreground dark:text-white">Fichiers & photos</p>
+        <div className="rounded-2xl border border-white/[0.08] bg-black/20 p-5 sm:p-6 space-y-4">
+          <p className="text-sm font-semibold text-foreground dark:text-white tracking-wide">
+            Fichiers & photos
+          </p>
           <div>
-            <label className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2">
+            <label className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3">
               Plans / documents (PDF, images)
             </label>
             <input
@@ -496,14 +505,14 @@ export default function NouveauProjetPage() {
               accept=".pdf,image/*"
               disabled={submitting}
               onChange={(e) => setAttachments(e.target.files)}
-              className="block w-full rounded-xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/40 px-3 py-2 text-sm text-foreground dark:text-gray-200 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-900 dark:text-amber-100 hover:file:bg-amber-500/30"
+              className="block w-full rounded-[10px] border border-white/[0.12] bg-white/[0.04] px-4 py-[14px] text-sm text-foreground dark:text-gray-200 transition-[box-shadow,border-color,background-color] duration-200 ease-out focus:outline-none focus:border-[#c9a84c] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] file:mr-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-amber-500/25 file:to-yellow-300/20 file:px-3 file:py-2 file:text-amber-100 hover:file:from-amber-500/35 hover:file:to-yellow-300/30"
             />
             <p className="mt-1 text-xs text-foreground dark:text-gray-500">
               (Optionnel) Aide l’expert à évaluer rapidement.
             </p>
           </div>
           <div>
-            <label className="block text-sm font-medium text-foreground dark:text-gray-200 mb-2">
+            <label className="block text-[0.85rem] font-medium tracking-[0.04em] uppercase text-white/70 mb-3">
               Photos de l’état actuel (site)
             </label>
             <input
@@ -512,7 +521,7 @@ export default function NouveauProjetPage() {
               accept="image/*"
               disabled={submitting}
               onChange={(e) => setSitePhotos(e.target.files)}
-              className="block w-full rounded-xl border border-border dark:border-white/10 bg-black/5 dark:bg-black/40 px-3 py-2 text-sm text-foreground dark:text-gray-200 file:mr-4 file:rounded-lg file:border-0 file:bg-amber-500/20 file:px-3 file:py-2 file:text-amber-900 dark:text-amber-100 hover:file:bg-amber-500/30"
+              className="block w-full rounded-[10px] border border-white/[0.12] bg-white/[0.04] px-4 py-[14px] text-sm text-foreground dark:text-gray-200 transition-[box-shadow,border-color,background-color] duration-200 ease-out focus:outline-none focus:border-[#c9a84c] focus:shadow-[0_0_0_3px_rgba(201,168,76,0.22)] file:mr-4 file:rounded-lg file:border-0 file:bg-gradient-to-r file:from-amber-500/25 file:to-yellow-300/20 file:px-3 file:py-2 file:text-amber-100 hover:file:from-amber-500/35 hover:file:to-yellow-300/30"
             />
           </div>
         </div>
@@ -520,7 +529,7 @@ export default function NouveauProjetPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gradient-to-r from-amber-500 to-yellow-400 text-gray-900 font-semibold shadow-lg shadow-amber-500/40 hover:shadow-amber-500/60 transition-all disabled:opacity-60 disabled:cursor-not-allowed text-sm inline-flex items-center justify-center gap-2"
+          className="w-full sm:w-auto px-8 py-[14px] rounded-[10px] bg-[linear-gradient(135deg,#c9a84c,#e8c96d)] text-[#0d0d0d] font-bold tracking-[0.05em] uppercase shadow-[0_18px_45px_rgba(201,168,76,0.25)] hover:shadow-[0_24px_65px_rgba(201,168,76,0.35)] hover:-translate-y-0.5 transition-all duration-250 ease-out disabled:opacity-60 disabled:cursor-not-allowed text-sm inline-flex items-center justify-center gap-2"
         >
           {submitting ? "Création en cours..." : "Créer le projet"}
         </button>

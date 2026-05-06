@@ -28,6 +28,7 @@
     "@google/generative-ai": "^0.24.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^11.1.19",
+    "@nestjs/jwt": "^10.2.0",
     "@nestjs/mapped-types": "^2.1.1",
     "@nestjs/mongoose": "^11.0.4",
     "@nestjs/platform-express": "^11.1.19",

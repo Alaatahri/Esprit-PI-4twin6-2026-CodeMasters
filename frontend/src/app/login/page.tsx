@@ -1,18 +1,45 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Building2, Mail, Lock, Loader2, AlertCircle } from "lucide-react";
-import { getStoredUser, normalizeRole, setStoredUser } from "@/lib/auth";
+import {
+  ensureAuthCookie,
+  getStoredUser,
+  normalizeRole,
+  setAuthTokens,
+  setStoredUser,
+} from "@/lib/auth";
 import { formatApiError } from "@/lib/api-error";
 import { getApiBaseUrl } from "@/lib/api-base";
 import { fieldInputClass } from "@/lib/form-ui";
 
 const API_URL = getApiBaseUrl();
 
-export default function LoginPage() {
+function safeReturnUrl(raw: string | null): string | null {
+  if (!raw || typeof raw !== "string") return null;
+  const t = raw.trim();
+  if (!t.startsWith("/") || t.startsWith("//")) return null;
+  return t;
+}
+
+function homeForRole(role: string): string {
+  const r = normalizeRole(role);
+  if (r === "client") return "/espace/client";
+  if (r === "expert") return "/espace/expert";
+  if (r === "artisan") return "/espace/artisan";
+  if (r === "admin") return "/espace/admin";
+  if (r === "livreur") return "/espace-livreur";
+  if (r === "ouvrier") return "/espace";
+  return "/espace";
+}
+
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const returnUrl = safeReturnUrl(searchParams.get("returnUrl"));
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -21,22 +48,9 @@ export default function LoginPage() {
   useEffect(() => {
     const existing = getStoredUser();
     if (existing) {
-      const r = normalizeRole(existing.role);
-      const target =
-        r === "client"
-          ? "/espace/client"
-          : r === "expert"
-            ? "/espace/expert"
-            : r === "artisan"
-              ? "/espace/artisan"
-              : r === "admin"
-                ? "/espace/admin"
-                : r === "livreur"
-                  ? "/espace-livreur"
-                  : "/espace";
-      router.replace(target);
+      router.replace(returnUrl ?? homeForRole(existing.role));
     }
-  }, [router]);
+  }, [router, returnUrl]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -68,29 +82,32 @@ export default function LoginPage() {
         return;
       }
 
-      const token = btoa(`${data.user._id}-${Date.now()}`);
       const userToStore = {
         ...data.user,
         role: normalizeRole(data.user.role),
       };
       if (typeof window !== "undefined") {
         setStoredUser(userToStore);
-        localStorage.setItem("bmp_token", token);
+        if (
+          typeof data.accessToken === "string" &&
+          data.accessToken.length > 0
+        ) {
+          setAuthTokens(
+            data.accessToken,
+            typeof data.refreshToken === "string"
+              ? data.refreshToken
+              : undefined,
+          );
+        } else {
+          localStorage.setItem(
+            "bmp_token",
+            btoa(`${data.user._id}-${Date.now()}`),
+          );
+          ensureAuthCookie();
+        }
       }
 
-      const r = normalizeRole(data.user.role);
-      const target =
-        r === "client"
-          ? "/espace/client"
-          : r === "expert"
-            ? "/espace/expert"
-            : r === "artisan"
-              ? "/espace/artisan"
-              : r === "admin"
-                ? "/espace/admin"
-                : r === "livreur"
-                  ? "/espace-livreur"
-                  : "/espace";
+      const target = returnUrl ?? homeForRole(data.user.role);
       router.push(target);
     } catch (err: unknown) {
       setError(
@@ -266,5 +283,19 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-background text-muted-foreground">
+          <Loader2 className="w-10 h-10 animate-spin text-amber-400/80" />
+        </div>
+      }
+    >
+      <LoginForm />
+    </Suspense>
   );
 }

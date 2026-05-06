@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma';
 import React from 'react';
 
+/** Toujours à la demande : évite le prérendu au build si DATABASE_URL n’est pas défini (ex. CI local). */
+export const dynamic = 'force-dynamic';
+
 export default async function StockDashboard() {
   const products = await prisma.product.findMany({
     include: {

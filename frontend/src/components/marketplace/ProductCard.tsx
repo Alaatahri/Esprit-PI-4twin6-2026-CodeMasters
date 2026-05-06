@@ -74,9 +74,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {product.image_url ? (
             <SafeImg
               src={product.image_url}
-              fallbackSrc={`https://picsum.photos/seed/${encodeURIComponent(
-                product._id || product.nom || "bmp-fallback-product",
-              )}/1200/900`}
+              fallbackSrc="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&h=900&q=80"
               alt={product.nom}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
             />

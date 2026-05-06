@@ -118,7 +118,7 @@ export default function ProductDetailPage() {
                 src={product.image_url}
                 fallbackSrc="https://picsum.photos/seed/bmp-fallback-produit/1400/1000"
                 alt={product.nom}
-                className="w-full h-auto object-cover"
+                className="w-full aspect-[4/3] object-cover rounded-2xl hover:scale-105 transition-transform duration-700 ease-out"
               />
             ) : (
               <div className="aspect-square flex items-center justify-center bg-gradient-to-br from-amber-500/20 to-yellow-500/20">

@@ -8,6 +8,7 @@ import { ProductCard } from '@/components/marketplace/ProductCard';
 import { marketplaceAPI, Product } from '@/lib/marketplace-api';
 import { useCartStore } from '@/lib/cart-store';
 import { CartCounter } from '@/components/CartCounter';
+import { SafeImg } from '@/components/SafeImg';
 
 export default function MarketplacePage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -432,9 +433,14 @@ function CartDrawerComponent({
                     exit={{ opacity: 0, x: -50 }}
                     className="flex gap-3 p-3 rounded-xl bg-black/5 dark:bg-white/5 border border-border dark:border-white/5 hover:border-amber-500/30 transition-all duration-300"
                   >
-                    <div className="w-16 h-16 rounded-xl bg-gray-800/50 flex items-center justify-center overflow-hidden">
+                    <div className="w-16 h-16 rounded-xl bg-gray-800/50 flex items-center justify-center overflow-hidden shrink-0">
                       {item.image_url ? (
-                        <img src={item.image_url} alt={item.nom} className="w-full h-full object-cover" />
+                        <SafeImg
+                          src={item.image_url}
+                          fallbackSrc="https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&h=900&q=80"
+                          alt={item.nom}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <ShoppingBag className="w-6 h-6 text-gray-600" />
                       )}

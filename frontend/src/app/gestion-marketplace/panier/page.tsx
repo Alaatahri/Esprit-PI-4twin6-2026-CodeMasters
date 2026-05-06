@@ -19,7 +19,7 @@ export default function CartPage() {
   const handleGoToDelivery = () => {
     const user = getStoredUser();
     if (!user) {
-      router.push('/login');
+      router.push('/login?returnUrl=/gestion-marketplace/panier');
       return;
     }
     

@@ -12,6 +12,7 @@ import {
   validatePaymentData,
 } from '@/components/marketplace/PaymentForm';
 import { marketplaceAPI } from '@/lib/marketplace-api';
+import { getStoredUser, normalizeRole } from '@/lib/auth';
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -27,19 +28,17 @@ export default function CheckoutPage() {
 
   useEffect(() => {
     setIsMounted(true);
-    
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const user = JSON.parse(storedUser);
-        setClientId(user._id || user.id);
-      } catch (e) {
-        console.error('Erreur parsing user:', e);
-        setClientId('67f8a1b2c3d4e5f6a7b8c9d0');
-      }
-    } else {
-      setClientId('67f8a1b2c3d4e5f6a7b8c9d0');
+    const u = getStoredUser();
+    if (!u) {
+      router.replace('/login?returnUrl=/gestion-marketplace/checkout');
+      return;
     }
+    // Checkout marketplace = action sensible : exiger un compte client.
+    if (normalizeRole(u.role) !== 'client') {
+      router.replace('/login?returnUrl=/gestion-marketplace/checkout');
+      return;
+    }
+    setClientId(u._id);
   }, []);
 
   const [paymentSuccess, setPaymentSuccess] = useState(false);
@@ -63,9 +62,10 @@ export default function CheckoutPage() {
       return;
     }
 
-    let currentClientId = clientId;
+    const currentClientId = clientId;
     if (!currentClientId) {
-      currentClientId = '67f8a1b2c3d4e5f6a7b8c9d0';
+      router.replace('/login?returnUrl=/gestion-marketplace/checkout');
+      return;
     }
 
     if (!location) {

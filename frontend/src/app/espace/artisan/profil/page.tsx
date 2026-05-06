@@ -259,10 +259,14 @@ export default function ArtisanProfilPage() {
         <section className="space-y-6">
           <div className="rounded-3xl border border-border dark:border-white/10 bg-black/5 dark:bg-white/5 backdrop-blur-xl p-6 sm:p-7">
             <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center border border-amber-500/40">
-                <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
-                  {d.nom?.charAt(0).toUpperCase() || "A"}
-                </span>
+              <div className="w-14 h-14 rounded-2xl bg-amber-500/20 flex items-center justify-center border border-amber-500/40 overflow-hidden shrink-0">
+                {d.avatarUrl ? (
+                  <img src={d.avatarUrl} alt={d.nom} className="w-full h-full object-cover" />
+                ) : (
+                  <span className="text-xl font-bold text-amber-700 dark:text-amber-300">
+                    {d.nom?.charAt(0).toUpperCase() || "A"}
+                  </span>
+                )}
               </div>
               <div>
                 <h2 className="text-xl font-semibold text-foreground dark:text-white">{d.nom}</h2>

@@ -86,14 +86,14 @@ class MarketplaceAPI {
   // ==================== PRODUITS ====================
   
   async getProducts(): Promise<Product[]> {
-    const res = await fetch(`${API_URL}/marketplace/produits`);
+    const res = await fetch(`${API_URL}/marketplace/produits`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Erreur chargement produits');
     const items = (await res.json()) as Product[];
     return Array.isArray(items) ? items.map((p) => this.normalizeProduct(p)) : [];
   }
 
   async getProduct(id: string): Promise<Product> {
-    const res = await fetch(`${API_URL}/marketplace/produits/${id}`);
+    const res = await fetch(`${API_URL}/marketplace/produits/${id}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Produit non trouvé');
     const p = (await res.json()) as Product;
     return this.normalizeProduct(p);
@@ -113,14 +113,14 @@ class MarketplaceAPI {
     if (filters.prixMax) params.append('prixMax', filters.prixMax.toString());
     if (filters.enStock) params.append('enStock', 'true');
     
-    const res = await fetch(`${API_URL}/marketplace/produits/recherche/avancee?${params}`);
+    const res = await fetch(`${API_URL}/marketplace/produits/recherche/avancee?${params}`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Erreur recherche produits');
     const items = (await res.json()) as Product[];
     return Array.isArray(items) ? items.map((p) => this.normalizeProduct(p)) : [];
   }
 
   async getSimilarProducts(productId: string): Promise<Product[]> {
-    const res = await fetch(`${API_URL}/marketplace/produits/${productId}/similaires`);
+    const res = await fetch(`${API_URL}/marketplace/produits/${productId}/similaires`, { cache: 'no-store' });
     if (!res.ok) throw new Error('Erreur chargement produits similaires');
     const items = (await res.json()) as Product[];
     return Array.isArray(items) ? items.map((p) => this.normalizeProduct(p)) : [];
