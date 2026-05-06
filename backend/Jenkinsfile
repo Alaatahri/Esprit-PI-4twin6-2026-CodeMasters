@@ -37,7 +37,6 @@ pipeline {
                 -Dsonar.projectKey=bmp-backend \
                 -Dsonar.sources=src \
                 -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
-                -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml \
                 -Dsonar.host.url=http://192.168.106.1:9000 \
                 -Dsonar.token=${SONAR_AUTH_TOKEN}
             '''
